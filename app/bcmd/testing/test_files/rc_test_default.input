@@ -1,0 +1,8 @@
+# File created using BayesCMD file creation
+@5
+: 1 V
+= 0 5 1
+= 5 10 0
+= 10 15 -1
+= 15 20 0
+= 20 25 1
