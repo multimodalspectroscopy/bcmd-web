@@ -1,23 +1,25 @@
-from new_code.input_creation import InputCreator
+from bcmdModel.input_creation import InputCreator
 from nose.tools import assert_equal
 import os
 
+
 def test_default_creation():
     """
-    Nose test function to check that the default creation function outputs the same as a test file.
+    Nose test function to check that the default creation function outputs the
+    same as a test file.
     :return: None - checks output files are the same
     """
-    output = os.path.join('.','test_files','test_default.input')
-    actual = os.path.join('.','test_files','rc_test_default.input')
-    times = list(range(0,30,5))
-    params={"names":['V'],
-            "values":[
-                [1],
-                [0],
-                [-1],
-                [0],
-                [1]
-            ]
+    output = os.path.join('.', 'test_files', 'test_default.input')
+    actual = os.path.join('.', 'test_files', 'rc_test_default.input')
+    times = list(range(0, 30, 5))
+    params = {"names": ['V'],
+              "values": [
+        [1],
+        [0],
+        [-1],
+        [0],
+        [1]
+    ]
     }
     input_creator = InputCreator(output, times, params)
     input_creator.default_creation()
@@ -27,6 +29,7 @@ def test_default_creation():
 
     assert_equal(content, actual_content)
     os.remove(output)
+
 
 def test_default_creation_2():
     """
@@ -41,8 +44,8 @@ def test_default_creation_2():
                   [-1],
                   [0],
                   [1]
-              ]
-              }
+    ]
+    }
     input_creator = InputCreator(None, times, params)
     f_out = input_creator.default_creation_2()
     with open(actual) as f_actual:
@@ -51,5 +54,3 @@ def test_default_creation_2():
     content = f_out.getvalue()
 
     assert_equal(content, actual_content)
-
-
