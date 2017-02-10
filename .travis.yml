@@ -3,6 +3,14 @@ language: python
 python:
   - "3.5.2"
 
+cache: apt
+addons:
+  apt:
+    packages:
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
 # command to install dependencies
 install:
   - pip install -r requirements.txt
