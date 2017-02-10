@@ -18,7 +18,8 @@ from .input_creation import InputCreator
 TIMEOUT = 30
 # default base directory - this should be a relative directory path
 # leading to bcmd/
-BASEDIR = '..'
+BASEDIR=os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+assert os.path.basename(BASEDIR)=='bcmd-web', "Incorrect base directory"
 print(BASEDIR)
 
 class ModelBCMD:

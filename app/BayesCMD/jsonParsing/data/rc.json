@@ -1,0 +1,1 @@
+{"params": {"Vc": "0", "V": "0", "C": "0.1", "t": "0", "R": "10"}, "input": ["V"], "model_name": "rc", "output": ["Vc", "V"]}
