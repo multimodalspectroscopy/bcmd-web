@@ -1,0 +1,208 @@
+# flux-based scalp compartment add-on with venous compliance
+# this is basically a 3-element windkessel or RCR circuit model
+# in which the storage volume is accounted for in the NIRS estimates
+
+# dependencies
+@extern P_a P_an XOa XOv_n K_G
+@input yFlux
+
+# signals -- since we used x and y for previous, use z here
+@output rz Gz zBF P_vz
+@output HbO2z HbTz HHbz TOIz
+@output Volaz Volvz
+
+# --- dynamics
+
+## Extracerebral blood flow.
+## For the moment we assume it can be estimated directly from the flux.
+## Flux input is shared with linear model 'y', but we use a model-specific
+## scale factor in case we need to take other model elements into account
+## when estimating.
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ s$^{-1}$
+zBF = yFlux * zBFn
+
+## Extracerebral conductance inferred from flow.
+## $G_z$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+Gz = zBF / P_a
+
+## Extracerebral vessel radius inferred from conductance.
+## We assume that the proportionality constant here is the same as for the cerebral
+## model. This probably is not the case, but we have no basis for making a different
+## estimate; this at least has the benefit of consistency.
+## $r_z$
+## ~ cm
+rz = (Gz/K_Gz) ^ 0.25
+
+## Pressure drop over the extracerebral venous compartment, which also defines the
+## stored volume. The underlying model for this is essentially a 3-element windkessel.
+## $P_{v,z}$
+## ~ mmHg
+P_vz' = ( Gz * (P_a - P_vz)          # pressure drop over arterial subcompartment
+          - (P_vz * G_vz) )          # pressure drop over venous subcompartment
+        / C_vz                       # compliance of venous subcompartment
+
+
+# --- NIRS estimation
+
+## Relative extracerebral arterial volume, compared to the `normal' value.
+## Unlike the other scalp models, here both arterial and venous volumes
+## may vary, but we assume that the balance when all values are normal
+## produces the normal venous/arterial ratio.
+## $Vol_{a,z}$
+## ~ dimensionless
+Volaz = (rz/rzn)^2 / (1 + VArat_z)
+
+## Relative extracerebral venous volume. We assume this consists of a
+## constant base volume plus a fraction that varies with compliance, scaled
+## such that at normality the total is 1.
+## $Vol_{v,z}$
+## ~ dimensionless
+Volvz = (Volvz_0 + Volcz / Volczn) * VArat_z / (1 + VArat_z)
+
+## Volume contribution from venous compliance.
+## (This is effectively dimensionless, but we specify units to
+## emphasise scaling consistency with the compliance parameter.)
+## $Vol_{c,z}$
+## ~ ~ ml$_{blood}$ ml$_{tissue}^{-1}$
+Volcz = P_vz * C_vz
+
+## Extracerebral oxygenated haemoglobin.
+## $HbO_{2,z}$
+## ~ uM
+HbO2z = (Volaz * XOa + Volvz * XOvz) * blood_hbz
+
+## Extracerebral total haemoglobin.
+## $HbT_z$
+## ~ uM
+HbTz = (Volaz + Volvz) * Xtot * blood_hbz
+
+## Extracerebral deoxygenated haemoglobin.
+## $HHb_z$
+## ~ uM
+HHbz = HbTz - HbO2z
+
+## Extracerebral TOI.
+## $TOI_z$
+## ~ dimensionless
+TOIz = 100 * HbO2z / HbTz
+
+# --- initial values (unlike the x & y models, this one has a state var and requires initialisation)
+
+P_vz := P_vzn
+Volcz := Volczn
+
+# --- parameters
+
+# -- configuration parameters
+# these define the balance of the system that will be used to set initial & normal values
+
+## Fraction of normal total resistance that resides in the venous compartment.
+## We expect this to be small in general.
+## ~ dimensionless
+## $R_{frac,v,z}$
+R_fracvz := 0.1
+
+## Fraction of normal venous volume that is due to the venous compliance.
+## This volume is subject to variation when the system is not at baseline,
+## whereas the remainder is constant.
+## ~ dimensionless
+## $Vol_{c,z,frac}$
+Volcz_frac := 0.1
+
+# -- asserted parameters
+
+## Compliance of the venous compartment. Decent estimates for the scalp are
+## elusive, but we start with a ballpark for peripheral veins in general
+## from Olsen and L\"anne (1998). They find lower body compliance of 0.051 ml
+## per 100 ml per mmHg in young subjects. We scale this to account for the
+## compliant volume fraction and the units change.
+## $C_{v,z}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$
+C_vz := 0.051 * 0.01 / Volcz_frac
+
+# -- derived parameters
+
+## Normal venous pressure. At normal arterial pressure and normal
+## conductance the venous compliance should be steady and the total
+## resistance should divide according to $R_{frac,v,z}$.
+## $P_{v,z,n}$
+## ~ mmHg
+P_vzn := R_fracvz * P_an
+
+## Conductance of the venous compartment, assumed constant.
+## $G_{v,z}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+G_vz := Gtotzn / R_fracvz
+
+## Normal conductance of the arterial compartment.
+## $G_{z,n}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+Gzn := Gtotzn/(1 - R_fracvz)
+
+## `Normal' extracerebral blood flow, i.e. flow at normal pressure.
+## At the moment we use the same value as the linear flux model.
+## $zBF_n$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ s$^{-1}$
+zBFn := yBFn
+
+## `Normal' total extracerebral conductance, i.e. conductance for normal
+## flow at normal systemic and venous pressures.
+## $G_{tot,z,n}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+Gtotzn := zBFn / P_an
+
+## `Normal' extracerebral vessel radius is the value implied by normal
+## conductance of the arterial compartment. (Venous compartment is assumed
+## not to contribute to the flow variability.)
+## $r_{z,n}$
+## ~ cm
+rzn := (Gzn/K_Gz) ^ 0.25
+
+## Conductance/flow proportionality constant for extracerebral vessels.
+## Since we have no basis for setting this, for the moment we just assume
+## it matches the internal value.
+## $K_{G,z}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$ cm$^{-4}$
+K_Gz := K_G
+
+## `Normal' ratio of extracerebral veins to arteries.
+## $VA_{rat,z}$
+## ~ dimensionless
+VArat_z := 3
+
+## Venous concentration of oxygen bound to haemoglobin
+## in the extracerebral tissue. Since we do not model oxygen consumption
+## in the extracerebral model, we assume this is constant and currently just
+## import the baseline value from the cerebral model.
+## $HbO_{2,v,z}$
+## ~ mM
+XOvz := XOv_n
+
+## Haemoglobin fraction in scalp. As with the cerebral fraction,
+## this term combines scaling for units and haemoglobin binding site
+## with a blood fraction estimate.
+## ~ dimensionless
+## $blood_{hb,z}$
+blood_hbz := 0.04 * 1000 / 4    # fraction of scalp volume that is blood * (mM->uM) / binding sites
+
+## Compliance-independent (ie, constant) contribution to venous volume.
+## $Vol_{v,z,0}$
+## ~ dimensionless
+Volvz_0 := 1 - Volcz_frac
+
+## Normal compliance-dependent venous volume.
+## (This is effectively dimensionless, but we specify units to
+## emphasise scaling consistency with the compliance parameter.)
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$
+## $Vol_{c,z,n}$
+Volczn := C_vz * P_vzn / Volcz_frac
+
+
+## + Extracerebral_flux_capacitor
+## @ zBF Gz rz P_vz Volaz Volvz Volcz HbO2z HbTz HHbz TOIz
+## + Extracerebral_flux_capacitor
+## @ R_fracvz Volcz_frac C_vz P_vzn G_vz Gzn zBFn Gtotzn rzn
+## + Extracerebral_flux_capacitor
+## @ K_Gz VArat_z XOvz blood_hbz Volvz_0 Volczn
+

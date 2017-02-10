@@ -1,0 +1,46 @@
+# trivial extension to the measurement model that
+# adds extra NIRS outputs that are mixtures of brain and scalp
+
+@output HbO2_mix_x HHb_mix_x HbT_mix_x
+@output HbO2_mix_y HHb_mix_y HbT_mix_y
+
+## Observed oxygenated haemoglobin as a mixture of brain and scalp contributions.
+## $HbO_{2,mix,y}$
+## ~ uM
+HbO2_mix_y = contrib_scalp * HbO2y + (1 - contrib_scalp) * HbO2
+
+## Observed oxygenated haemoglobin as a mixture of brain and scalp contributions.
+## $HbO_{2,mix,x}$
+## ~ uM
+HbO2_mix_x = contrib_scalp * HbO2x + (1 - contrib_scalp) * HbO2
+
+## Observed deoxygenated haemoglobin as a mixture of brain and scalp contributions.
+## $HHb_{2,mix,y}$
+## ~ uM
+HHb_mix_y = contrib_scalp * HHby + (1 - contrib_scalp) * HHb
+
+## Observed deoxygenated haemoglobin as a mixture of brain and scalp contributions.
+## $HHb_{2,mix,x}$
+## ~ uM
+HHb_mix_x = contrib_scalp * HHbx + (1 - contrib_scalp) * HHb
+
+## Observed deoxygenated haemoglobin as a mixture of brain and scalp contributions.
+## $HbT_{2,mix,y}$
+## ~ uM
+HbT_mix_y = contrib_scalp * HbTy + (1 - contrib_scalp) * HbT
+
+## Observed deoxygenated haemoglobin as a mixture of brain and scalp contributions.
+## $HbT_{2,mix,x}$
+## ~ uM
+HbT_mix_x = contrib_scalp * HbTx + (1 - contrib_scalp) * HbT
+
+## Parameter determining the contribution of the scalp model to the measured signal.
+## (Must be between 0 and 1.)
+## ~ dimensionless
+contrib_scalp = 0.5
+contrib_scalp >= 0
+contrib_scalp <= 1
+
+## + Scalp_mix
+## @ contrib_scalp HbO2_mix_x HHb_mix_x HbT_mix_x HbO2_mix_y HHb_mix_y HbT_mix_y
+

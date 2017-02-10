@@ -1,0 +1,109 @@
+## Parameter representing the relative supply of reducing substrate.
+## This is normally 1, and the dependency in f1 is logarithmic, so this
+## term normally disappears, but we may adjust it later to investigate
+## supply restrictions.
+## $S_{red}$
+## @ Sred
+
+## Fitted intercept for the linear model for $f_1$.
+## $\lambda_{f_1}$
+## ~ mM s$^{-1}$
+## @ f1_0
+
+## Fitted linear dependence of $f_1$ on logarithm of relative supply.
+## $\lambda_{f_1,s}$
+## ~ mM s$^{-1}$
+## @ f1_s
+
+## Fitted linear dependence of $f_1$ on logarithm of Cu$_{A,ox}$.
+## $\lambda_{f_1,a}$
+## ~ mM s$^{-1}$
+## @ f1_a
+
+## Fitted linear dependence of $f_1$ on $\Delta p$.
+## $\lambda_{f_1,p}$
+## ~ mM s$^{-1}$ mV$^{-1}$
+## @ f1_p
+
+
+
+## Fitted intercept for the linear model for $f_2$.
+## $\lambda_{f_2}$
+## ~ mM s$^{-1}$
+## @ f2_0
+
+## Fitted linear dependence of $f_2$ on logarithm of Cu$_{A,red}$.
+## $\lambda_{f_2,a}$
+## ~ mM s$^{-1}$
+## @ f2_a
+
+## Fitted linear dependence of $f_2$ on logarithm of a$_{3,ox}$.
+## $\lambda_{f_2,b}$
+## ~ mM s$^{-1}$
+## @ f2_b
+
+## Fitted linear dependence of $f_2$ on $\Delta p$.
+## $\lambda_{f_2,p}$
+## ~ mM s$^{-1}$ mV$^{-1}$
+## @ f2_p
+
+
+
+## Fitted intercept for the linear model for $f_3$.
+## $\lambda_{f_3}$
+## ~ mM s$^{-1}$
+## @ f3_0
+
+## Fitted linear dependence of $f_3$ on logarithm of a$_{3,red}$.
+## $\lambda_{f_3,b}$
+## ~ mM s$^{-1}$
+## @ f3_b
+
+## Fitted linear dependence of $f_3$ on logarithm of O$_2$.
+## $\lambda_{f_3,O_2}$
+## ~ mM s$^{-1}$
+## @ f3_O2
+
+## Fitted linear dependence of $f_3$ on $\Delta p$.
+## $\lambda_{f_3,p}$
+## ~ mM s$^{-1}$ mV$^{-1}$
+## @ f3_p
+
+
+
+## Fitted intercept for the linear model for $L$.
+## $\lambda_{L}$
+## ~ mM s$^{-1}$
+## @ L_0
+
+## Fitted linear dependence of $L$ on $\theta$.
+## $\lambda_{L,\theta}$
+## ~ mM s$^{-1}$
+## @ L_th
+
+## Fitted linear dependence of $L$ on $\Delta p$.
+## $\lambda_{L,p}$
+## ~ mM s$^{-1}$ mV$^{-1}$
+## @ L_Dp
+
+
+
+## Concentration of reduced Cu$_A$.
+## ~ mM
+## $Cu_{A,r}$
+## @ ared
+
+## Concentration of oxidised cytochrome a$_3$.
+## ~ mM
+## $a_{3,o}$
+## @ b
+
+## Concentration of cytochrome c oxidase in mitochondria.
+## $CCO_{tot}$
+## ~ mM
+## @ cytox_tot
+
+## Concentration of cytochrome c oxidase in tissue.
+## $CCO_{tis}$
+## ~ mM
+## @ cytox_tot_tis

@@ -1,0 +1,15 @@
+## BSX wrapper adding features for optimisation.
+## @
+
+# the scalp_mix add-on generates extra outputs based on scalp contribution
+# (included because we will probably want to optimise this)
+@import scalp_mix
+
+# the pulse add-on overrides all inputs with a pulse defined by parameters
+# (again, this allows for optimisation)
+@import pulse
+
+# bring in the rest of the model as is
+@import scalp_x
+@import scalp_y
+@import bsx_brain
