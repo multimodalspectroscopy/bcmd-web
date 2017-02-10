@@ -5,9 +5,10 @@ import pprint
 import subprocess
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from bcmdModel.bcmd_model import ModelBCMD
+from ..bcmdModel.bcmd_model import ModelBCMD
 from io import StringIO
 
+BASEDIR='../../..'
 
 def float_or_str(n):
     try:
@@ -47,6 +48,9 @@ def modeldefParse(fpath):
 
     return model_data
 
+
+def getDefaultFilePath(model_name):
+    return os.path.join(BASEDIR,'examples',model_name+'.modeldef')
 
 if __name__ == '__main__':
     import argparse
