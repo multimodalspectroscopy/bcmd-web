@@ -1,10 +1,10 @@
-from bcmdModel.bcmd_model import ModelBCMD
+from ..bcmdModel.bcmd_model import ModelBCMD
 from nose.tools import assert_true, assert_equal
 import numpy.testing as np_test
 import filecmp
 import os
 
-BASEDIR = '../..'
+BASEDIR = '../../..'
 
 
 def test_default_output():

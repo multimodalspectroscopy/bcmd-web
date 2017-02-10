@@ -1,4 +1,4 @@
-from bcmdModel.input_creation import InputCreator
+from ..bcmdModel.input_creation import InputCreator
 from nose.tools import assert_equal
 import os
 
