@@ -7,4 +7,4 @@ python:
 install:
   - pip install -r requirements.txt
 # command to run tests
-script: cd app/BayesCMD/testing && nosetests --nocapture --with-coverage
+script: ./confgure && make build/rc.model && cd app/BayesCMD/testing && nosetests --nocapture --with-coverage
