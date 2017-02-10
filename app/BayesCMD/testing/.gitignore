@@ -9,15 +9,18 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+build/
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
+lib/
 lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -64,7 +67,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# IPython Notebook
+# Jupyter Notebook
 .ipynb_checkpoints
 
 # pyenv
@@ -77,6 +80,7 @@ celerybeat-schedule
 .env
 
 # virtualenv
+.venv/
 venv/
 ENV/
 
@@ -86,91 +90,3 @@ ENV/
 # Rope project settings
 .ropeproject
 
-
-#Pycharm folders
-.idea/
-
-# BCMD specific
-# Compiled source
-
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.dylib
-*.a
-*.out
-
-# Packages
-
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-
-
-# editor backups
-*~
-
-# OS generated files
-
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Python
-
-__pycache__
-.tox
-
-
-# R
-.Rhistory
-
-
-# LaTeX
-
-*.acn
-*.acr
-*.alg
-*.aux
-*.bbl
-*.blg
-*.dvi
-*.fdb_latexmk
-*.glg
-*.glo
-*.gls
-*.idx
-*.ilg
-*.ind
-*.ist
-*.lof
-*.lot
-*.maf
-*.mtc
-*.mtc0
-*.nav
-*.nlo
-*.pdfsync
-*.snm
-*.synctex.gz
-*.toc
-*.vrb
-*.xdy
-*.tdo
-
-# Makefile specific
-configure.ac
-aclocal.m4
-autom4te.cache/
-autogen.sh

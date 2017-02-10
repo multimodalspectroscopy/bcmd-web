@@ -1,0 +1,88 @@
+# add-on features to internally generate
+# a pulse on the model inputs
+
+## Time at which the input pulse (if any) begins.
+## ~ s
+pulse_start := 1e5
+
+## Time at which the input pulse (if any) ends.
+## ~ s
+pulse_end := 1.1e5
+
+## Baseline value of $P_a$.
+## ~ mm Hg
+P_a_base := P_an
+
+## Value of P_a during pulse interval.
+## ~ mm Hg
+P_a_step := P_an
+
+
+## Baseline value of $Pa_{CO_2}$.
+## ~ mm Hg
+Pa_CO2_base := Pa_CO2n
+
+## Value of $Pa_{CO_2}$ during pulse interval.
+## ~ mm Hg
+Pa_CO2_step := Pa_CO2n
+
+## Baseline value of $Sa_{O_2,sup}$.
+## ~ dimensionless
+SaO2_base := SaO2_n
+
+## Value of $Sa_{O_2,sup}$ during pulse interval.
+## ~ dimensionless
+SaO2_step := SaO2_n
+
+## Baseline value of demand, $u$.
+## ~ dimensionless
+u_base := u_n
+
+## Value of $u$ during pulse interval.
+## ~ dimensionless
+u_step := u_n
+
+## Baseline value of the normalised scalp blood flux.
+## ~ dimensionless
+yFlux_base := 1
+
+## Value of the normalised scalp blood flux during pulse interval.
+## ~ dimensionless
+yFlux_step := 1
+
+# dynamic assignment of the inputs
+P_a = (t < pulse_start)
+      ? P_a_base
+      : (t > pulse_end)
+        ? P_a_base
+        : P_a_step
+
+Pa_CO2 = (t < pulse_start)
+         ? Pa_CO2_base
+         : (t > pulse_end)
+           ? Pa_CO2_base
+           : Pa_CO2_step
+
+SaO2sup = (t < pulse_start)
+          ? SaO2_base
+          : (t > pulse_end)
+            ? SaO2_base
+            : SaO2_step
+
+u = (t < pulse_start)
+    ? u_base
+    : (t > pulse_end)
+      ? u_base
+      : u_step
+
+yFlux = (t < pulse_start)
+        ? yFlux_base
+        : (t > pulse_end)
+          ? yFlux_base
+          : yFlux_step
+
+## + Pulse
+## @ pulse_start pulse_end P_a_base P_a_step Pa_CO2_base Pa_CO2_step
+## + Pulse
+## @ SaO2_base SaO2_step u_base u_step yFlux_base yFlux_step
+

@@ -1,0 +1,11 @@
+# documentation for metabolic submodel symbols specific to BrainSignals
+
+## Effect of demand on metabolism.
+## $\nu_{u2}$
+## ~ dimensionless
+## @ v_u2
+
+## Filter time constant for effect of demand on metabolism.
+## ~ s
+## $\tau_{u2}
+## @ t_u2

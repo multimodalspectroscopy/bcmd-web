@@ -1,0 +1,214 @@
+# flux-based scalp compartment add-on with venous compliance
+# this is basically a 3-element windkessel or RCR circuit model
+# in which the storage volume is accounted for in the NIRS estimates
+
+# dependencies
+@extern P_a P_an XOa XOv_n K_G
+@input yFlux
+
+# signals
+@output ry Gy yBF P_vy
+@output HbO2y HbTy HHby TOIy
+@output Volay Volvy yFlux
+
+# --- dynamics
+
+## Extracerebral blood flow in the flux-based model.
+## For the moment we assume it can be estimated directly from the flux.
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ s$^{-1}$
+yBF = yFlux * yBFn
+
+## Extracerebral conductance in the flux-based model, inferred from flow.
+## $G_y$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+Gy = yBF / P_a
+
+## Extracerebral vessel radius in the flux-based model, inferred from conductance.
+## We assume that the proportionality constant here is the same as for the cerebral
+## model. This probably is not the case, but we have no basis for making a different
+## estimate; this at least has the benefit of consistency.
+## $r_y$
+## ~ cm
+ry = (Gy/K_Gy) ^ 0.25
+
+## Pressure drop over the extracerebral venous compartment in the flux-based model.
+## This also determines the stored volume.
+## The underlying model for this is essentially a 3-element windkessel.
+## $P_{v,y}$
+## ~ mmHg
+P_vy' = ( Gy * (P_a - P_vy)          # pressure drop over arterial subcompartment
+          - (P_vy * G_vy) )          # pressure drop over venous subcompartment
+        / C_vy                       # compliance of venous subcompartment
+
+
+# --- NIRS estimation
+
+## Relative extracerebral arterial volume in the flux-based model, compared to the `normal' value.
+## Both arterial and venous volumes
+## may vary, but we assume that the balance when all values are normal
+## produces the normal venous/arterial ratio.
+## $Vol_{a,y}$
+## ~ dimensionless
+Volay = (ry/ryn)^2 / (1 + VArat_y)
+
+## Relative extracerebral venous volume in the flux-based model. We assume this consists of a
+## constant base volume plus a fraction that varies with compliance, scaled
+## such that at normality the total is 1.
+## $Vol_{v,y}$
+## ~ dimensionless
+Volvy = (Volvy_0 + Volcy / Volcyn) * VArat_y / (1 + VArat_y)
+
+## Volume contribution from venous compliance in the flux-based model.
+## (This is effectively dimensionless, but we specify units to
+## emphasise scaling consistency with the compliance parameter.)
+## $Vol_{c,y}$
+## ~ ~ ml$_{blood}$ ml$_{tissue}^{-1}$
+Volcy = P_vy * C_vy
+
+## Extracerebral oxygenated haemoglobin in the flux-based model.
+## $HbO_{2,y}$
+## ~ uM
+HbO2y = (Volay * XOa + Volvy * XOvy) * blood_hby
+
+## Extracerebral total haemoglobin in the flux-based model.
+## $HbT_y$
+## ~ uM
+HbTy = (Volay + Volvy) * Xtot * blood_hby
+
+## Extracerebral deoxygenated haemoglobin in the flux-based model.
+## $HHb_y$
+## ~ uM
+HHby = HbTy - HbO2y
+
+## Extracerebral TOI in the flux-based model.
+## $TOI_y$
+## ~ dimensionless
+TOIy = 100 * HbO2y / HbTy
+
+# --- initial values
+
+P_vy := P_vyn
+Volcy := Volcyn
+
+## Superficial blood "flux" from Laser Doppler or equivalent instrumentation.
+## This does not provide an absolute measurement, but instead is relative to
+## some baseline condition which is (of course) unknown and hence has a basically
+## arbitrary scale and offset. We assume that this has been factored out such that
+## yFlux is equal to 1 at yBFn.
+yFlux := 1
+
+# --- parameters
+
+# -- configuration parameters
+# these define the balance of the system that will be used to set initial & normal values
+
+## Fraction of normal total resistance that resides in the venous compartment in the flux-based model.
+## We expect this to be small in general.
+## ~ dimensionless
+## $R_{frac,v,y}$
+R_fracvy := 0.1
+
+## Fraction of normal venous volume that is due to the venous compliance in the flux-based model.
+## This volume is subject to variation when the system is not at baseline,
+## whereas the remainder is constant.
+## ~ dimensionless
+## $Vol_{c,y,frac}$
+Volcy_frac := 0.1
+
+# -- asserted parameters
+
+## Compliance of the venous compartment in the flux-based model. Decent estimates for the scalp are
+## elusive, but we start with a ballpark for peripheral veins in general
+## from Olsen and L\"anne (1998). They find lower body compliance of 0.051 ml
+## per 100 ml per mmHg in young subjects. We scale this to account for the
+## compliant volume fraction and the units change.
+## $C_{v,y}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$
+C_vy := 0.051 * 0.01 / Volcy_frac
+
+# -- derived parameters
+
+## Normal venous pressure in the flux-based model. At normal arterial pressure and normal
+## conductance the venous compliance should be steady and the total
+## resistance should divide according to $R_{frac,v,y}$.
+## $P_{v,y,n}$
+## ~ mmHg
+P_vyn := R_fracvy * P_an
+
+## Conductance of the venous compartment in the flux-based model. This is assumed constant.
+## $G_{v,y}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+G_vy := Gtotyn / R_fracvy
+
+## Normal conductance of the arterial compartment in the flux-based model.
+## $G_{y,n}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+Gyn := Gtotyn/(1 - R_fracvy)
+
+## `Normal' extracerebral blood flow in the flux-based model, i.e. when normalised flux = 1.
+## At the moment we use the same value as the pressure model at normal pressue.
+## $yBF_n$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ s$^{-1}$
+yBFn := xBFn
+
+## `Normal' total extracerebral conductance in the flux-based model, i.e. conductance for normal
+## flow at normal systemic and venous pressures.
+## $G_{tot,y,n}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+Gtotyn := yBFn / P_an
+
+## `Normal' extracerebral vessel radius in the flux-based model.
+## This is the value implied by the normal
+## conductance of the arterial compartment. (The venous compartment is assumed
+## not to contribute to the flow variability.)
+## $r_{y,n}$
+## ~ cm
+ryn := (Gyn/K_Gy) ^ 0.25
+
+## Conductance/flow proportionality constant for extracerebral vessels in the flux-based model.
+## Since we have no basis for setting this, for the moment we just assume
+## it matches the internal value.
+## $K_{G,y}$
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$ mmHg$^{-1}$ s$^{-1}$ cm$^{-4}$
+K_Gy := K_G
+
+## `Normal' ratio of extracerebral veins to arteries in the flux-based model.
+## $VA_{rat,y}$
+## ~ dimensionless
+VArat_y := 3
+
+## Venous concentration of oxygen bound to haemoglobin
+## in the extracerebral tissue in the flux-based model. Since we do not model oxygen consumption
+## in the extracerebral model, we assume this is constant and currently just
+## import the baseline value from the cerebral model.
+## $HbO_{2,v,y}$
+## ~ mM
+XOvy := XOv_n
+
+## Haemoglobin fraction in scalp in the flux-based model. As with the cerebral fraction,
+## this term combines scaling for units and haemoglobin binding site
+## with a blood fraction estimate.
+## ~ dimensionless
+## $blood_{hb,y}$
+blood_hby := 0.04 * 1000 / 4    # fraction of scalp volume that is blood * (mM->uM) / binding sites
+
+## Compliance-independent (ie, constant) contribution to venous volume in the flux-based model.
+## $Vol_{v,y,0}$
+## ~ dimensionless
+Volvy_0 := 1 - Volcy_frac
+
+## Normal compliance-dependent venous volume in the flux-based model.
+## (This is effectively dimensionless, but we specify units to
+## emphasise scaling consistency with the compliance parameter.)
+## ~ ml$_{blood}$ ml$_{tissue}^{-1}$
+## $Vol_{c,y,n}$
+Volcyn := C_vy * P_vyn / Volcy_frac
+
+
+## + Extracerebral_flux
+## @ yBF Gy ry P_vy Volay Volvy Volcy HbO2y HbTy HHby TOIy
+## + Extracerebral_flux
+## @ R_fracvy Volcy_frac C_vy P_vyn G_vy Gyn yBFn Gtotyn ryn
+## + Extracerebral_flux
+## @ K_Gy VArat_y XOvy blood_hby Volvy_0 Volcyn yFlux
+

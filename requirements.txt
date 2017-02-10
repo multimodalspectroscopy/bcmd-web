@@ -1,6 +1,8 @@
 appdirs==1.4.0
 click==6.7
+coverage==4.3.4
 Flask==0.12
+gunicorn==19.6.0
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23

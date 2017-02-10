@@ -1,0 +1,17 @@
+## Extended BrainSignals model, based primarily on the simplified variant B1M2 from
+## BrainSignals Revisited. The metabolic submodel has been modified to improve
+## modelling of functional activation, and an extracerebral blood flow compartment
+## (actually 2 different versions of such a compartment) have been added.
+## The scalp compartments operate in parallel to the cerebral
+## model and do not affect its behaviour.
+## @
+
+# pressure-based scalp model with venous compliance
+@import scalp_x
+
+# flux-based scalp model with venous compliance
+@import scalp_y
+
+# the cerebral BSX model is another umbrella file to import the
+# individual submodels
+@import bsx_brain

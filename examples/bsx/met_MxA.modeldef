@@ -1,0 +1,131 @@
+# new trial BSX metabolic rates model
+# makes each of the f terms depend on the logs of the two reactant concs and Dp
+# and introduces a new reactant parameter Sred, for the relative reducing substrate supply
+# (Sred is normally 1, so the term disappears, but we might want to fiddle with it later)
+
+Sred := 1
+
+f1 = f1_0 + f1_s * log(Sred) + f1_a * log(a) + f1_p * Dp
+f2 = f2_0 + f2_a * log(ared) + f2_b * log(b) + f2_p * Dp
+f3 = f3_0 + f3_b * log(bred) + f3_O2 * log(O2) + f3_p * Dp
+
+L = L_0 + L_th * theta + L_Dp * Dp
+
+# Call:
+# lm(formula = f1 ~ log(a) + Dp, data = sx1)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -0.0035535 -0.0009131  0.0001881  0.0008820  0.0132422 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  4.336e+00  4.872e-04    8900   <2e-16 ***
+# log(a)       7.146e-01  1.112e-04    6426   <2e-16 ***
+# Dp          -1.117e-02  2.134e-06   -5236   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.001482 on 99997 degrees of freedom
+# Multiple R-squared:  0.9985,	Adjusted R-squared:  0.9985 
+# F-statistic: 3.235e+07 on 2 and 99997 DF,  p-value: < 2.2e-16
+f1_0 := 4.336e+00
+f1_a := 7.146e-01
+f1_p := -1.117e-02
+
+# There is no data to fit this from, since it doesn't directly
+# correspond to anything in BS, and the relevant term is
+# always 0 for now, so just arbitrarily set it to 1.
+f1_s := 1
+
+
+# Call:
+# lm(formula = f2 ~ log(ared) + log(b) + Dp, data = sx1)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -0.0152528 -0.0012721  0.0002713  0.0011934  0.0234665 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  1.041e+01  2.210e-02   470.9   <2e-16 ***
+# log(ared)   -1.137e-01  2.336e-04  -486.8   <2e-16 ***
+# log(b)       3.188e+00  7.933e-03   401.9   <2e-16 ***
+# Dp          -1.390e-02  7.371e-06 -1885.8   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.001666 on 99996 degrees of freedom
+# Multiple R-squared:  0.998,	Adjusted R-squared:  0.998 
+# F-statistic: 1.706e+07 on 3 and 99996 DF,  p-value: < 2.2e-16
+f2_0 := 1.041e+01
+f2_a := -1.137e-01
+f2_b := 3.188e+00
+f2_p := -1.390e-02
+
+# Call:
+# lm(formula = f3 ~ log(bred) + log(O2) + Dp, data = sx1)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -0.0246334 -0.0005265  0.0003117  0.0007684  0.0038548 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  9.282e+00  1.088e-02   853.2   <2e-16 ***
+# log(bred)    2.324e-01  5.978e-04   388.8   <2e-16 ***
+# log(O2)      2.918e-01  4.576e-04   637.6   <2e-16 ***
+# Dp          -3.654e-02  3.114e-05 -1173.2   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.001087 on 99996 degrees of freedom
+# Multiple R-squared:  0.9992,	Adjusted R-squared:  0.9992 
+# F-statistic: 4.006e+07 on 3 and 99996 DF,  p-value: < 2.2e-16
+f3_0 := 9.282e+00
+f3_b := 2.324e-01
+f3_O2 := 2.918e-01
+f3_p := -3.654e-02
+
+# Call:
+# lm(formula = L ~ theta + Dp, data = sx1)
+#
+# Residuals:
+#       Min        1Q    Median        3Q       Max 
+# -0.015083 -0.008114 -0.002220  0.005429  0.129034 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -1.486e+01  4.346e-03   -3419   <2e-16 ***
+# theta        5.653e+00  3.277e-04   17254   <2e-16 ***
+# Dp           9.440e-02  2.357e-05    4005   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.01105 on 99997 degrees of freedom
+# Multiple R-squared:  0.9998,	Adjusted R-squared:  0.9998 
+# F-statistic: 2.332e+08 on 2 and 99997 DF,  p-value: < 2.2e-16
+L_0 := -1.486e+01
+L_th := 5.653e+00
+L_Dp := 9.440e-02
+
+
+# Because we frame the reactions in terms of red/ox reactants
+# we need to reintroduce a couple of parameters from BrainSignals
+# that were dumped from BSRF:
+cytox_tot_tis := 0.0055
+cytox_tot := cytox_tot_tis / Vol_mit
+
+# and the counterpart reactants are intermediates
+ared = cytox_tot - a
+b = cytox_tot - bred
+
+
+## + Metabolism
+## @ f1_0 f1_s f1_a f1_p f2_0 f2_a f2_b f2_p
+## + Metabolism
+## @ f3_0 f3_b f3_O2 f3_p L_0 L_th L_Dp Sred
+## + Metabolism
+## @ cytox_tot_tis cytox_tot ared b
+
+@import doc_met_MxA

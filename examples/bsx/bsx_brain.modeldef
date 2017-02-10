@@ -1,0 +1,17 @@
+# Cerebral portion of BSX, model based on the simplified variant B1M2.
+
+# these components remain the same as BrainSignals
+@import oxy link nirs
+
+# this is taken directly from BSRV
+@import haemo_B1
+
+# metabolic model is modified for BSX
+@import met_Mx met_MxA
+
+# some additional outputs for development purposes
+@output f1 f2 f3 L R_Hi
+
+# documentation
+@import doc_roots
+

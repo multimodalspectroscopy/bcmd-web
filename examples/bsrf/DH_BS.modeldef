@@ -1,0 +1,14 @@
+## DH's functional-activation adapted BrainSignals in BSRF form.
+## @
+
+# portions shared with BSRF
+@import oxy link nirs
+
+# blood flow is the same as BrainSignals
+@import haemo_BS
+
+# metabolism adds a 1st order filter for demand
+@import met_DH_BS
+
+# shared documentation
+@import doc_roots
