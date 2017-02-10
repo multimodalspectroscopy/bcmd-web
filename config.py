@@ -7,6 +7,7 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = os.environ['SECRET_KEY']
+    MONGOLAB_DB_URI = os.environ['MONGODB_URI']
 
 
 class ProductionConfig(Config):
