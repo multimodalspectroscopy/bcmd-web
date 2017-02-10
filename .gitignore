@@ -9,7 +9,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
 develop-eggs/
 dist/
 downloads/
@@ -91,3 +90,82 @@ ENV/
 
 #Pycharm folders
 .idea/
+
+# BCMD specific
+# Compiled source
+
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.dylib
+*.a
+*.out
+
+# Packages
+
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+
+# editor backups
+*~
+
+# OS generated files
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python
+
+__pycache__
+.tox
+
+
+# R
+.Rhistory
+
+
+# LaTeX
+
+*.acn
+*.acr
+*.alg
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.fdb_latexmk
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.lot
+*.maf
+*.mtc
+*.mtc0
+*.nav
+*.nlo
+*.pdfsync
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdy
+*.tdo
