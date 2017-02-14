@@ -14,9 +14,23 @@
 <!DOCTYPE html>
 <h1>Choose a model:</h1>
 <div>
-    <form method="POST" action="." role="form">
+    <form method=post action="" role="form">
         {{  form.csrf_token  }}
         {{  render_field(form.model_name, placeholder="Choose a model") }}
         <button type="submit">Choose model</button>
     </form>
+    <div>
+        {% if  model_info != None %}
+            <table>
+                {% for key, value in model_info.items() %}
+                    {% if key != '_id' and key!= 'model_name' %}
+                   <tr>
+                        <th> {{ key }} </th>
+                        <td> {{ value }} </td>
+                   </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
 </div>

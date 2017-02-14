@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="stylesheet" type="text/css" href="static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="static/bower_components/angular/angular.min.js"></script>
+    <script src="static/bower_components/jquery/src/jquery.js"></script>
+    <script src="static/bower_components/angular-route/angular-route.js"></script>
+    <script src="static/js/app.js"></script>
+
+
+    <title>WeBCMD - Metabolight</title>
+</head>
+
+<body ng-app="myApp">
+    <header>
+        <div class="page-header">
+            <h1> WeBCMD </h1>
+        </div>
+    </header>
+    {% raw %}
+    <div ng-view></div>
+    {% endraw %}
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "bcmd-web",
+  "description": "Web interface for BCMD",
+  "main": "index.js",
+  "authors": [
+    "Joshua Russell-Buckland"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "bcmd-web"
+  ],
+  "homepage": "https://github.com/buck06191/bcmd-web",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "angular": "^1.6.2",
+    "jquery": "^3.1.1",
+    "angular-route": "^1.6.2"
+  }
+}

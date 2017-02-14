@@ -1,8 +1,10 @@
+aniso8601==1.2.0
 appdirs==1.4.0
 click==6.7
 coverage==4.3.4
 Flask==0.12
 Flask-PyMongo==0.4.1
+Flask-RESTful==0.3.5
 Flask-WTF==0.14.2
 gunicorn==19.6.0
 itsdangerous==0.24
@@ -13,6 +15,9 @@ numpy==1.12.0
 packaging==16.8
 pymongo==3.4.0
 pyparsing==2.1.10
+python-dateutil==2.6.0
+pytz==2016.10
+requests==2.13.0
 six==1.10.0
 Werkzeug==0.11.15
 WTForms==2.1
