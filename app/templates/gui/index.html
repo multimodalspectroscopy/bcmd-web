@@ -4,14 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-    <link rel="stylesheet" type="text/css" href="static/bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <script src="static/bower_components/angular/angular.min.js"></script>
-    <script src="static/bower_components/jquery/src/jquery.js"></script>
-    <script src="static/bower_components/angular-route/angular-route.js"></script>
-    <script src="static/js/app.js"></script>
-
-
+    <link rel="stylesheet" type="text/css" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <title>WeBCMD - Metabolight</title>
 </head>
 
@@ -25,8 +19,12 @@
     <div ng-view></div>
     {% endraw %}
 
-
-
+    <!-- Define javascript code -->
+    <script src="/static/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/static/bower_components/angular/angular.js"></script>
+    <script src="/static/bower_components/angular-route/angular-route.js"></script>
+    <script> var available_models='{{available_models|tojson}}';
+    console.log(available_models);</script>
+    <script src="/static/js/app.js"></script>
 </body>
-
 </html>
