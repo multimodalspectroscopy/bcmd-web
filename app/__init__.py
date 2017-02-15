@@ -21,10 +21,12 @@ def get_choices():
     build_dir = os.path.abspath(os.path.join(os.path.dirname(guidir),
                                              'build'))
     assert os.path.basename(build_dir) == 'build', "Incorrect base directory"
-    model_choices = [os.path.splitext(file)[0] for file in os.listdir(
-        build_dir) if file.endswith('.model')]
+    model_choices = [{"id": idx, "model": os.path.splitext(file)[0]}
+                     for idx, file in enumerate(os.listdir(build_dir))
+                     if file.endswith('.model')]
 
-    return {'available_model':model_choices}
+    return {'models': model_choices, "count": len(model_choices)}
+
 
 available_models = get_choices()
 # Register blueprint(s)

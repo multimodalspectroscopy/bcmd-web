@@ -1,14 +1,13 @@
-'use strict';
+(function() {
+    'use strict';
+    console.log(available_models);
+    // Declare app level module which depends on views, and components
+    var app = angular.module('weBCMD', ['ngRoute']);
 
-console.log(available_models);
-
-// Declare app level module which depends on views, and components
-/*angular.module('myApp', [
-  'ngRoute',
-  'myApp.home',
-  'myapp.about'
-]).
-config(['$routeProvider', function($routeProvider) {
-  $routeProvider
-  .otherwise({redirectTo: '/home'});
-}]);*/
+    app.controller('DisplayModelsController',['$scope',function($scope){
+      $scope.data={
+        choice:null,
+        models:available_models.models
+      };
+    }]);
+})();

@@ -9,22 +9,33 @@
     <title>WeBCMD - Metabolight</title>
 </head>
 
-<body ng-app="myApp">
+<body ng-app="weBCMD">
     <header>
         <div class="page-header">
             <h1> WeBCMD </h1>
         </div>
     </header>
     {% raw %}
-    <div ng-view></div>
+    <div ng-controller="DisplayModelsController">
+        <form name="modelForm">
+            <label for="modelSelect"> Choose a model: </label>
+            <select name="modelSelect" id="modelSelect" ng-model="data.choice">
+              <option ng-repeat="option in data.models" value="{{option.model}}">{{option.model}}</option>
+            </select>
+        </form>
+        <hr>
+        <tt>model = {{data.choice}}</tt><br/>
+    </div>
     {% endraw %}
 
     <!-- Define javascript code -->
     <script src="/static/bower_components/jquery/dist/jquery.js"></script>
     <script src="/static/bower_components/angular/angular.js"></script>
     <script src="/static/bower_components/angular-route/angular-route.js"></script>
-    <script> var available_models='{{available_models|tojson}}';
-    console.log(available_models);</script>
+    <script>
+        var available_models = JSON.parse('{{available_models|tojson}}');
+    </script>
     <script src="/static/js/app.js"></script>
 </body>
+
 </html>
