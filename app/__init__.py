@@ -12,10 +12,8 @@ mongo = PyMongo(app)
 from app.gui.api import ModelInfo, api
 from app.gui.controllers import choose_model
 
-api.add_resource(ModelInfo, '/ModelInfo')
+
 # Get array of available models.
-
-
 def get_choices():
     guidir = os.path.abspath(os.path.dirname(__file__))
     build_dir = os.path.abspath(os.path.join(os.path.dirname(guidir),
@@ -29,12 +27,11 @@ def get_choices():
 
 
 available_models = get_choices()
-# Register blueprint(s)
-# app.register_blueprint(choose_model)
+
+# Add API route for getting models.
+api.add_resource(ModelInfo, '/api/modelinfo')
 
 # Sample HTTP error handling
-
-
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404

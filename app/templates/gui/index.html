@@ -17,14 +17,21 @@
     </header>
     {% raw %}
     <div ng-controller="DisplayModelsController">
-        <form name="modelForm">
+        <form name="modelForm" ng-submit="submit()">
             <label for="modelSelect"> Choose a model: </label>
-            <select name="modelSelect" id="modelSelect" ng-model="data.choice">
-              <option ng-repeat="option in data.models" value="{{option.model}}">{{option.model}}</option>
-            </select>
+            <select name="modelSelect" id="modelSelect" ng-options="option.model for option in data.models" ng-model="data.choice"></select>
+            <input class="btn btn-primary" type="submit" for="modelSelect" id="submit" value="Submit" />
         </form>
         <hr>
-        <tt>model = {{data.choice}}</tt><br/>
+        <div class="modelData well" ng-repeat="category in infoCategories">
+            <h4>{{category.name}}</h4>
+            <div ng-repeat="data in category.data">
+                <em class="pull-right">
+                  {{ data }}
+                </em><br>
+            </div>
+        </div>
+        <br/>
     </div>
     {% endraw %}
 
