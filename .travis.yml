@@ -14,5 +14,6 @@ addons:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - cd app && npm install && bower install 
 # command to run tests
 script: ./configure && make build/rc.model && cd app/BayesCMD/testing && nosetests --nocapture --with-coverage
