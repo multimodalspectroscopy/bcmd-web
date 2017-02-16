@@ -7,6 +7,8 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = os.environ['SECRET_KEY']
+    MONGO_URI = os.environ['MONGODB_URI']
+    MONGO_DBNAME = MONGO_URI.split('/')[-1]
 
 
 class ProductionConfig(Config):
