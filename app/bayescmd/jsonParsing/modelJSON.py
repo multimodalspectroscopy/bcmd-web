@@ -4,9 +4,11 @@ import re
 import pprint
 import subprocess
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.join("..","..",".."))))
-BASEDIR=os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-assert os.path.basename(BASEDIR)=='bcmd-web', "Incorrect base directory"
+sys.path.append(os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.join("..", ".."))))
+BASEDIR = os.path.abspath(os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+assert os.path.basename(BASEDIR) == 'BayesCMD', "Incorrect base directory"
 print(BASEDIR)
 from ..bcmdModel.bcmd_model import ModelBCMD
 from io import StringIO
@@ -26,7 +28,7 @@ def get_model_name(fpath):
 
 
 def json_writer(model_name, dictionary):
-    with open(os.path.join(os.path.dirname(__file__),'data','%s.json' % model_name), 'w') as fp:
+    with open(os.path.join(os.path.dirname(__file__), 'data', '%s.json' % model_name), 'w') as fp:
         json.dump(dictionary, fp)
 
 
@@ -52,12 +54,12 @@ def modeldefParse(fpath):
 
 
 def getDefaultFilePath(model_name):
-    def_path = os.path.join(BASEDIR,'examples')
+    def_path = os.path.join(BASEDIR, 'examples')
     modelPath = None
     for root, dirs, files in os.walk(def_path, topdown=True):
         for file in files:
-            if file==model_name+'.modeldef':
-                modelPath = os.path.join(root,file)
+            if file == model_name + '.modeldef':
+                modelPath = os.path.join(root, file)
                 print(modelPath)
     return modelPath
 
