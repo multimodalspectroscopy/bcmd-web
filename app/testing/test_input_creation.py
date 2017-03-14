@@ -1,8 +1,12 @@
-from bayescmd.bcmdModel.input_creation import InputCreator
 from nose.tools import assert_equal
 import os
 
-BASEDIR = os.path.abspath(os.path.dirname(__file__))
+from bayescmd.bcmdModel.input_creation import InputCreator
+from bayescmd.util import *
+
+BASEDIR = findBaseDir('app', verbose=True)
+print("BASEDIR:\t%s" % os.path.abspath(BASEDIR))
+TESTDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class TestInputDefault:
@@ -18,7 +22,7 @@ class TestInputDefault:
             [1]
         ]
         }
-        self.actual = os.path.join(BASEDIR,
+        self.actual = os.path.join(TESTDIR,
                                    'test_files',
                                    'rc_test_default.input')
 
@@ -40,7 +44,7 @@ class TestInputDefault:
         Nose test function to check that the default creation function outputs the same as a test file.
         :return: None - checks output files are the same
         """
-        output = os.path.join(BASEDIR, 'test_files', 'test_default.input')
+        output = os.path.join(TESTDIR, 'test_files', 'test_default.input')
         input_creator = InputCreator(self.times, self.inputs, filename=output)
         input_creator.default_creation()
         input_creator.input_file_write()

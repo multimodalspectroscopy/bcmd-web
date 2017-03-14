@@ -2,15 +2,15 @@ from bayescmd.abc.data_import import *
 from bayescmd.abc.distances import get_distance
 from bayescmd.abc.rejection import Rejection
 from bayescmd.bcmdModel import ModelBCMD
+from bayescmd.util import *
 
 from nose.tools import assert_true, assert_equal, with_setup, assert_dict_equal
 import numpy.testing as np_test
 
 import os
 
-BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-assert os.path.basename(BASEDIR) == 'BayesCMD'
-print(BASEDIR)
+BASEDIR = findBaseDir('bcmd-web')
+print("BASEDIR:\t%s" % os.path.abspath(BASEDIR))
 
 
 def test_csv_data_import():
