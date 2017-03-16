@@ -39,4 +39,4 @@ def not_found(error):
 
 @app.route('/')
 def index():
-    return render_template("gui/index.html", available_models=available_models)
+    return render_template("index.html", available_models=available_models)
