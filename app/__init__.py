@@ -10,7 +10,6 @@ mongo = PyMongo(app)
 
 # Local module import
 from app.gui.api import ModelInfo, api
-from app.gui.controllers import choose_model
 
 
 # Get array of available models.
