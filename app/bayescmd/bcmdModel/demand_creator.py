@@ -88,12 +88,6 @@ def signalGenerator(start, end, peaks,
             raise
 
         try:
-            float(demand[0])
-        except ValueError:
-            print('peak for demand %d given as %s' % (idx, demand[2]))
-            raise
-
-        try:
             assert demand[3] in SIGNAL.keys()
         except AssertionError:
             print('Peak type not recognised')
