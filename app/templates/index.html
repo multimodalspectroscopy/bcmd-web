@@ -4,36 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" type="text/css" href="/static/css/vendor/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/vendor/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <title>WeBCMD - Metabolight</title>
+    <!-- <base href="/"> -->
 </head>
 
 <body ng-app="weBCMD">
     <header>
-        <div class="page-header">
-            <h1> WeBCMD </h1>
-        </div>
-    </header>
-    {% raw %}
-    <div ng-controller="DisplayModelsController">
-        <form name="modelForm" ng-submit="submit()">
-            <label for="modelSelect"> Choose a model: </label>
-            <select name="modelSelect" id="modelSelect" ng-options="option.model for option in data.models" ng-model="data.choice"></select>
-            <input class="btn btn-primary" type="submit" for="modelSelect" id="submit" value="Submit" />
-        </form>
-        <hr>
-        <div class="modelData well" ng-repeat="category in infoCategories">
-            <h4>{{category.name}}</h4>
-            <div ng-repeat="data in category.data">
-                <em class="pull-right">
-                  {{ data }}
-                </em><br>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
+                        WeBCMD
+                    </a>
+                </div>
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a href="#!display-models">Model Info</a></li>
+                    <li><a href="#!run-model">Run Model</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#!about">About</a></li>
+                </ul>
             </div>
-        </div>
-        <br/>
-    </div>
-    {% endraw %}
+        </nav>
+    </header>
+    <div ng-view></div>
 
     <!-- Define javascript code -->
     <script src="/static/bower_components/jquery/dist/jquery.js"></script>
@@ -44,6 +40,7 @@
         var available_models = JSON.parse('{{available_models|tojson}}');
     </script>
     <script src="/static/js/app.js"></script>
+    <script src="/static/js/controllers.js"></script>
 </body>
 
 </html>

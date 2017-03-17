@@ -1,8 +1,5 @@
 body {
-    background-color: #466368;
-    background-color: -webkit-linear-gradient(#648880, #293f50);
-    background-color: -moz-linear-gradient(#648880, #293f50);
-    background-color: linear-gradient(#648880, #293f50);
+    background-color: #f1f8ff;
 }
 
 .page-header {
