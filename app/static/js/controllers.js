@@ -38,26 +38,29 @@ myApp.controller('IndexController',['$scope','$http',function($scope, $http) {
 
 }]);
 
-myApp.controller('RunModelController', ['$scope', '$http', 'Upload', function($scope, $http, Upload){
-  $scope.submit=function(){
-    if ($scope.form.file.$valid && $scope.file){
-      $scope.upload($scope.file);
-    }
+myApp.controller('RunModelController', ['$scope', '$http', '$parse', function($scope, $http, $parse){
+  $scope.csv = {
+    content: null,
+    header: true,
+    headerVisible: true,
+    separator: ',',
+    separatorVisible: true,
+    result: null,
+    encoding: 'UTF-8',
+    uploadButtonLabel: "Upload CSV"
   };
 
-  //upload on file select
+  var _lastGoodResult = '';
+  $scope.toPrettyJSON = function(json, tabWidth){
+    var objStr = JSON.stringify(json);
+    var obj = null;
+    try{
+      obj=$parse(objStr)({});
+    } catch(e){
+      return _lastGoodResult;
+    }
 
-  $scope.upload = function(file){
-    Upload.upload({
-      url: '/data/csv',
-      data: {file: file}
-    }).then(function(resp) {
-      console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-    }, function(resp) {
-      console.log('Error status: ' + resp.status);
-    }, function(evt) {
-      var progressPercentage = parseInt(100.0 * evt.loaded /evt.total);
-      console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
-    });
+    var result = JSON.stringify(obj, null, Number(tabWidth));
+    _lastGoodResult = result;
   };
 }]);

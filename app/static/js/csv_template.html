@@ -1,0 +1,16 @@
+<div class="ng-csv-import">
+    <div ng-show="headerVisible">
+        <div class="label">Header</div>
+        <input type="checkbox" ng-model="header">
+    </div>
+    <div ng-show="encoding">
+        <div class="label">Encoding</div><span>{{encoding}}</span>
+    </div>
+    <div ng-show="separatorVisible">
+        <div class="label">Seperator</div>
+        <span><input class="separator-input" type="text" ng-change="changeSeparator" ng-model="separator"></span>
+    </div>
+    <div>
+        <input class="btn cta gray" upload-button-label="{{uploadButtonLabel}}" type="file" accept="{{accept}}" />
+    </div>
+</div>

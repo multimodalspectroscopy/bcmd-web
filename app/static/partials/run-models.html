@@ -1,7 +1,12 @@
-<form class="form-inline" ng-controller="RunModelController" name="form">
-    <div class="form-group">
-        <label for="file-select"> Select file: </label>
-        <input id="file-select" type="file" ngf-select ng-model="file" name="file" ngf-pattern="'.csv'" ngf-max-size="20MB">
+<ng-csv-import class="import" content="csv.content" header="csv.header" header-visible="csv.headerVisible" separator="csv.separator" separator-visible="csv.separatorVisible" result="csv.result" encoding="csv.encoding" upload-button-label="csv.uploadButtonLabel"></ng-csv-import>
+
+<!--
+<div class="modelData well" ng-repeat="category in infoCategories">
+    <h4>{{category.name}}</h4>
+    <div ng-repeat="data in category.data">
+        <em class="pull-right">
+          {{ data }}
+        </em><br>
     </div>
-        <button type="submit" ng-click="submit()">Upload</button>
-</form>
+</div>
+==>
