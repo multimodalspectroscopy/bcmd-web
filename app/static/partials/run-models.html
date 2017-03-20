@@ -1,13 +1,11 @@
-{% raw %}
-<div ng-controller="RunModelController">
-    <div class="block row">
-        <div class="title">
-            <h4>Select CSV:</h4></div>
-        <div class="block right">
+<div class="block row">
+  <div class="title">
+      <h4>Select CSV:</h4>
+  </div>
+    <div class="block right">
             <ng-csv-import class="import" content="csv.content" material md-svg-icon="/static/icons/ic_backup_black_24px.svg" md-button-class="md-icon-button md-raised md-accent" header="csv.header" header-visible="csv.headerVisible" separator="csv.separator" separator-visible="csv.separatorVisible"
                 result="csv.result" accept="csv.accept" upload-button-label="csv.uploadButtonLabel"></ng-csv-import>
                 <br/>
-        </div>
     </div>
+  <hr />
 </div>
-{% endraw %}

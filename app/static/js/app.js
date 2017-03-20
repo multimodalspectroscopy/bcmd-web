@@ -15,10 +15,7 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'ngCsvImport']);
             })
             .when('/run-models', {
                 templateUrl: '/static/partials/run-models.html',
-                controller: 'RunModelController',
-                css: {
-                    href: '/static/css/run-style.css'
-                }
+                controller: 'RunModelController'
             })
             .when('/about', {
                 templateUrl: '/static/partials/about.html',
