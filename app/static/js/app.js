@@ -1,4 +1,4 @@
-var myApp = angular.module('weBCMD', ['ngRoute', 'ngCsvImport']);
+var myApp = angular.module('weBCMD', ['ngRoute', 'ngFileUpload']);
 (function(app) {
     'use strict';
     // Declare app level module which depends on views, and components

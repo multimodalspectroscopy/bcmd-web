@@ -38,17 +38,26 @@ myApp.controller('IndexController',['$scope','$http',function($scope, $http) {
 
 }]);
 
-myApp.controller('RunModelController', ['$scope', '$http', function($scope, $http){
-  $scope.csv = {
-    content: null,
-    header: true,
-    headerVisible: true,
-    separator: ',',
-    separatorVisible: true,
-    result: null,
-    encoding: 'ISO-8859-1',
-    mdSvgIcon: '/static/icons/ic_backup_black_24px.svg',
-    uploadButtonLabel: "upload a csv file"
+myApp.controller('RunModelController', ['$scope', '$http', 'Upload', function($scope, $http, Upload){
+  $scope.submit=function(){
+    if ($scope.form.file.$valid && $scope.file){
+      $scope.upload($scope.file);
+    }
   };
-  console.log($scope.csv);
+
+  //upload on file select
+
+  $scope.upload = function(file){
+    Upload.upload({
+      url: '/data/csv',
+      data: {file: file}
+    }).then(function(resp) {
+      console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+    }, function(resp) {
+      console.log('Error status: ' + resp.status);
+    }, function(evt) {
+      var progressPercentage = parseInt(100.0 * evt.loaded /evt.total);
+      console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+    });
+  };
 }]);

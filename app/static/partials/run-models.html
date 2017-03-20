@@ -1,11 +1,7 @@
-<div class="block row">
-  <div class="title">
-      <h4>Select CSV:</h4>
-  </div>
-    <div class="block right">
-            <ng-csv-import class="import" content="csv.content" material md-svg-icon="/static/icons/ic_backup_black_24px.svg" md-button-class="md-icon-button md-raised md-accent" header="csv.header" header-visible="csv.headerVisible" separator="csv.separator" separator-visible="csv.separatorVisible"
-                result="csv.result" accept="csv.accept" upload-button-label="csv.uploadButtonLabel"></ng-csv-import>
-                <br/>
+<form class="form-inline" ng-controller="RunModelController" name="form">
+    <div class="form-group">
+        <label for="file-select"> Select file: </label>
+        <input id="file-select" type="file" ngf-select ng-model="file" name="file" ngf-pattern="'.csv'" ngf-max-size="20MB">
     </div>
-  <hr />
-</div>
+        <button type="submit" ng-click="submit()">Upload</button>
+</form>
