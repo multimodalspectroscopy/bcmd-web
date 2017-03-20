@@ -22,7 +22,7 @@
     "angular": "^1.6.2",
     "jquery": "^3.1.1",
     "angular-route": "^1.6.2",
-    "angular-csv-import": "^0.0.37",
-    "angular-css": "^1.0.8"
+    "angular-css": "^1.0.8",
+    "ng-file-upload": "^12.2.13"
   }
 }
