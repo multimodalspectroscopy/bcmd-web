@@ -1,4 +1,4 @@
-var myApp = angular.module('weBCMD', ['ngRoute']);
+var myApp = angular.module('weBCMD', ['ngRoute', 'ngCsvImport']);
 (function(app) {
     'use strict';
     // Declare app level module which depends on views, and components
@@ -6,18 +6,25 @@ var myApp = angular.module('weBCMD', ['ngRoute']);
 
     app.config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/', {
-            templateUrl: '/static/partials/home.html',
-            controller: 'IndexController'
-        })
-        .when('/display-models', {
-            templateUrl: '/static/partials/display-models.html',
-            controller: 'DisplayModelsController'
-        })
-        .when('/about', {
-            templateUrl: '/static/partials/about.html',
-        })
-        .otherwise({
-            redirectTo: '/'
-        });
+                templateUrl: '/static/partials/home.html',
+                controller: 'IndexController'
+            })
+            .when('/display-models', {
+                templateUrl: '/static/partials/display-models.html',
+                controller: 'DisplayModelsController'
+            })
+            .when('/run-models', {
+                templateUrl: '/static/partials/run-models.html',
+                controller: 'RunModelController',
+                css: {
+                    href: '/static/css/run-style.css'
+                }
+            })
+            .when('/about', {
+                templateUrl: '/static/partials/about.html',
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
     }]);
 })(myApp);

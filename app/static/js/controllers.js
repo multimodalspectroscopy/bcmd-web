@@ -37,3 +37,18 @@ myApp.controller('DisplayModelsController',['$scope','$http',
 myApp.controller('IndexController',['$scope','$http',function($scope, $http) {
 
 }]);
+
+myApp.controller('RunModelController', ['$scope', '$http', function($scope, $http){
+  $scope.csv = {
+    content: null,
+    header: true,
+    headerVisible: true,
+    separator: ',',
+    separatorVisible: true,
+    result: null,
+    encoding: 'ISO-8859-1',
+    mdSvgIcon: '/static/icons/ic_backup_black_24px.svg',
+    uploadButtonLabel: "upload a csv file"
+  };
+  console.log($scope.csv);
+}]);
