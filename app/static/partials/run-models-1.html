@@ -1,0 +1,55 @@
+<!--
+<div class="title">
+    <h4>Upload CSV data:</h4></div>
+<form name="selectFileForm" class="form-inline">
+    <div class="form-group">
+        <label for="fileSelect"> Select CSV: </label>
+        <input type="file" name="fileSelect" id="fileSelect" />
+    <button class="btn btn-primary" for="fileSelect" ng-click="add()">Submit CSV </button>
+  </div>
+</form>
+<hr>
+<div class="block row">
+    <div class="content">
+        <h4>Data:</h4><br>{{content}}</div>
+</div>
+<hr>
+-->
+<div class="title">
+    <h4>Upload CSV data:</h4></div>
+<form name="selectFileForm" class="form-inline">
+    <div class="form-group">
+        <label for="fileSelect"> Select CSV: </label>
+        <input type="file" file-reader="fileContent" parse-result="parseResult" id="fileSelect1" />
+    </div>
+</form>
+<hr>
+<div class="block row">
+    <div class="content">
+        <h4>Inputs:</h4>
+        <ul>
+            <li ng-repeat="input in fileContent.header">
+                <input type="checkbox" name="group-check" value="{{input}}" ng-model="inputs[input]" ng-click="updateLength()"> {{input}}
+            </li>
+        </ul>
+        <br>
+        <div ng-if="inputsLength != 0">
+          {{inputs}}
+        </div>
+    </div>
+    <hr>
+    <div class="content">
+        <h4>Outputs:</h4>
+        <ul>
+            <li ng-repeat="output in fileContent.header">
+                <input type="checkbox" name="group-check" value="{{output}}" ng-model="outputs[output]" ng-click="updateLength()"> {{output}}
+            </li>
+        </ul>
+        <br>
+        <div ng-if="outputsLength != 0">
+          {{outputs}}
+        </div>
+    </div>
+    <hr>
+
+</div>

@@ -21,7 +21,7 @@
                 </div>
                 <ul class="nav navbar-nav navbar-left">
                     <li><a href="#!display-models">Model Info</a></li>
-                    <li><a href="#!run-models">Run Model</a></li>
+                    <li><a href="#!run-models-1">Run Model</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#!about">About</a></li>
@@ -40,13 +40,14 @@
     <script src="/static/js/vendor/bootstrap/bootstrap.min.js"></script>
     <script src="/static/bower_components/angular/angular.js"></script>
     <script src="/static/bower_components/angular-route/angular-route.js"></script>
-    <script src="/static/bower_components/angular-csv-import/dist/angular-csv-import.js"></script>
-    <!-- Custom code -->
+    <script src="/static/bower_components/papaparse/papaparse.js"></script>
+    <!-- Custom Code -->
     <script>
         var available_models = JSON.parse('{{available_models|tojson}}');
     </script>
     <script src="/static/js/app.js"></script>
     <script src="/static/js/controllers.js"></script>
+    <script src="/static/js/directives.js"></script>
 
 </body>
 

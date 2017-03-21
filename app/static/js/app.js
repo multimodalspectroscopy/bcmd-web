@@ -1,4 +1,4 @@
-var myApp = angular.module('weBCMD', ['ngRoute', 'ngCsvImport']);
+var myApp = angular.module('weBCMD', ['ngRoute']);
 (function(app) {
     'use strict';
     // Declare app level module which depends on views, and components
@@ -13,9 +13,9 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'ngCsvImport']);
                 templateUrl: '/static/partials/display-models.html',
                 controller: 'DisplayModelsController'
             })
-            .when('/run-models', {
-                templateUrl: '/static/partials/run-models.html',
-                controller: 'RunModelController'
+            .when('/run-models-1', {
+                templateUrl: '/static/partials/run-models-1.html',
+                controller: 'RunModelController1'
             })
             .when('/about', {
                 templateUrl: '/static/partials/about.html',

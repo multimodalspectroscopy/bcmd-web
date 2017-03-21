@@ -1,3 +1,4 @@
+'use strict';
 myApp.controller('DisplayModelsController',['$scope','$http',
 
     function($scope, $http) {
@@ -38,29 +39,20 @@ myApp.controller('IndexController',['$scope','$http',function($scope, $http) {
 
 }]);
 
-myApp.controller('RunModelController', ['$scope', '$http', '$parse', function($scope, $http, $parse){
-  $scope.csv = {
-    content: null,
-    header: true,
-    headerVisible: true,
-    separator: ',',
-    separatorVisible: true,
-    result: null,
-    encoding: 'UTF-8',
-    uploadButtonLabel: "Upload CSV"
+myApp.controller('RunModelController1', ['$scope', '$http', '$parse', function($scope, $http, $parse){
+  $scope.parseResult=null;
+  // Get inputs and outputs from checkboxes. Get lengths of each for logic checks.
+  $scope.inputs = {};
+  $scope.inputsLength = Object.keys($scope.inputs).length;
+  $scope.outputs = {};
+  $scope.outputsLength = Object.keys($scope.outputs).length;
+  $scope.updateLength = function(){
+    $scope.inputsLength = Object.keys($scope.inputs).length;
+    console.log($scope.inputsLength);
+    console.log($scope.inputs);
+    $scope.outputsLength = Object.keys($scope.outputs).length;
+    console.log($scope.outputsLength);
+    console.log($scope.outputs);
   };
 
-  var _lastGoodResult = '';
-  $scope.toPrettyJSON = function(json, tabWidth){
-    var objStr = JSON.stringify(json);
-    var obj = null;
-    try{
-      obj=$parse(objStr)({});
-    } catch(e){
-      return _lastGoodResult;
-    }
-
-    var result = JSON.stringify(obj, null, Number(tabWidth));
-    _lastGoodResult = result;
-  };
 }]);
