@@ -1,20 +1,3 @@
-<!--
-<div class="title">
-    <h4>Upload CSV data:</h4></div>
-<form name="selectFileForm" class="form-inline">
-    <div class="form-group">
-        <label for="fileSelect"> Select CSV: </label>
-        <input type="file" name="fileSelect" id="fileSelect" />
-    <button class="btn btn-primary" for="fileSelect" ng-click="add()">Submit CSV </button>
-  </div>
-</form>
-<hr>
-<div class="block row">
-    <div class="content">
-        <h4>Data:</h4><br>{{content}}</div>
-</div>
-<hr>
--->
 <div class="title">
     <h4>Upload CSV data:</h4></div>
 <form name="selectFileForm" class="form-inline">
@@ -34,7 +17,7 @@
         </ul>
         <br>
         <div ng-if="inputsLength != 0">
-          {{inputs}}
+            {{inputs}}
         </div>
     </div>
     <hr>
@@ -47,9 +30,19 @@
         </ul>
         <br>
         <div ng-if="outputsLength != 0">
-          {{outputs}}
+            {{outputs}}
         </div>
     </div>
     <hr>
 
+    <footer>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="pager">
+                  <li><a href="#!csv-upload"> Previous </a></li>
+                    <li><a href="#!model-check"> Next </a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
 </div>

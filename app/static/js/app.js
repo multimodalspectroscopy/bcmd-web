@@ -13,9 +13,17 @@ var myApp = angular.module('weBCMD', ['ngRoute']);
                 templateUrl: '/static/partials/display-models.html',
                 controller: 'DisplayModelsController'
             })
-            .when('/run-models-1', {
-                templateUrl: '/static/partials/run-models-1.html',
-                controller: 'RunModelController1'
+            .when('/csv-upload', {
+                templateUrl: '/static/partials/csv-upload.html',
+                controller: 'CsvFileController'
+            })
+            .when('/demand-creation', {
+                templateUrl: '/static/partials/demand-creation.html',
+                controller: 'DemandCreationController'
+            })
+            .when('/model-check', {
+                templateUrl: '/static/partials/model-check.html',
+                controller: 'ModelCheckController'
             })
             .when('/about', {
                 templateUrl: '/static/partials/about.html',
