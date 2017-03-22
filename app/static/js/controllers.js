@@ -41,20 +41,57 @@ myApp.controller('IndexController', ['$scope', '$http', function($scope, $http) 
 }]);
 
 myApp.controller('CsvFileController', ['$scope', '$http', '$parse', 'RunModelData',
-    function($scope, $http, $parse) {
+    function($scope, $http, $parse, RunModelData) {
+        // Define initial variables.
+        $scope.data = {
+          inputHeader: {},
+          inputs: {},
+          outputHeader: {},
+          outputs: {}
+        };
+        console.log($scope.data);
         $scope.parseResult = null;
-        // Get inputs and outputs from checkboxes. Get lengths of each for logic checks.
-        $scope.inputs = {};
-        $scope.inputsLength = Object.keys($scope.inputs).length;
-        $scope.outputs = {};
-        $scope.outputsLength = Object.keys($scope.outputs).length;
+        // $scope.inputHeader = {};
+        $scope.inputsLength = Object.keys($scope.data.inputHeader).length;
+        //$scope.outputHeader = {};
+        $scope.outputsLength = Object.keys($scope.data.outputHeader).length;
+        $scope.inputSaved=false;
+        $scope.outputSaved=false;
+        // Define functions.
+
+        $scope.setInputs = function(){
+          $scope.data.inputs = setObject($scope.parseResult, $scope.data.inputHeader);
+          $scope.inputSaved = true;
+          console.log($scope.data);
+        };
+
+        $scope.setOutputs = function(){
+          $scope.data.outputs = setObject($scope.parseResult, $scope.data.outputHeader);
+          $scope.outputSaved = true;
+          console.log($scope.data);
+        };
+
+        $scope.getState = function(){
+          $scope.data = RunModelData.getState();
+        };
+
+        $scope.saveState = function(){
+          RunModelData.setKey($scope.data.inputs, "inputs");
+          RunModelData.setKey($scope.data.outputs, "outputs");
+          RunModelData.setKey($scope.data.inputHeader, "inputHeader");
+          RunModelData.setKey($scope.data.outputHeader, "outputHeader");
+        };
+
+        // Start of running code.
+        // Get inputs and outputs from checkboxes. Get lengths of each for logic checks
+        $scope.getState();
         $scope.updateLength = function() {
-            $scope.inputsLength = Object.keys($scope.inputs).length;
+            $scope.inputsLength = Object.keys($scope.data.inputHeader).length;
             console.log($scope.inputsLength);
-            console.log($scope.inputs);
-            $scope.outputsLength = Object.keys($scope.outputs).length;
+            console.log($scope.data.inputHeader);
+            $scope.outputsLength = Object.keys($scope.data.outputHeader).length;
             console.log($scope.outputsLength);
-            console.log($scope.outputs);
+            console.log($scope.data.outputHeader);
         };
 
 
@@ -62,7 +99,18 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', 'RunModelDat
 ]);
 
 myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunModelData',
-    function($scope, $http, $parse) {
+    function($scope, $http, $parse, RunModelData) {
+      // Define functions
+      $scope.getState = function(){
+        $scope.data = RunModelData.getState();
+      };
+      $scope.saveState = function(){
+        RunModelData.setKey($scope.data.inputs, "inputs");
+        RunModelData.setKey($scope.data.outputs, "outputs");
+        RunModelData.setKey($scope.data.inputHeader, "inputHeader");
+        RunModelData.setKey($scope.data.outputHeader, "outputHeader");
+      };
+      $scope.getState();
 
     }
 ]);

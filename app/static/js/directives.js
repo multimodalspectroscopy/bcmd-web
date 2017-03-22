@@ -18,7 +18,7 @@ myApp.directive('fileReader', function() {
                         var contents = e.target.result;
                         scope.$apply(function() {
                             result = Papa.parse(contents).data;
-                            scope.parseResult = result;
+                            scope.parseResult = arrayToJSON(transposeArray(result));
                             scope.fileReader.header = result[0];
                             for (var  i = 1; i<result.length; i++){
                               scope.fileReader.contents.push(result[i]);
