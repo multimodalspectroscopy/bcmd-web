@@ -1,4 +1,4 @@
-var myApp = angular.module('weBCMD', ['ngRoute']);
+var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'd3']);
 (function(app) {
     'use strict';
     // Declare app level module which depends on views, and components
@@ -7,7 +7,8 @@ var myApp = angular.module('weBCMD', ['ngRoute']);
     app.config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/', {
                 templateUrl: '/static/partials/home.html',
-                controller: 'IndexController'
+                controller: 'IndexController',
+                css: '/static/css/main-style.css'
             })
             .when('/display-models', {
                 templateUrl: '/static/partials/display-models.html',
@@ -15,11 +16,13 @@ var myApp = angular.module('weBCMD', ['ngRoute']);
             })
             .when('/csv-upload', {
                 templateUrl: '/static/partials/csv-upload.html',
-                controller: 'CsvFileController'
+                controller: 'CsvFileController',
+                css: ['/static/css/run-style.css', '/static/css/plot-style.css']
             })
             .when('/demand-creation', {
                 templateUrl: '/static/partials/demand-creation.html',
-                controller: 'DemandCreationController'
+                controller: 'DemandCreationController',
+                css: ['/static/css/demand-style.css', '/static/css/plot-style.css']
             })
             .when('/model-check', {
                 templateUrl: '/static/partials/model-check.html',

@@ -9,7 +9,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 mongo = PyMongo(app)
 
 # Local module import
-from app.gui.api import ModelInfo, api
+from app.gui.api import ModelInfo, DemandCreator, api
 
 
 # Get array of available models.
@@ -29,6 +29,7 @@ available_models = get_choices()
 
 # Add API route for getting models.
 api.add_resource(ModelInfo, '/api/modelinfo')
+api.add_resource(DemandCreator, '/api/demandcreation')
 
 # Sample HTTP error handling
 @app.errorhandler(404)

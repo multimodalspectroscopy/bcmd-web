@@ -6,7 +6,7 @@
     <h4>Upload CSV data:</h4></div>
 <form name="selectFileForm" class="form-inline">
     <div class="form-group">
-        <label for="fileSelect"> Select CSV: </label>
+        <label for="fileSelect1"> Select CSV: </label>
         <input type="file" file-reader="fileContent" parse-result="parseResult" id="fileSelect1" />
     </div>
 </form>
@@ -30,6 +30,7 @@
     <br>
     <div ng-if="inputsLength != 0">
         {{data.inputHeader}} {{data.inputs}}
+        <line-graph data="data.inputs"></line-graph>
     </div>
 </div>
 <hr>

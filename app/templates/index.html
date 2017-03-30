@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="weBCMD">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
     <!-- <base href="/"> -->
 </head>
 
-<body ng-app="weBCMD">
+<body>
     <header>
         <nav class="navbar navbar-default">
             <div class="container-fluid">
@@ -40,14 +40,18 @@
     <script src="/static/js/vendor/bootstrap/bootstrap.min.js"></script>
     <script src="/static/bower_components/angular/angular.js"></script>
     <script src="/static/bower_components/angular-route/angular-route.js"></script>
+    <script src="/static/bower_components/angular-route-styles/route-styles.js"></script>
     <script src="/static/bower_components/papaparse/papaparse.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
     <!-- Custom Code -->
     <script>
         var available_models = JSON.parse('{{available_models|tojson}}');
     </script>
     <script src="/static/js/utilityFunctions.js"></script>
+    <script src="/static/js/plots.js"></script>
     <script src="/static/js/app.js"></script>
     <script src="/static/js/services.js"></script>
+    <script src="/static/js/modules.js"></script>
     <script src="/static/js/controllers.js"></script>
     <script src="/static/js/directives.js"></script>
 

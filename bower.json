@@ -23,6 +23,8 @@
     "jquery": "^3.1.1",
     "angular-route": "^1.6.2",
     "angular-css": "^1.0.8",
-    "papaparse": "^4.2.0"
+    "papaparse": "^4.2.0",
+    "angular-route-styles": "*",
+    "d3": "^4.7.4"
   }
 }
