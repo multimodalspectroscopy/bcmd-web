@@ -27,3 +27,6 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+
+class DockerConfig(StagingConfig):
+    HOST='0.0.0.0'
