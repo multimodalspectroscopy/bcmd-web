@@ -1,0 +1,80 @@
+<header>
+    <h2> Demand Creation </h2>
+    <h4> If you haven't specified a demand function already, and one is needed, you can use the creator below to create specific demand steps at specified time points.</h4>
+</header>
+
+<div>
+    <h4> Inputs: </h4>
+    <span data-ng-repeat="(key, value) in data.inputs">
+{{key}}
+</span>
+</div>
+<div>
+    <h4> Outputs: </h4>
+    <span data-ng-repeat="(key, value) in data.outputs">
+{{key}}
+</span>
+</div>
+
+<label for="demandNeeded">Demand required?</label>
+<input type="checkbox" ng-model="demandNeeded" id="demandNeeded"/>
+
+<div class="container" ng-if="demandNeeded">
+
+<form ng-submit = "getDemandTrace()">
+    <div class="form-group">
+        <label for="startTime">Start Time</label>
+        <input type="text" ng-model="demand.startTime" class="form-control" id="startTime" aria-describedby="startTimeHelp" ng-attr-placeholder="'Enter start time (default:' + {{demand.startTime}} +')'" required="">
+        <small id="startTimeHelp" class="form-text text-muted">Enter a start time for your Demand time series (default: 0)</small>
+    </div>
+
+    <div class="form-group">
+        <label for="endTime">End Time</label>
+        <input type="text" ng-model="demand.endTime" class="form-control" id="endTime" aria-describedby="endTimeHelp" ng-attr-placeholder="'Enter end time (default:' + {{demand.endTime}} +')'" required="">
+        <small id="endTimeHelp" class="form-text text-muted">Enter an end time for your Demand time series (default: last time value from input)</small>
+    </div>
+    <div class="form-group">
+        <label for="sampleRate">Sample Rate</label>
+        <input type="text" ng-model="demand.sampleRate" class="form-control" id="sampleRate" aria-describedby="sampleRateHelp" ng-attr-placeholder="'Enter end time (default:' + {{demand.sampleRate}} +')'" required="">
+        <small id="sampleRateHelp" class="form-text text-muted">Enter a sample rate for your Demand time series (default: second time value- first time value from input)</small>
+    </div>
+
+    <div class="form-group">
+        <label for="peakGen">Peak Generation </label>
+        <fieldset id="peakGen" data-ng-repeat="peak in demand.peaks">
+            <label ng-attr-for="{{ 'start-' + peak.id }}"> Start: </label>
+            <input type="text" ng-model="peak.start" ng-attr-id="{{ 'start-' + peak.id }}" placeholder="Enter start time for a demand peak" />
+            <label ng-attr-for="{{ 'end-' + peak.id }}">End:</label>
+            <input type="text" ng-model="peak.end" ng-attr-id="{{ 'end-' + peak.id }}" placeholder="Enter end time for a demand peak"/> <br>
+
+            <br>
+
+            <label ng-attr-for="{{ 'height-' + peak.id }}"> Peak Height: </label>
+            <input type="text" ng-model="peak.height" ng-attr-id="{{ 'height-' + peak.id }}" placeholder="Maximum height of the peak" />
+            <peak-select peak-types="peaks"></peak-select>
+            <br>
+
+
+            <label ng-attr-for="{{ 'repeat-' + peak.id }}">Repeat peak?</label>
+            <input type="checkbox" ng-model="peak.repeat" name="showRepeats" ng-attr-id="{{'repeat-' + peak.id}}" />
+            <span ng-if="peak.repeat">
+              <label ng-attr-for="{{'nRepeats-' + peak.id}}">Number:</label><input type="text" ng-model="peak.nRepeats" ng-attr-id="{{'nRepeats-' + peak.id}}" placeholder="Number of repeats"/>
+              <label ng-attr-for="{{'interval-' + peak.id}}">Interval:</label> <input type="text" ng-model="peak.interval" ng-attr-id="{{'interval-' + peak.id}}" placeholder="Interval between peaks"/>
+            </span>
+            <button type="button" class="btn btn-danger" ng-show="$last" ng-click="removeChoice()">Remove</button>
+        </fieldset>
+        <button class="btn btn-info" ng-click="addNewChoice()">Add another peak</button>
+    </div>
+    <button type="submit" class="btn btn-primary"> Generate Demand </button>
+</form>
+</div>
+<footer>
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="pager">
+                <li><a href="#!csv-upload" ng-click="saveState()"> Previous </a></li>
+                <li><a href="#!model-check" ng-click="saveState()"> Next </a></li>
+            </ul>
+        </div>
+    </div>
+</footer>

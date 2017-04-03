@@ -15,9 +15,10 @@ addons:
     - libatlas-base-dev
     - liblapack-dev
     - gfortran
+    - node
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - cd app && npm install && bower install 
+  - npm install && bower install 
 # command to run tests
 script: cd .. && ./configure && make build/rc.model && cd app/BayesCMD/testing && nosetests --nocapture --with-coverage

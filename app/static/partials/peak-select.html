@@ -1,0 +1,5 @@
+<select name="peakSelect" id="peakSelect">
+      <option value="">---Please select---</option> <!-- not selected / blank option -->
+      <option ng-repeat="peakType in peakTypes" value="{{peakType.function}}">{{peakType.name}}</option>
+      <img ng-src="{{peakType.image}}" alt="Description" />
+</select>
