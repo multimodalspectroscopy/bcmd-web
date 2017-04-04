@@ -12,7 +12,7 @@ function transposeArray(array){
 function arrayToJSON(array){
   var tsObj = {};
   array.forEach(function(item, idx){
-    tsObj[item[0]] = item.slice(1).map(parseFloat);
+    tsObj[item[0]] = item.slice(1).map(parseFloat).filter(function(x){return !isNaN(x);});
   });
   return tsObj;
 }

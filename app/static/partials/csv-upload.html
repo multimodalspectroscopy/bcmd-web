@@ -43,8 +43,8 @@
             </li>
         </ul>
         <button ng-click="setOutputs()" class="btn btn-primary">Set Outputs </button>
-        <div ng-if="outputSaved">
-            <h4>Output Saved! </h4>
+        <div ng-model="outputSaved">
+            <h4>{{outputSaved}}</h4>
         </div>
     </div>
     <br>

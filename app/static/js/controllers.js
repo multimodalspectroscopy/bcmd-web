@@ -67,8 +67,7 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         };
 
         $scope.setInputs = function() {
-          if ($scope.data.inputHeader.length != 0){
-            console.log(Object.keys($scope.data.inputHeader).length);
+          if (Object.keys($scope.data.inputHeader).length !== 0){
             $scope.data.inputs = setObject($scope.parseResult, $scope.data.inputHeader);
             $scope.inputSaved = "Input Saved!";
             console.log($scope.data);
@@ -78,7 +77,7 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         };
 
         $scope.setOutputs = function() {
-          if ($scope.data.outputHeader.length !== 0){
+          if (Object.keys($scope.data.outputHeader).length !== 0){
             $scope.data.outputs = setObject($scope.parseResult, $scope.data.outputHeader);
             $scope.outputSaved = "Output Saved!";
             console.log($scope.data);

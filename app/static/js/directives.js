@@ -18,7 +18,9 @@ myApp.directive('fileReader', function() {
                     r.onload = function(e) {
                         var contents = e.target.result;
                         scope.$apply(function() {
-                            result = Papa.parse(contents, {"skipEmptyLines": true}).data;
+                            result = Papa.parse(contents, {
+                                "skipEmptyLines": true
+                            }).data;
                             scope.parseResult = arrayToJSON(transposeArray(result));
                             scope.fileReader.header = result[0];
                             for (var i = 1; i < result.length; i++) {
@@ -33,17 +35,23 @@ myApp.directive('fileReader', function() {
     };
 });
 
-myApp.directive('peakSelect', function(){
-  return {
-    restruct: 'E',
-    scope: {
-      peakTypes:"=peakTypes"
-    },
-    templateUrl: '/static/partials/peak-select.html'
-  }
+myApp.directive('peakSelect', function() {
+    return {
+        restruct: 'E',
+        scope: {
+            peakTypes: "=peakTypes"
+        },
+        templateUrl: '/static/partials/peak-select.html'
+    }
 });
 
 myApp.directive('lineGraph', ['d3Service', function(d3Service) {
+
+    // constants
+    var margin = 20,
+        width = 960,
+        height = 500 - 0.5 - margin,
+        color = d3.interpolateRgb("#f77", "#77f");
     return {
         restrict: 'EA',
         scope: {
@@ -51,6 +59,8 @@ myApp.directive('lineGraph', ['d3Service', function(d3Service) {
         },
         link: function(scope, element, attrs) {
             d3Service.d3().then(function(d3) {
+
+
                 // set the style of the the element to have a width of 100%
                 var svg = d3.select(element[0])
                     .append('svg')
@@ -75,6 +85,7 @@ myApp.directive('lineGraph', ['d3Service', function(d3Service) {
 
                 // Custom d3 code
                 console.log(svg);
+                
                 scope.render = function(data) {
                     console.log(svg);
                     // remove all previous items before render
