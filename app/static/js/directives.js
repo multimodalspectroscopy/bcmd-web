@@ -85,7 +85,7 @@ myApp.directive('lineGraph', ['d3Service', function(d3Service) {
 
                 // Custom d3 code
                 console.log(svg);
-                
+
                 scope.render = function(data) {
                     console.log(svg);
                     // remove all previous items before render

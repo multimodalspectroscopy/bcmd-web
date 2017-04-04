@@ -56,15 +56,16 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         $scope.outputSaved = "";
         // Define functions.
 
-        $scope.clearInputs = function(){
+        $scope.$watchCollection("parseResult", function(newResult, oldResult){
           $scope.data.inputHeader = {};
+          // $scope.data.inputHeader = Object.keys(newResult);
           $scope.data.inputs = {};
-        };
+        });
 
-        $scope.clearOutputs = function(){
-          $scope.data.outputHeader = {};
-          $scope.data.outputs = {};
-        };
+        $scope.$watchCollection("data", function(newData, oldData) {
+            $scope.inputsLength = Object.keys(newData.inputHeader).length;
+            $scope.outputsLength = Object.keys(newData.outputHeader).length;
+        });
 
         $scope.setInputs = function() {
           if (Object.keys($scope.data.inputHeader).length !== 0){
@@ -101,10 +102,6 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         // Get inputs and outputs from checkboxes. Get lengths of each for logic checks
         $scope.getState();
         // plotCSV($scope.data.inputs);
-        $scope.updateLength = function() {
-            $scope.inputsLength = Object.keys($scope.data.inputHeader).length;
-            $scope.outputsLength = Object.keys($scope.data.outputHeader).length;
-        };
 
 
     }
