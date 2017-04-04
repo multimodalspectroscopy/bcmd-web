@@ -22,8 +22,8 @@
                 </li>
             </ul>
             <button ng-click="setInputs()" class="btn btn-primary">Submit Inputs</button>
-            <div ng-if="inputSaved">
-                <h4>Input Saved! </h4>
+            <div ng-model="inputSaved">
+                <h4>{{inputSaved}}</h4>
             </div>
         </div>
     </div>

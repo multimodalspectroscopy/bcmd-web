@@ -76,7 +76,7 @@ myApp.directive('lineGraph', ['d3Service', function(d3Service) {
                 // Custom d3 code
                 console.log(svg);
                 scope.render = function(data) {
-                console.log(svg);
+                    console.log(svg);
                     // remove all previous items before render
                     svg.selectAll('*').remove();
 
@@ -115,7 +115,7 @@ myApp.directive('lineGraph', ['d3Service', function(d3Service) {
                         });
 
                     // Adds the svg canvas
-                    var svg = d3.select("body")
+                    svg = d3.select("body")
                         .append("svg")
                         .attr("width", width + margin.left + margin.right)
                         .attr("height", height + margin.top + margin.bottom)
