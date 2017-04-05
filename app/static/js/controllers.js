@@ -45,8 +45,10 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         // Define initial variables.
         $scope.data = {
             inputHeader: {},
+            inputKeys:[],
             inputs: {},
             outputHeader: {},
+            outputKeys:[],
             outputs: {}
         };
         $scope.parseResult = null;
@@ -70,8 +72,8 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         $scope.setInputs = function() {
           if (Object.keys($scope.data.inputHeader).length !== 0){
             $scope.data.inputs = setObject($scope.parseResult, $scope.data.inputHeader);
+            $scope.data.inputKeys = Object.keys($scope.data.inputs);
             $scope.inputSaved = "Input Saved!";
-            console.log($scope.data);
           } else {
             $scope.inputSaved = "No inputs selected"
           }
@@ -80,6 +82,7 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         $scope.setOutputs = function() {
           if (Object.keys($scope.data.outputHeader).length !== 0){
             $scope.data.outputs = setObject($scope.parseResult, $scope.data.outputHeader);
+            $scope.data.outputKeys = Object.keys($scope.data.outputs);
             $scope.outputSaved = "Output Saved!";
             console.log($scope.data);
           } else {

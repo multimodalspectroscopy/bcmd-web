@@ -1,4 +1,4 @@
-var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'd3']);
+var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles']);
 (function(app) {
     'use strict';
     // Declare app level module which depends on views, and components

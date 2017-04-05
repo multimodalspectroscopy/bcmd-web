@@ -28,9 +28,22 @@
         </div>
     </div>
 </div>
-<div ng-if="inputsLength != 0">
-    {{data.inputHeader}} {{data.inputs}}
-    <line-graph data="data.inputs"></line-graph>
+<div class="row">
+    <div ng-if="inputsLength != 0" class="col-xs-8">
+        <h4> Preview Data </h4>
+        <form name="">
+            <label for="xSelect"> x-axis: </label>
+            <select name="xSelect" id="inXSelect" ng-model="inplotx">
+            <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
+    </select>
+            <label for="ySelect"> y-axis: </label>
+            <select name="ySelect" id="inYSelect" ng-model="inploty">
+            <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
+    </select>
+        </form>
+        <br>
+        <line-graph data="{{data.inputs}}" select-x="{{inplotx}}" select-y="{{inploty}}"></line-graph>
+    </div>
 </div>
 <hr>
 <div class="row">
@@ -50,11 +63,26 @@
         <br>
     </div>
 </div>
-<hr>
-<div ng-if="outputsLength != 0">
-    {{data.outputHeader}} {{data.outputs}}
+<br>
+<div class="row">
+    <div ng-if="outputsLength != 0" class="col-xs-8">
+        <h4> Preview Data </h4>
+        <form name="">
+            <label for="xSelect"> x-axis: </label>
+            <select name="xSelect" id="outXSelect" ng-model="outplotx">
+            <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
+    </select>
+            <label for="ySelect"> y-axis: </label>
+            <select name="ySelect" id="outYSelect" ng-model="outploty">
+            <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
+    </select>
+        </form>
+        <br>
+        {{data.outputs}}
+        <line-graph data="{{data.outputs}}" select-x="{{outplotx}}" select-y="{{outploty}}"></line-graph>
+    </div>
 </div>
-{{parseResult}}
+
 
 <footer class="container">
     <div class="row">
