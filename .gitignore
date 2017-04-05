@@ -174,7 +174,3 @@ configure.ac
 aclocal.m4
 autom4te.cache/
 autogen.sh
-
-
-#Ignore node modules
-app/node_modules/
