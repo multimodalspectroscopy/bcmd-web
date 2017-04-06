@@ -36,12 +36,18 @@ myApp.directive('fileReader', function() {
 
 myApp.directive('peakSelect', function() {
     return {
-        restruct: 'E',
+        restrict: 'E',
         scope: {
-            peakTypes: "=peakTypes"
+            peakTypes: "=peakTypes",
+            selectedPeak: "=ngModel"
         },
-        templateUrl: '/static/partials/peak-select.html'
-    }
+        require: 'ngModel',
+        templateUrl: '/static/partials/peak-select.html',
+        link: function(scope, element, attrs){
+            console.log(scope.peakTypes);
+            console.log(scope.selectedPeak);
+        }
+    };
 });
 
 myApp.directive('lineGraph', [function() {
@@ -55,7 +61,6 @@ myApp.directive('lineGraph', [function() {
         },
         link: function(scope, element, attrs) {
             //d3Service.d3().then(function(d3) {
-            console.log(scope);
             var keys = {
                 "x": scope.selectX,
                 "y": scope.selectY
@@ -70,8 +75,6 @@ myApp.directive('lineGraph', [function() {
                     dArray[idx][x] = element;
                 });
             }
-            console.log("initial keys" + JSON.stringify(keys));
-
 
             // set the style of the the element to have a width of 100%
             var svg = d3.select(element[0])
@@ -93,8 +96,6 @@ myApp.directive('lineGraph', [function() {
             // Check for changes in bound data
             scope.$watch('selectX', function(newVal, oldVal) {
                 keys.x = newVal;
-                console.log("X changed");
-                console.log(keys);
                 for (var x in keys) {
                     if (keys[x] == "") {
                         console.log(x + " not defined yet");
@@ -105,8 +106,6 @@ myApp.directive('lineGraph', [function() {
             }, true);
             scope.$watch('selectY', function(newVal, oldVal) {
                 keys.y = newVal;
-                console.log("Y changed");
-                console.log(keys);
                 for (var x in keys) {
                     if (keys[x] == "") {
                         console.log(x + " not defined yet");
@@ -116,11 +115,6 @@ myApp.directive('lineGraph', [function() {
                 return scope.render(keys);
             }, true);
 
-            /*scope.$watch('keys', function(newVal, oldVal) {
-                console.log("Key Changed");
-                console.log(keys);
-                return scope.render(newVal);
-            }, true);*/
 
 
             // Custom d3 code

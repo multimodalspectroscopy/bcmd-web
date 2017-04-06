@@ -2,7 +2,7 @@
     <h2> Demand Creation </h2>
     <h4> If you haven't specified a demand function already, and one is needed, you can use the creator below to create specific demand steps at specified time points.</h4>
 </header>
-
+{{data}}
 <div>
     <h4> Inputs: </h4>
     <span data-ng-repeat="(key, value) in data.inputs">
@@ -51,7 +51,7 @@
 
             <label ng-attr-for="{{ 'height-' + peak.id }}"> Peak Height: </label>
             <input type="text" ng-model="peak.height" ng-attr-id="{{ 'height-' + peak.id }}" placeholder="Maximum height of the peak" />
-            <peak-select peak-types="peaks"></peak-select>
+            <peak-select peak-types="peaks" ng-model="peak.type" ></peak-select>
             <br>
 
 
@@ -63,10 +63,12 @@
             </span>
             <button type="button" class="btn btn-danger" ng-show="$last" ng-click="removeChoice()">Remove</button>
         </fieldset>
-        <button class="btn btn-info" ng-click="addNewChoice()">Add another peak</button>
+        <button type = "button" class="btn btn-info" ng-click="addNewChoice()">Add another peak</button>
     </div>
     <button type="submit" class="btn btn-primary"> Generate Demand </button>
 </form>
+{{demand}} <br>
+{{response}}
 </div>
 <footer>
     <div class="row">

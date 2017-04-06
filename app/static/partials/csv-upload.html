@@ -21,7 +21,7 @@
                     <input type="checkbox" name="group-check" value="{{input}}" ng-model="data.inputHeader[input]" ng-click="updateLength()" ng-checked="data.inputHeader[input]"> {{input}}
                 </li>
             </ul>
-            <button type="button" ng-click="setInputs()" class="btn btn-primary">Submit Inputs</button>
+            <button type="button" ng-click="setInputs()" class="btn btn-primary">Set Inputs</button>
             <div ng-model="inputSaved">
                 <h4>{{inputSaved}}</h4>
             </div>
@@ -78,12 +78,11 @@
     </select>
         </form>
         <br>
-        {{data.outputs}}
         <line-graph data="{{data.outputs}}" select-x="{{outplotx}}" select-y="{{outploty}}"></line-graph>
     </div>
 </div>
 
-
+{{data}}
 <footer class="container">
     <div class="row">
         <div class="col-md-6">
@@ -93,4 +92,3 @@
         </div>
     </div>
 </footer>
-</div>

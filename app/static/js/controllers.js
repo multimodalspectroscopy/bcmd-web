@@ -60,8 +60,12 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
 
         $scope.$watchCollection("parseResult", function(newResult, oldResult){
           $scope.data.inputHeader = {};
-          // $scope.data.inputHeader = Object.keys(newResult);
           $scope.data.inputs = {};
+          $scope.data.outputHeader = {};
+          $scope.data.outputs = {};
+          console.log("Getting data after file change");
+          $scope.getState();
+          console.log($scope.data);
         });
 
         $scope.$watchCollection("data", function(newData, oldData) {
@@ -84,7 +88,6 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
             $scope.data.outputs = setObject($scope.parseResult, $scope.data.outputHeader);
             $scope.data.outputKeys = Object.keys($scope.data.outputs);
             $scope.outputSaved = "Output Saved!";
-            console.log($scope.data);
           } else {
             $scope.outputSaved = "No outputs selected"
           }
@@ -99,11 +102,14 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
             RunModelData.setKey($scope.data.outputs, "outputs");
             RunModelData.setKey($scope.data.inputHeader, "inputHeader");
             RunModelData.setKey($scope.data.outputHeader, "outputHeader");
+            RunModelData.setKey($scope.data.inputKeys, "inputKeys");
+            RunModelData.setKey($scope.data.outputKeys, "outputKeys");
         };
 
         // Start of running code.
         // Get inputs and outputs from checkboxes. Get lengths of each for logic checks
         $scope.getState();
+        console.log($scope.data);
         // plotCSV($scope.data.inputs);
 
 
@@ -121,15 +127,20 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
             "peaks": []
         };
         $scope.peaks = PeakTypes.getPeaks();
+        console.log($scope.peaks);
         $scope.demandNeeded = true;
+        $scope.response = undefined;
 
         //} Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
+            console.log($scope.data);
             $scope.demand.endTime = $scope.data.inputs.t[$scope.data.inputs.t.length-1];
             $scope.demand.sampleRate = $scope.data.inputs.t[1]-$scope.data.inputs.t[0];
         };
         $scope.saveState = function() {
+            console.log("SAVING STATE");
+            console.log($scope.data);
             RunModelData.setKey($scope.data.inputs, "inputs");
             RunModelData.setKey($scope.data.outputs, "outputs");
             RunModelData.setKey($scope.data.inputHeader, "inputHeader");
@@ -155,6 +166,11 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
                 "params": $scope.demand
             }).then(function(response) {
                 console.log(response);
+                $scope.response = response;
+            })
+            .catch(function(data){
+                console.log(data);
+                $scope.response=data;
             });
         };
 

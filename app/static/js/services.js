@@ -7,12 +7,16 @@ myApp.factory('RunModelData', function() {
     var data = {
         inputHeader: {},
         inputs: {},
+        inputKeys: [],
         outputHeader: {},
-        outputs: {}
+        outputs: {},
+        outputKeys:[]
     };
 
     function getState() {
-        return data;
+        console.log("FROM SERVICE");
+        console.log(data);
+        return Object.assign({},data);
     }
 
     function clearInput() {
@@ -26,6 +30,7 @@ myApp.factory('RunModelData', function() {
     }
 
     function setKey(newVal, key) {
+        console.log("SETTING: " + key + " TO: " + JSON.stringify(newVal));
         if (data.hasOwnProperty(key)) {
             data[key] = newVal;
         }
