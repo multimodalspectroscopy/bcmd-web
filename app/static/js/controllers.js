@@ -45,10 +45,10 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         // Define initial variables.
         $scope.data = {
             inputHeader: {},
-            inputKeys:[],
+            inputKeys: [],
             inputs: {},
             outputHeader: {},
-            outputKeys:[],
+            outputKeys: [],
             outputs: {}
         };
         $scope.parseResult = null;
@@ -58,14 +58,14 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         $scope.outputSaved = "";
         // Define functions.
 
-        $scope.$watchCollection("parseResult", function(newResult, oldResult){
-          $scope.data.inputHeader = {};
-          $scope.data.inputs = {};
-          $scope.data.outputHeader = {};
-          $scope.data.outputs = {};
-          console.log("Getting data after file change");
-          $scope.getState();
-          console.log($scope.data);
+        $scope.$watchCollection("parseResult", function(newResult, oldResult) {
+            $scope.data.inputHeader = {};
+            $scope.data.inputs = {};
+            $scope.data.outputHeader = {};
+            $scope.data.outputs = {};
+            console.log("Getting data after file change");
+            $scope.getState();
+            console.log($scope.data);
         });
 
         $scope.$watchCollection("data", function(newData, oldData) {
@@ -74,23 +74,23 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         });
 
         $scope.setInputs = function() {
-          if (Object.keys($scope.data.inputHeader).length !== 0){
-            $scope.data.inputs = setObject($scope.parseResult, $scope.data.inputHeader);
-            $scope.data.inputKeys = Object.keys($scope.data.inputs);
-            $scope.inputSaved = "Input Saved!";
-          } else {
-            $scope.inputSaved = "No inputs selected"
-          }
+            if (Object.keys($scope.data.inputHeader).length !== 0) {
+                $scope.data.inputs = setObject($scope.parseResult, $scope.data.inputHeader);
+                $scope.data.inputKeys = Object.keys($scope.data.inputs);
+                $scope.inputSaved = "Input Saved!";
+            } else {
+                $scope.inputSaved = "No inputs selected"
+            }
         };
 
         $scope.setOutputs = function() {
-          if (Object.keys($scope.data.outputHeader).length !== 0){
-            $scope.data.outputs = setObject($scope.parseResult, $scope.data.outputHeader);
-            $scope.data.outputKeys = Object.keys($scope.data.outputs);
-            $scope.outputSaved = "Output Saved!";
-          } else {
-            $scope.outputSaved = "No outputs selected"
-          }
+            if (Object.keys($scope.data.outputHeader).length !== 0) {
+                $scope.data.outputs = setObject($scope.parseResult, $scope.data.outputHeader);
+                $scope.data.outputKeys = Object.keys($scope.data.outputs);
+                $scope.outputSaved = "Output Saved!";
+            } else {
+                $scope.outputSaved = "No outputs selected"
+            }
         };
 
         $scope.getState = function() {
@@ -127,16 +127,18 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
             "peaks": []
         };
         $scope.peaks = PeakTypes.getPeaks();
-        console.log($scope.peaks);
         $scope.demandNeeded = true;
-        $scope.response = undefined;
+        $scope.demandSignal = {
+            "time": []
+        };
+        $scope.repeat = false;
 
         //} Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
             console.log($scope.data);
-            $scope.demand.endTime = $scope.data.inputs.t[$scope.data.inputs.t.length-1];
-            $scope.demand.sampleRate = $scope.data.inputs.t[1]-$scope.data.inputs.t[0];
+            $scope.demand.endTime = $scope.data.inputs.t[$scope.data.inputs.t.length - 1];
+            $scope.demand.sampleRate = $scope.data.inputs.t[1] - $scope.data.inputs.t[0];
         };
         $scope.saveState = function() {
             console.log("SAVING STATE");
@@ -163,15 +165,21 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
         $scope.getDemandTrace = function() {
             console.log($scope.demand);
             $http.get('/api/demandcreation', {
-                "params": $scope.demand
-            }).then(function(response) {
-                console.log(response);
-                $scope.response = response;
-            })
-            .catch(function(data){
-                console.log(data);
-                $scope.response=data;
-            });
+                    "params": {
+                        "demand_dict": $scope.demand
+                    }
+                }).then(function(response) {
+                    console.log(response);
+                    $scope.demandSignal.demand = response.data.demand_signal;
+                    for (var i = $scope.demand.startTime; i <= $scope.demand.endTime; i+=$scope.demand.sampleRate) {
+                        $scope.demandSignal.time.push(i);
+                    }
+                    console.log($scope.demandSignal);
+                })
+                .catch(function(data) {
+                    console.log(data);
+                    $scope.response = data;
+                });
         };
 
         $scope.getState();

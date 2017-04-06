@@ -43,23 +43,23 @@
         <label for="peakGen">Peak Generation </label>
         <fieldset id="peakGen" data-ng-repeat="peak in demand.peaks">
             <label ng-attr-for="{{ 'start-' + peak.id }}"> Start: </label>
-            <input type="text" ng-model="peak.start" ng-attr-id="{{ 'start-' + peak.id }}" placeholder="Enter start time for a demand peak" />
+            <input type="text" ng-model="peak.start" ng-attr-id="{{ 'start-' + peak.id }}" placeholder="Enter start time for a demand peak" ng-attr-min="{{demand.startTime}}"/>
             <label ng-attr-for="{{ 'end-' + peak.id }}">End:</label>
-            <input type="text" ng-model="peak.end" ng-attr-id="{{ 'end-' + peak.id }}" placeholder="Enter end time for a demand peak"/> <br>
+            <input type="text" ng-model="peak.end" ng-attr-id="{{ 'end-' + peak.id }}" placeholder="Enter end time for a demand peak"/ ng-attr-min="{{demand.endTime}}"> <br>
 
             <br>
 
             <label ng-attr-for="{{ 'height-' + peak.id }}"> Peak Height: </label>
-            <input type="text" ng-model="peak.height" ng-attr-id="{{ 'height-' + peak.id }}" placeholder="Maximum height of the peak" />
+            <input type="text" ng-model="peak.height" ng-attr-id="{{ 'height-' + peak.id }}" placeholder="Maximum height of the peak" min = "0"/>
             <peak-select peak-types="peaks" ng-model="peak.type" ></peak-select>
             <br>
 
 
             <label ng-attr-for="{{ 'repeat-' + peak.id }}">Repeat peak?</label>
-            <input type="checkbox" ng-model="peak.repeat" name="showRepeats" ng-attr-id="{{'repeat-' + peak.id}}" />
-            <span ng-if="peak.repeat">
-              <label ng-attr-for="{{'nRepeats-' + peak.id}}">Number:</label><input type="text" ng-model="peak.nRepeats" ng-attr-id="{{'nRepeats-' + peak.id}}" placeholder="Number of repeats"/>
-              <label ng-attr-for="{{'interval-' + peak.id}}">Interval:</label> <input type="text" ng-model="peak.interval" ng-attr-id="{{'interval-' + peak.id}}" placeholder="Interval between peaks"/>
+            <input type="checkbox" ng-model="repeat" name="showRepeats" ng-attr-id="{{'repeat-' + peak.id}}" />
+            <span ng-if="repeat">
+              <label ng-attr-for="{{'nRepeats-' + peak.id}}">Number:</label><input type="text" min="0" ng-model="peak.nRepeats" ng-attr-id="{{'nRepeats-' + peak.id}}" placeholder="Number of repeats"/>
+              <label ng-attr-for="{{'interval-' + peak.id}}">Interval:</label> <input type="text" min="0" ng-model="peak.interval" ng-attr-id="{{'interval-' + peak.id}}" placeholder="Interval between peaks"/>
             </span>
             <button type="button" class="btn btn-danger" ng-show="$last" ng-click="removeChoice()">Remove</button>
         </fieldset>
@@ -69,6 +69,9 @@
 </form>
 {{demand}} <br>
 {{response}}
+</div>
+<div ng-if="demandSignal.demand">
+<line-graph data="{{demandSignal}}" select-x="time" select-y="demand"></line-graph>
 </div>
 <footer>
     <div class="row">
