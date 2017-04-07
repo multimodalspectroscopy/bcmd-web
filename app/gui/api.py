@@ -99,9 +99,23 @@ class DemandCreator(Resource):
             with app.app_context():
                 response = {"demand_signal": []}
                 parsedReq = self.request_handler(args['demand_dict'])
-                response["demand_signal"] = signalGenerator(**parsedReq).tolist()
+                response["demand_signal"] = signalGenerator(
+                    **parsedReq).tolist()
                 print(response["demand_signal"], file=sys.stderr)
             return jsonify(response)
+
+        except Exception as e:
+            return {"error": str(e)}, 404
+
+
+class RunModel(Resource):
+
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('model_run_params',
+                                help="Dictionary of model run information")
+            args = parser.parse_args()
 
         except Exception as e:
             return {"error": str(e)}, 404

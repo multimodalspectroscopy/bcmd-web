@@ -40,6 +40,25 @@ myApp.controller('IndexController', ['$scope', '$http', function($scope, $http) 
 
 }]);
 
+myApp.controller('ChooseModelController', ['$scope', '$http', 'RunModelData',
+
+    function($scope, $http, RunModelData) {
+
+        $scope.data = {
+            choice: null,
+            models: available_models.models
+        };
+
+        //Define functions
+
+        $scope.chooseModel = function() {
+            var name = $scope.data.choice.model;
+            console.log("Name is " + name);
+            RunModelData.setModel(name);
+        };
+    }
+]);
+
 myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', 'RunModelData',
     function($scope, $http, $parse, $window, RunModelData) {
         // Define initial variables.
@@ -116,6 +135,50 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
     }
 ]);
 
+myApp.controller('TimeCreationController', ['$scope', '$http', '$parse', 'RunModelData', 'PeakTypes',
+    function($scope, $http, $parse, RunModelData, PeakTypes) {
+
+        // Define objects
+        $scope.time = {
+            "startTime": 0,
+            "endTime": undefined,
+            "sampleRate": 1,
+        };
+        $scope.timeNeeded = true;
+        $scope.timeSignal = [];
+        $scope.timeSignalSample = [];
+        // Define functions
+        $scope.getState = function() {
+            $scope.data = RunModelData.getState();
+            $scope.timeNeeded = !$scope.data.inputs.hasOwnProperty('t');
+            console.log($scope.data);
+        };
+
+        $scope.saveState = function() {
+            console.log("SAVING STATE");
+            console.log($scope.data);
+            RunModelData.setKey($scope.data.inputs, "inputs");
+            RunModelData.setKey($scope.data.outputs, "outputs");
+            RunModelData.setKey($scope.data.inputHeader, "inputHeader");
+            RunModelData.setKey($scope.data.outputHeader, "outputHeader");
+        };
+
+        $scope.generateTime = function() {
+            $scope.timeSignal = _.range($scope.time.startTime,$scope.time.endTime,$scope.time.sampleRate);
+            console.log($scope.timeSignal);
+            $scope.timeSignalSample = $scope.timeSignal.slice(0, parseInt($scope.timeSignal.length/10));
+        };
+
+        $scope.confirmTime = function() {
+            $scope.data.inputs['t'] = $scope.timeSignal;
+            $scope.inputHeader.push['t'];
+        };
+
+        $scope.getState();
+
+    }
+]);
+
 myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunModelData', 'PeakTypes',
     function($scope, $http, $parse, RunModelData, PeakTypes) {
 
@@ -136,6 +199,8 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
         //} Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
+            $scope.demandNeeded = !$scope.data.inputs.hasOwnProperty('u');
+            console.log("REPEAT? " + $scope.demandNeeded)
             console.log($scope.data);
             $scope.demand.endTime = $scope.data.inputs.t[$scope.data.inputs.t.length - 1];
             $scope.demand.sampleRate = $scope.data.inputs.t[1] - $scope.data.inputs.t[0];
@@ -171,7 +236,7 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
                 }).then(function(response) {
                     console.log(response);
                     $scope.demandSignal.demand = response.data.demand_signal;
-                    for (var i = $scope.demand.startTime; i <= $scope.demand.endTime; i+=$scope.demand.sampleRate) {
+                    for (var i = $scope.demand.startTime; i <= $scope.demand.endTime; i += $scope.demand.sampleRate) {
                         $scope.demandSignal.time.push(i);
                     }
                     console.log($scope.demandSignal);
@@ -182,13 +247,63 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
                 });
         };
 
+        $scope.confirmDemand = function() {
+            $scope.data.inputs['u'] = $scope.demandSignal.demand;
+            $scope.inputHeader.push['u'];
+        }
+
         $scope.getState();
 
     }
 ]);
 
+myApp.controller('ParameterController', ['$scope', '$http', '$parse', 'RunModelData',
+    function($scope, $http, $parse) {
+        //} Define functions
+        $scope.getState = function() {
+            $scope.data = RunModelData.getState();
+            console.log($scope.data);
+        };
+
+        $scope.saveState = function() {
+            console.log("SAVING STATE");
+            console.log($scope.data);
+            RunModelData.setKey($scope.data.inputs, "inputs");
+            RunModelData.setKey($scope.data.outputs, "outputs");
+            RunModelData.setKey($scope.data.inputHeader, "inputHeader");
+            RunModelData.setKey($scope.data.outputHeader, "outputHeader");
+        };
+
+        $scope.getDefaultParameters = function() {
+
+        };
+
+        // Running code
+
+        $scope.getState();
+    }
+]);
+
+
 myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModelData',
     function($scope, $http, $parse) {
+        //} Define functions
+        $scope.getState = function() {
+            $scope.data = RunModelData.getState();
+            console.log($scope.data);
+        };
 
+        $scope.saveState = function() {
+            console.log("SAVING STATE");
+            console.log($scope.data);
+            RunModelData.setKey($scope.data.inputs, "inputs");
+            RunModelData.setKey($scope.data.outputs, "outputs");
+            RunModelData.setKey($scope.data.inputHeader, "inputHeader");
+            RunModelData.setKey($scope.data.outputHeader, "outputHeader");
+        };
+
+        // Running code
+
+        $scope.getState();
     }
 ]);

@@ -35,7 +35,7 @@
     </div>
     <div class="form-group">
         <label for="sampleRate">Sample Rate</label>
-        <input type="text" ng-model="demand.sampleRate" class="form-control" id="sampleRate" aria-describedby="sampleRateHelp" ng-attr-placeholder="'Enter end time (default:' + {{demand.sampleRate}} +')'" required="">
+        <input type="text" ng-model="demand.sampleRate" class="form-control" id="sampleRate" aria-describedby="sampleRateHelp" ng-attr-placeholder="'Enter sample rate (default:' + {{demand.sampleRate}} +')'" required="">
         <small id="sampleRateHelp" class="form-text text-muted">Enter a sample rate for your Demand time series (default: second time value- first time value from input)</small>
     </div>
 
@@ -78,7 +78,7 @@
         <div class="col-md-6">
             <ul class="pager">
                 <li><a href="#!csv-upload" ng-click="saveState()"> Previous </a></li>
-                <li><a href="#!model-check" ng-click="saveState()"> Next </a></li>
+                <li><a href="#!parameters" ng-click="saveState()"> Next </a></li>
             </ul>
         </div>
     </div>

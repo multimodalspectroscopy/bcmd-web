@@ -5,6 +5,7 @@ myApp.factory('RunModelData', function() {
     var outputHeader = {};
 
     var data = {
+        modelName:"",
         inputHeader: {},
         inputs: {},
         inputKeys: [],
@@ -17,6 +18,10 @@ myApp.factory('RunModelData', function() {
         console.log("FROM SERVICE");
         console.log(data);
         return Object.assign({},data);
+    }
+
+    function setModel(model) {
+        data.modelName = model;
     }
 
     function clearInput() {
@@ -55,6 +60,7 @@ myApp.factory('RunModelData', function() {
 
     return {
         getState: getState,
+        setModel: setModel,
         setKey: setKey,
         clearInput: clearInput,
         clearOutput: clearOutput,
