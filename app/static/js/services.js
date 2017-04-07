@@ -5,19 +5,20 @@ myApp.factory('RunModelData', function() {
     var outputHeader = {};
 
     var data = {
-        modelName:"",
+        modelName: "",
         inputHeader: {},
         inputs: {},
         inputKeys: [],
         outputHeader: {},
         outputs: {},
-        outputKeys:[]
+        outputKeys: [],
+        parameters: {}
     };
 
     function getState() {
         console.log("FROM SERVICE");
         console.log(data);
-        return Object.assign({},data);
+        return Object.assign({}, data);
     }
 
     function setModel(model) {
@@ -32,6 +33,19 @@ myApp.factory('RunModelData', function() {
     function clearOutput() {
         data.outputs = {};
         data.outputHeader = {};
+    }
+
+    function clearData() {
+        data = {
+            modelName: "",
+            inputHeader: {},
+            inputs: {},
+            inputKeys: [],
+            outputHeader: {},
+            outputs: {},
+            outputKeys: [],
+            parameters: {}
+        };
     }
 
     function setKey(newVal, key) {
@@ -62,6 +76,7 @@ myApp.factory('RunModelData', function() {
         getState: getState,
         setModel: setModel,
         setKey: setKey,
+        clearData: clearData,
         clearInput: clearInput,
         clearOutput: clearOutput,
     };
@@ -74,9 +89,9 @@ myApp.factory('PeakTypes', function() {
             "function": "top-hat"
         },
         {
-          "name": "Wavelet",
-          "image": "/static/images/peaks/wavelet.png",
-          "function": "sinusoidal"
+            "name": "Wavelet",
+            "image": "/static/images/peaks/wavelet.png",
+            "function": "sinusoidal"
         }
     ];
 

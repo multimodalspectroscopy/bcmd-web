@@ -3,20 +3,136 @@
     <h4> Check your model information below before submitting to run.</h4>
 </header>
 
-<section class="input-section">
+<section class="input-section row">
     <h2> INPUTS </h2>
+    <h4> Select which default model inputs and assign any uploaded/created data.</h4>
+    <div class="col-sm-10">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Default</th>
+                    <th>Include</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat=" key in defaults.inputs">
+                    <td class="col-sm-6">{{key}}</td>
+                    <td class="col-sm-2">
+                        <input type="checkbox" ng-checked="true" ng-model="finalChoice.inputs[key].include">
+                    </td>
+                    <td class="col-sm-4">
+                        <select name="inputSelect" id="inputSelect" ng-model="finalChoice.inputs[key].data">
+                            <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 
-<section class="output-section">
-    <h2> OUTPUTS </h2>
+<section class="parameter-section row">
+    <h2> PARAMETERS </h2>
+    <h4> Any non-default parameters as set on the previous page </h4>
+    <div class="col-sm-10">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="(key,val) in data.parameters">
+                    <td class="col-sm-7">{{key}}</td>
+                    <td class="col-sm-5">{{val}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </section>
+
+<section class="output-section row">
+    <h2> OUTPUTS </h2>
+    <h4>Select output from model. This can be any of the inputs, outputs or non-default parameters. Data can also be passed to compare against if it has been uploaded or created.</h4>
+    <div class="col-sm-10">
+        <h4> Model Outputs </h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Default</th>
+                    <th>Include</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat=" key in defaults.outputs">
+                    <td class="col-sm-6">{{key}}</td>
+                    <td class="col-sm-2">
+                        <input type="checkbox" ng-checked="true" ng-model="finalChoice.outputs[key].include">
+                    </td>
+                    <td class="col-sm-4">
+                        <select name="outputSelect" id="outputSelect" ng-model="finalChoice.outputs[key].data">
+                            <option ng-repeat="(key,val) in data.outputs" ng-value="val" required>{{key}}</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4> Model Inputs </h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Default</th>
+                    <th>Include</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat=" key in defaults.inputs">
+                    <td class="col-sm-6">{{key}}</td>
+                    <td class="col-sm-2">
+                        <input type="checkbox" ng-checked="true" ng-model="finalChoice.outputs[key].include">
+                    </td>
+                    <td class="col-sm-4">
+                        <select name="modelSelect" id="modelSelect" ng-model="finalChoice.outputs[key].data">
+                            <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4> Model Parameters </h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Default</th>
+                    <th>Include</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="(key, val) in defaults.parameters">
+                    <td class="col-sm-6">{{key}}</td>
+                    <td class="col-sm-2">
+                        <input type="checkbox" ng-model="finalChoice.outputs[key].include">
+                    </td>
+                    <td class="col-sm-4">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
 
 <footer>
     <div class="row">
         <div class="col-md-6">
             <ul class="pager">
                 <li><a href="#!parameters" ng-click="saveState()"> Previous </a></li>
-                <li><a href="#!model-check" ng-click="saveState()"> Next </a></li>
+                <li><a href="#!output-display" ng-click="saveState()"> Next </a></li>
             </ul>
         </div>
     </div>

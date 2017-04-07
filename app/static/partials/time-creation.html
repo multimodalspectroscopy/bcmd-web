@@ -31,7 +31,7 @@
     <div class="form-group">
         <label for="endTime">End Time</label>
         <input type="text" ng-model="time.endTime" class="form-control" id="endTime" aria-describedby="endTimeHelp" placeholder="Enter end time" required="">
-        <small id="endTimeHelp" class="form-text text-muted">Enter an end time for your time series</small>
+        <small id="endTimeHelp" class="form-text text-muted">Enter an end time for your time series. Points will be generated up to and including this value.</small>
     </div>
     <div class="form-group">
         <label for="sampleRate">Sample Rate</label>
@@ -43,7 +43,7 @@
     <button type="submit" class="btn btn-primary"> Generate Time </button>
 </form>
 <span ng-if="timeSignalSample.length !== 0">
-    <h4>First ten time points generated: </h4> {{timeSignalSample}}
+    <h4>First ten time points generated: </h4> {{timeSignalSample}}<button type="button" class="btn btn-primary" ng-click="confirmTime()"> Confirm Time </button>
 </span>
 </div>
 

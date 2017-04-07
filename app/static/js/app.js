@@ -37,7 +37,7 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles']);
             .when('/parameters', {
                 templateUrl: '/static/partials/parameters.html',
                 controller: 'ParameterController',
-                css: ['/static/css/parameter-style.css', '/static/css/plot-style.css']
+                css: ['/static/css/parameter-style.css']
             })
             .when('/model-check', {
                 templateUrl: '/static/partials/model-check.html',

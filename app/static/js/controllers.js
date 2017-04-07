@@ -2,12 +2,18 @@
 myApp.controller('DisplayModelsController', ['$scope', '$http',
 
     function($scope, $http) {
+        // Define variables
+        $scope.defaults = {
+            "inputs": {},
+            "outputs": {},
+            "parameters": {}
+        };
 
         $scope.data = {
             choice: null,
             models: available_models.models
         };
-
+        // define functions
         $scope.submit = function() {
             var name = $scope.data.choice.model;
             console.log("Name is " + name);
@@ -16,19 +22,14 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
                     "model_name": name
                 }
             }).then(function(response) {
-                $scope.infoCategories = [{
-                        "name": "Inputs",
-                        "data": response.data.input
-                    },
-                    {
-                        "name": "Outputs",
-                        "data": response.data.output
-                    },
-                    {
-                        "name": "Parameters",
-                        "data": response.data.params
-                    }
-                ];
+                console.log(response);
+                $scope.defaults.inputs = response.data.input;
+                $scope.defaults.outputs = response.data.output;
+                $scope.defaults.parameters = response.data.params;
+                $scope.modelSelected=true;
+                console.log($scope.defaults);
+            }).catch(function(data){
+                console.log(data);
             });
 
         };
@@ -54,6 +55,7 @@ myApp.controller('ChooseModelController', ['$scope', '$http', 'RunModelData',
         $scope.chooseModel = function() {
             var name = $scope.data.choice.model;
             console.log("Name is " + name);
+            RunModelData.clearData();
             RunModelData.setModel(name);
         };
     }
@@ -158,20 +160,18 @@ myApp.controller('TimeCreationController', ['$scope', '$http', '$parse', 'RunMod
             console.log("SAVING STATE");
             console.log($scope.data);
             RunModelData.setKey($scope.data.inputs, "inputs");
-            RunModelData.setKey($scope.data.outputs, "outputs");
             RunModelData.setKey($scope.data.inputHeader, "inputHeader");
-            RunModelData.setKey($scope.data.outputHeader, "outputHeader");
         };
 
         $scope.generateTime = function() {
-            $scope.timeSignal = _.range($scope.time.startTime,$scope.time.endTime,$scope.time.sampleRate);
+            $scope.timeSignal = _.range($scope.time.startTime, $scope.time.endTime + $scope.time.sampleRate, $scope.time.sampleRate);
             console.log($scope.timeSignal);
-            $scope.timeSignalSample = $scope.timeSignal.slice(0, parseInt($scope.timeSignal.length/10));
+            $scope.timeSignalSample = $scope.timeSignal.slice(0, 10);
         };
 
         $scope.confirmTime = function() {
             $scope.data.inputs['t'] = $scope.timeSignal;
-            $scope.inputHeader.push['t'];
+            $scope.data.inputHeader['t'] = true;
         };
 
         $scope.getState();
@@ -258,36 +258,54 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
 ]);
 
 myApp.controller('ParameterController', ['$scope', '$http', '$parse', 'RunModelData',
-    function($scope, $http, $parse) {
-        //} Define functions
+    function($scope, $http, $parse, RunModelData) {
+        // Define initial variables
+        $scope.error = "";
+        // Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
+            $scope.parameters = $scope.data.parameters;
             console.log($scope.data);
-        };
-
-        $scope.saveState = function() {
-            console.log("SAVING STATE");
-            console.log($scope.data);
-            RunModelData.setKey($scope.data.inputs, "inputs");
-            RunModelData.setKey($scope.data.outputs, "outputs");
-            RunModelData.setKey($scope.data.inputHeader, "inputHeader");
-            RunModelData.setKey($scope.data.outputHeader, "outputHeader");
         };
 
         $scope.getDefaultParameters = function() {
+            $http.get('/api/modelinfo', {
+                "params": {
+                    "model_name": $scope.data.modelName
+                }
+            }).then(function(response) {
+                $scope.defaultParameters = response.data.params;
+                console.log($scope.defaultParameters);
+            }).catch(function(data) {
+                console.log(data);
+                $scope.error = data;
+            });
 
+        };
+
+        $scope.submitParameters = function() {
+            RunModelData.setKey($scope.parameters, "parameters");
         };
 
         // Running code
 
         $scope.getState();
+        $scope.getDefaultParameters();
     }
 ]);
 
 
 myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModelData',
-    function($scope, $http, $parse) {
-        //} Define functions
+    function($scope, $http, $parse, RunModelData) {
+        // Define variables
+        $scope.defaults = {
+            "inputs": {},
+            "outputs": {},
+            "parameters": {}
+        }
+
+        $scope.finalChoice={};
+        // Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
             console.log($scope.data);
@@ -302,8 +320,29 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
             RunModelData.setKey($scope.data.outputHeader, "outputHeader");
         };
 
+        $scope.getDefaults = function() {
+            var name = $scope.data.modelName;
+            console.log("Name is " + name);
+            $http.get('/api/modelinfo', {
+                "params": {
+                    "model_name": name
+                }
+            }).then(function(response) {
+                $scope.defaults.inputs = response.data.input;
+                $scope.defaults.outputs = response.data.output;
+                $scope.defaults.parameters = response.data.params;
+                console.log("DEFAULTS");
+                console.log($scope.defaults);
+            }).catch(function(data){
+                console.log("Error in getting defaults: ");
+                console.log(data);
+            });
+
+        };
+
         // Running code
 
         $scope.getState();
+        $scope.getDefaults();
     }
 ]);
