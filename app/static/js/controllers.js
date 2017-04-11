@@ -26,9 +26,9 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
                 $scope.defaults.inputs = response.data.input;
                 $scope.defaults.outputs = response.data.output;
                 $scope.defaults.parameters = response.data.params;
-                $scope.modelSelected=true;
+                $scope.modelSelected = true;
                 console.log($scope.defaults);
-            }).catch(function(data){
+            }).catch(function(data) {
                 console.log(data);
             });
 
@@ -174,6 +174,12 @@ myApp.controller('TimeCreationController', ['$scope', '$http', '$parse', 'RunMod
             $scope.data.inputHeader['t'] = true;
         };
 
+        // Ensure time data is provided
+
+        $scope.$on("$locationChangeStart", function(event) {
+          if (!$scope.data.inputs.hasOwnProperty('t') && !confirm('No time data detected. Leave page?'))
+            event.preventDefault();
+        });
         $scope.getState();
 
     }
@@ -199,7 +205,9 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
         //} Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
-            $scope.demandNeeded = !$scope.data.inputs.hasOwnProperty('u');
+            if ($scope.data.hasOwnProperty('inputs')) {
+                $scope.demandNeeded = !$scope.data.inputs.hasOwnProperty('u');
+            }
             console.log("REPEAT? " + $scope.demandNeeded)
             console.log($scope.data);
             $scope.demand.endTime = $scope.data.inputs.t[$scope.data.inputs.t.length - 1];
@@ -304,10 +312,14 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
             "parameters": {}
         }
 
-        $scope.finalChoice={};
+        $scope.finalChoice = {};
+
+        // Set loading variable to false until request is sent
+        $scope.loading = false;
         // Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
+            $scope.finalChoice.modelName = $scope.data.modelName;
             console.log($scope.data);
         };
 
@@ -333,9 +345,29 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
                 $scope.defaults.parameters = response.data.params;
                 console.log("DEFAULTS");
                 console.log($scope.defaults);
-            }).catch(function(data){
+            }).catch(function(data) {
                 console.log("Error in getting defaults: ");
                 console.log(data);
+            });
+
+        };
+
+        $scope.runModel = function() {
+            var runData = $scope.finalChoice;
+            $scope.loading = true;
+            console.log("Name is " + name);
+            $http.get('/api/', {
+                "params": {
+                    "runData": runData
+                }
+            }).then(function(response) {
+                console.log(response);
+            }).catch(function(data) {
+                console.log("Error in running model");
+                console.log(data);
+            }).finally(function() {
+                // called no matter success or failure
+                $scope.loading = false;
             });
 
         };

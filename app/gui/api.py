@@ -110,12 +110,26 @@ class DemandCreator(Resource):
 
 class RunModel(Resource):
 
+    @staticmethod
+    def request_handler(request):
+        request = json.loads(request)
+
+        inputs = request['inputs']
+
+        timed_model = ModelBCMD(request['modelName'], debug=False)
+
     def get(self):
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('model_run_params',
+            parser.add_argument('runData',
                                 help="Dictionary of model run information")
             args = parser.parse_args()
+
+            with app.app_context():
+                response = {}
+                print(args['runData'])
+                parsedReq = self.request_handler(args['runData'])
+                print(parsedReq)
 
         except Exception as e:
             return {"error": str(e)}, 404

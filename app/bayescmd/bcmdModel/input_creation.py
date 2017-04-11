@@ -48,15 +48,16 @@ class InputCreator:
         self.f_out.seek(0)
         return self.f_out
 
-    def initialised_creation(self):
+    def initialised_creation(self, burn_in):
         """
         Create an input file from given arguments that will initialise.
         Assumes parameters remain unchanged.
+        :param burn_in: Length of burn in
         :param times: List of times, as per input data. Length should be 1 more
         than actual number of time steps (0-base)
         :param inputs: dictionary of 'inputs'. This is any thing, inputs or
         params, which are defined at subsequent timepoints.
-        : param params: dict of non-default parameters of form name: val to
+        : param params: dict of non-default parameters of form {name: val} to
         initialise at start
         :param outputs: list of target outputs
         :return: Output string buffer
@@ -80,8 +81,11 @@ class InputCreator:
         self.f_out.write(':%d ' % len(init_names) +
                          ' '.join(init_names) +
                          '\n')
-        self.f_out.write('= -1000 -1 ' + ' '.join(str(v) for v in init_vals) +
-                         '\n')
+        if burn_in > 0:
+            self.f_out.write('= -%f -1 ' % (burn_in + 1) +
+                             ' '.join(str(v) for v in init_vals) +
+                             '\n')
+        # Set post burn in outputs and values
         if len(self.outputs) == 0:
             self.f_out.write('>>> 1 t \n!!!\n')
         elif len(self.outputs) == 1:

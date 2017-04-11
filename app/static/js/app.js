@@ -1,4 +1,4 @@
-var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles']);
+var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'ngMaterial']);
 (function(app) {
     'use strict';
     // Declare app level module which depends on views, and components
@@ -40,7 +40,7 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles']);
                 css: ['/static/css/parameter-style.css']
             })
             .when('/model-check', {
-                templateUrl: '/static/partials/model-check.html',
+                templateUrl: '/static/partials/model-check-2.html',
                 controller: 'ModelCheckController',
                 css: ['/static/css/check-style.css', '/static/css/plot-style.css']
             })

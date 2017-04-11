@@ -3,6 +3,19 @@
     <h4> Check your model information below before submitting to run.</h4>
 </header>
 
+<section class="time-section row">
+    <h2> Time </h2>
+    <h4> Select time data </h4>
+    <form>
+        <div class="form-group">
+            <label for="timeSelect">Time: </label>
+            <select name="timeSelect" id="timeSelect" ng-model="finalChoice.times">
+                <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
+            </select>
+        </div>
+    </form>
+</section>
+<hr>
 <section class="input-section row">
     <h2> INPUTS </h2>
     <h4> Select which default model inputs and assign any uploaded/created data.</h4>
@@ -11,17 +24,14 @@
             <thead>
                 <tr>
                     <th>Default</th>
-                    <th>Include</th>
+                    <th>Data</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat=" key in defaults.inputs">
                     <td class="col-sm-6">{{key}}</td>
-                    <td class="col-sm-2">
-                        <input type="checkbox" ng-checked="true" ng-model="finalChoice.inputs[key].include">
-                    </td>
-                    <td class="col-sm-4">
-                        <select name="inputSelect" id="inputSelect" ng-model="finalChoice.inputs[key].data">
+                    <td class="col-sm-6">
+                        <select name="inputSelect" id="inputSelect" ng-model="finalChoice.inputs[key]">
                             <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
                         </select>
                     </td>
@@ -30,7 +40,7 @@
         </table>
     </div>
 </section>
-
+<hr>
 <section class="parameter-section row">
     <h2> PARAMETERS </h2>
     <h4> Any non-default parameters as set on the previous page </h4>
@@ -51,7 +61,7 @@
         </table>
     </div>
 </section>
-
+<hr>
 <section class="output-section row">
     <h2> OUTPUTS </h2>
     <h4>Select output from model. This can be any of the inputs, outputs or non-default parameters. Data can also be passed to compare against if it has been uploaded or created.</h4>
@@ -63,18 +73,22 @@
                     <th>Default</th>
                     <th>Include</th>
                     <th>Data</th>
+                    <th>Zero</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat=" key in defaults.outputs">
-                    <td class="col-sm-6">{{key}}</td>
+                    <td class="col-sm-4">{{key}}</td>
                     <td class="col-sm-2">
-                        <input type="checkbox" ng-checked="true" ng-model="finalChoice.outputs[key].include">
+                        <input type="checkbox" ng-model="finalChoice.outputs[key].include" ng-init="finalChoice.outputs[key].include=true">
                     </td>
                     <td class="col-sm-4">
                         <select name="outputSelect" id="outputSelect" ng-model="finalChoice.outputs[key].data">
                             <option ng-repeat="(key,val) in data.outputs" ng-value="val" required>{{key}}</option>
                         </select>
+                    </td>
+                    <td class="col-sm-2">
+                        <input type="checkbox" ng-checked="false" ng-model="finalChoice.outputs[key].zero">
                     </td>
                 </tr>
             </tbody>
@@ -85,19 +99,13 @@
                 <tr>
                     <th>Default</th>
                     <th>Include</th>
-                    <th>Data</th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat=" key in defaults.inputs">
+                <tr ng-repeat="key in defaults.inputs">
                     <td class="col-sm-6">{{key}}</td>
-                    <td class="col-sm-2">
+                    <td class="col-sm-6">
                         <input type="checkbox" ng-checked="true" ng-model="finalChoice.outputs[key].include">
-                    </td>
-                    <td class="col-sm-4">
-                        <select name="modelSelect" id="modelSelect" ng-model="finalChoice.outputs[key].data">
-                            <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
-                        </select>
                     </td>
                 </tr>
             </tbody>
@@ -118,22 +126,36 @@
                         <input type="checkbox" ng-model="finalChoice.outputs[key].include">
                     </td>
                     <td class="col-sm-4">
+                        {{val}}
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </section>
-
-
-
-<footer>
-    <div class="row">
-        <div class="col-md-6">
-            <ul class="pager">
-                <li><a href="#!parameters" ng-click="saveState()"> Previous </a></li>
-                <li><a href="#!output-display" ng-click="saveState()"> Next </a></li>
-            </ul>
-        </div>
+<hr>
+<section class="burn-in-section row">
+    <h2> Burn In </h2>
+    <h4> If you want to run the model for a period of time prior to collecting out put, enter that burn in time here </h4>
+    <div class="col-sm-10">
+        <input type="text" ng-model="finalChoice.burnIn" ng-pattern="/^[0-9]+(\.[0-9]{0,3})?$/">
     </div>
-</footer>
+</section>
+{{finalChoice}}
+
+<section>
+    <h2>Run Model </h2>
+    <button ng-click="runModel()">Run Model </button>
+    <div class="spinner" ng-show="loading"></div>
+</section>
+
+    <footer>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="pager">
+                    <li><a href="#!parameters" ng-click="saveState()"> Previous </a></li>
+                    <li><a href="#!output-display" ng-click="saveState()"> Next </a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>

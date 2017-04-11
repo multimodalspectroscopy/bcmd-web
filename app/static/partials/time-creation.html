@@ -17,7 +17,7 @@
 </div>
 
 <label for="timeNeeded">Time required?</label>
-<input type="checkbox" ng-model="timeNeeded" id="timeNeeded"/>
+<input type="checkbox" ng-model="timeNeeded" id="timeNeeded" required/>
 
 <div class="container" ng-if="timeNeeded">
 
@@ -43,7 +43,7 @@
     <button type="submit" class="btn btn-primary"> Generate Time </button>
 </form>
 <span ng-if="timeSignalSample.length !== 0">
-    <h4>First ten time points generated: </h4> {{timeSignalSample}}<button type="button" class="btn btn-primary" ng-click="confirmTime()"> Confirm Time </button>
+    <h4>First ten time points generated: </h4> <br><p>{{timeSignalSample}}</p> <br><button type="button" class="btn btn-primary" ng-click="confirmTime()"> Confirm Time </button>
 </span>
 </div>
 

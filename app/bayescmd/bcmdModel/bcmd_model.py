@@ -34,6 +34,7 @@ class ModelBCMD:
                  params=None,  # Parameters
                  times=None,  # Times to run simulation at
                  outputs=None,
+                 burn_in=999,
                  create_input=True,
                  input_file=None,
                  suppress=False,
@@ -157,7 +158,7 @@ class ModelBCMD:
                                          params=self.params,
                                          outputs=self.outputs,
                                          filename=new_input)
-            input_creator.initialised_creation()
+            input_creator.initialised_creation(self.burn_in)
             self.input_file = input_creator.input_file_write()
         except AssertionError:
             input_creator = InputCreator(self.times,
@@ -165,7 +166,7 @@ class ModelBCMD:
                                          params=self.params,
                                          outputs=self.outputs,
                                          filename=self.input_file)
-            input_creator.initialised_creation()
+            input_creator.initialised_creation(self.burn_in)
             input_creator.input_file_write()
 
         return True
@@ -177,7 +178,7 @@ class ModelBCMD:
         """
         input_creator = InputCreator(self.times, self.inputs,
                                      params=self.params, outputs=self.outputs)
-        f_out = input_creator.initialised_creation()
+        f_out = input_creator.initialised_creation(self.burn_in)
 
         if self.debug:
             print(f_out.getvalue(), file=sys.stderr)
