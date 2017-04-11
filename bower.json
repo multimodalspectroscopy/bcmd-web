@@ -26,6 +26,7 @@
     "papaparse": "^4.2.0",
     "angular-route-styles": "*",
     "d3": "^4.7.4",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "angular-material": "^1.1.3"
   }
 }
