@@ -355,9 +355,11 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
         $scope.runModel = function() {
             var runData = $scope.finalChoice;
             $scope.loading = true;
-            console.log("Name is " + name);
-            $http.get('/api/', {
+            console.log("Name is " + runData.modelName);
+
+            $http.get('/api/runmodel', {
                 "params": {
+
                     "runData": runData
                 }
             }).then(function(response) {

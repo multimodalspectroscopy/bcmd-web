@@ -3,7 +3,7 @@ from flask_restful import reqparse
 from flask import jsonify, json
 import sys
 
-from bayescmd.bcmdModel import signalGenerator
+from bayescmd.bcmdModel import signalGenerator, ModelBCMD
 
 from app import app
 from app import mongo
@@ -121,15 +121,31 @@ class RunModel(Resource):
     def get(self):
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('runData',
-                                help="Dictionary of model run information")
+            parser.add_argument('burnIn',
+                                help="Model burn in period")
+            parser.add_argument('inputs',
+                                help="Model inputs")
+            parser.add_argument('modelName',
+                                help="Name of model")
+            parser.add_argument('times',
+                                help="Time points for simulation",
+                                action='append')
+            parser.add_argument('outputs',
+                                help="Model outputs")
+            parser.add_argument('runData')
             args = parser.parse_args()
 
             with app.app_context():
                 response = {}
-                print(args['runData'])
+                print(args, file=sys.stderr)
+                print(args['modelName'], file=sys.stderr)
+                print(args['burnIn'])
+                print(args['inputs'])
+                print(args['times'])
+                print(args['outputs'])
                 parsedReq = self.request_handler(args['runData'])
                 print(parsedReq)
 
         except Exception as e:
+            print(e, file=sys.stderr)
             return {"error": str(e)}, 404
