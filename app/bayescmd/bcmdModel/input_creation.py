@@ -30,7 +30,7 @@ class InputCreator:
         params, which are defined at subsequent timepoints.
         :return: Output string buffer
         """
-        assert len(self.times[:-1]) == len(self.inputs['values']), "Different" \
+        assert len(self.times) == len(self.inputs['values']), "Different" \
             "number of time steps in log and in data:\n \t" \
             "time steps = %d \n\t" \
             "input steps = %d" % (len(self.times[:-1]),

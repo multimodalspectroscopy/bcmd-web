@@ -177,8 +177,8 @@ myApp.controller('TimeCreationController', ['$scope', '$http', '$parse', 'RunMod
         // Ensure time data is provided
 
         $scope.$on("$locationChangeStart", function(event) {
-          if (!$scope.data.inputs.hasOwnProperty('t') && !confirm('No time data detected. Leave page?'))
-            event.preventDefault();
+            if (!$scope.data.inputs.hasOwnProperty('t') && !confirm('No time data detected. Leave page?'))
+                event.preventDefault();
         });
         $scope.getState();
 
@@ -315,7 +315,7 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
         $scope.finalChoice = {};
 
         // Set loading variable to false until request is sent
-        $scope.loading = false;
+        $scope.loading = true;
         // Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
@@ -353,15 +353,21 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
 
         };
 
-        $scope.runModel = function() {
+        $scope.runModel = function(modelType) {
+            if (modelType == 'default'){
+                var modelurl = '/api/rundefault';
+            } else if (modelType == "initialised"){
+                var modelurl = '/api/runmodel';
+            }
             var runData = $scope.finalChoice;
-            $scope.loading = true;
             console.log("Name is " + runData.modelName);
 
-            $http.get('/api/runmodel', {
+            $http.get(modelurl, {
                 "params": runData
             }).then(function(response) {
+                console.log("Running Model");
                 console.log(response);
+                RunModelData.setModelOutput(response.data);
             }).catch(function(data) {
                 console.log("Error in running model");
                 console.log(data);
@@ -378,3 +384,10 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
         $scope.getDefaults();
     }
 ]);
+
+myApp.controller("ModelDisplayController", ['$scope', '$http', '$parse', '$window', 'RunModelData',
+        function($scope, $http, $parse, $window, RunModelData) {
+            $scope.modelOutput = RunModelData.getModelOutput();
+            console.log($scope.modelOutput);
+            $scope.modelVariables = Object.keys($scope.modelOutput);
+        }]);

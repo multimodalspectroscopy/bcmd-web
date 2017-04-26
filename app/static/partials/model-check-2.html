@@ -51,7 +51,7 @@
 
                 <section>
                     <h2>Run Model </h2>
-                    <button ng-click="runModel()">Run Model </button>
+                    <button ng-click="runModel('default')">Run Model </button>
                     <div class="spinner" ng-show="loading"></div>
                 </section>
             </md-content>
@@ -201,7 +201,7 @@
 
                 <section>
                     <h2>Run Model </h2>
-                    <button ng-click="runModel()">Run Model </button>
+                    <button ng-click="runModel('initialised')">Run Model </button>
                     <div class="spinner" ng-show="loading"></div>
                 </section>
             </md-content>
@@ -213,7 +213,7 @@
         <div class="col-md-6">
             <ul class="pager">
                 <li><a href="#!parameters" ng-click="saveState()"> Previous </a></li>
-                <li><a href="#!output-display" ng-click="saveState()"> Next </a></li>
+                <li><a href="#!model-display" ng-click="saveState()" ng-disabled="loading"> Next </a></li>
             </ul>
         </div>
     </div>

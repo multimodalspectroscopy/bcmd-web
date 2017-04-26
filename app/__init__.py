@@ -9,7 +9,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 mongo = PyMongo(app)
 
 # Local module import
-from app.gui.api import ModelInfo, DemandCreator, RunModel, api
+from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api
 
 
 # Get array of available models.
@@ -31,8 +31,11 @@ available_models = get_choices()
 api.add_resource(ModelInfo, '/api/modelinfo')
 api.add_resource(DemandCreator, '/api/demandcreation')
 api.add_resource(RunModel, '/api/runmodel')
+api.add_resource(RunDefault, '/api/rundefault')
 
 # Sample HTTP error handling
+
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404

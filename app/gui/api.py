@@ -1,7 +1,10 @@
 from flask_restful import Api, Resource
 from flask_restful import reqparse
 from flask import jsonify, json
+
 import sys
+import traceback
+import numpy as np
 
 from bayescmd.bcmdModel import signalGenerator, ModelBCMD
 
@@ -113,15 +116,43 @@ class RunModel(Resource):
     @staticmethod
     def request_handler(modelName, inputs, times, params, outputs, burn_in):
 
-        timed_model = ModelBCMD(request['modelName'],
-                                inputs=inputs,
-                                params=params,
-                                times=times,
-                                outputs=outputs,
-                                burn_in=burn_in,
-                                debug=False)
+        inputs = json.loads(inputs)
+        params = json.loads(params)
+        outputs = json.loads(outputs)
 
-        return time_model
+        print("MODEL NAME: " + modelName)
+        print("INPUTS: " + str(inputs))
+        print("TIMES: " + str(times))
+        print("PARAMS: " + str(params))
+        print("OUTPUTS: " + str(outputs))
+        print("BURN IN: " + str(burn_in))
+
+        parsed_inputs = {'names': inputs.keys()}
+        parsed_inputs['values'] = np.transpose(list(inputs.values()))
+        print("PARSED INPUTS: " + str(parsed_inputs))
+        parsed_outputs = [k for k, v in outputs.items() if v['include']]
+        print("PARSED OUTPUTS: " + str(parsed_outputs))
+        # Handle empty params dict
+        if len(params.keys()) == 0:
+            params = None
+        try:
+            burn_in = float(burn_in)
+            model = ModelBCMD(modelName,
+                              inputs=parsed_inputs,
+                              params=params,
+                              times=[float(x) for x in times],
+                              outputs=parsed_outputs,
+                              burn_in=burn_in,
+                              debug=False)
+        except (TypeError, ValueError):
+            model = ModelBCMD(modelName,
+                              inputs=parsed_inputs,
+                              params=params,
+                              times=[float(x) for x in times],
+                              outputs=parsed_outputs,
+                              debug=False)
+
+        return model
 
     def get(self):
         try:
@@ -145,15 +176,67 @@ class RunModel(Resource):
             args = parser.parse_args()
 
             with app.app_context():
-                response = {}
                 model = self.request_handler(args['modelName'],
-                                                 args['inputs'],
-                                                 args['times'],
-                                                 args['params'],
-                                                 args['outputs'],
-                                                 args['burnIn'])
-                print(model)
+                                             args['inputs'],
+                                             args['times'],
+                                             args['params'],
+                                             args['outputs'],
+                                             args['burnIn'])
+                model.create_initialised_input()
+                model.run_from_buffer()
+                output = model.output_parse()
 
-        except Exception as e:
-            print(e, file=sys.stderr)
-            return {"error": str(e)}, 404
+
+                return jsonify(output)
+        except Exception as error:
+            traceback.print_exc()
+            return {"error": str(error)}, 404
+
+class RunDefault(Resource):
+
+    @staticmethod
+    def request_handler(modelName, inputs, times):
+
+        inputs = json.loads(inputs)
+
+
+        print("MODEL NAME: " + modelName)
+        print("INPUTS: " + str(inputs))
+        print("TIMES: " + str(times))
+
+        parsed_inputs = {'names': inputs.keys()}
+        parsed_inputs['values'] = np.transpose(list(inputs.values()))
+        print("PARSED INPUTS: " + str(parsed_inputs))
+        model = ModelBCMD(modelName,
+                          inputs=parsed_inputs,
+                          times=[float(x) for x in times],
+                          debug=False)
+
+        return model
+
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('inputs',
+                                help="Model inputs")
+            parser.add_argument('modelName',
+                                help="Name of model",
+                                required=True)
+            parser.add_argument('times',
+                                help="Time points for simulation",
+                                action='append',
+                                required=True)
+            args = parser.parse_args()
+
+            with app.app_context():
+                model = self.request_handler(args['modelName'],
+                                             args['inputs'],
+                                             args['times'])
+                model.create_default_input()
+                model.run_from_buffer()
+                output = model.output_parse()
+                return jsonify(output)
+
+        except Exception as error:
+            traceback.print_exc()
+            return {"error": str(error)}, 404

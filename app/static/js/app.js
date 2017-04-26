@@ -44,6 +44,11 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'ngMaterial', 'n
                 controller: 'ModelCheckController',
                 css: ['/static/css/check-style.css', '/static/css/plot-style.css']
             })
+            .when('/model-display',{
+                templateUrl: '/static/partials/model-display.html',
+                controller: 'ModelDisplayController',
+                css:['/static/css/plot-style.css']
+            })
             .when('/about', {
                 templateUrl: '/static/partials/about.html',
             })

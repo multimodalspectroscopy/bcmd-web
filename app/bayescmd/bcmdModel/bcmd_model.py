@@ -52,6 +52,7 @@ class ModelBCMD:
         self.inputs = inputs  # any time dependent inputs to the model
         self.times = times
         self.outputs = outputs
+        self.burn_in = burn_in
 
         # Determine if input file is present already or if it needs creating
         self.create_input = create_input

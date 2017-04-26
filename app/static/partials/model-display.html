@@ -1,0 +1,19 @@
+<header>
+    Visualise Model Output
+</header>
+
+
+<div class="row">
+    <form name="">
+        <label for="xSelect"> x-axis: </label>
+        <select name="xSelect" id="inXSelect" ng-model="inplotx">
+                <option ng-repeat="key in modelVariables" value="{{key}}">{{key}}</option>
+            </select>
+        <label for="ySelect"> y-axis: </label>
+        <select name="ySelect" id="inYSelect" ng-model="inploty">
+                <option ng-repeat="key in modelVariables" value="{{key}}">{{key}}</option>
+            </select>
+    </form>
+    <br>
+    <line-graph data="{{modelOutput}}" select-x="{{inplotx}}" select-y="{{inploty}}"></line-graph>
+</div>
