@@ -111,12 +111,17 @@ class DemandCreator(Resource):
 class RunModel(Resource):
 
     @staticmethod
-    def request_handler(request):
-        request = json.loads(request)
+    def request_handler(modelName, inputs, times, params, outputs, burn_in):
 
-        inputs = request['inputs']
+        timed_model = ModelBCMD(request['modelName'],
+                                inputs=inputs,
+                                params=params,
+                                times=times,
+                                outputs=outputs,
+                                burn_in=burn_in,
+                                debug=False)
 
-        timed_model = ModelBCMD(request['modelName'], debug=False)
+        return time_model
 
     def get(self):
         try:
@@ -126,10 +131,14 @@ class RunModel(Resource):
             parser.add_argument('inputs',
                                 help="Model inputs")
             parser.add_argument('modelName',
-                                help="Name of model")
+                                help="Name of model",
+                                required=True)
+            parser.add_argument('params',
+                                help="Non-default model parameters")
             parser.add_argument('times',
                                 help="Time points for simulation",
-                                action='append')
+                                action='append',
+                                required=True)
             parser.add_argument('outputs',
                                 help="Model outputs")
             parser.add_argument('runData')
@@ -137,14 +146,13 @@ class RunModel(Resource):
 
             with app.app_context():
                 response = {}
-                print(args, file=sys.stderr)
-                print(args['modelName'], file=sys.stderr)
-                print(args['burnIn'])
-                print(args['inputs'])
-                print(args['times'])
-                print(args['outputs'])
-                parsedReq = self.request_handler(args['runData'])
-                print(parsedReq)
+                model = self.request_handler(args['modelName'],
+                                                 args['inputs'],
+                                                 args['times'],
+                                                 args['params'],
+                                                 args['outputs'],
+                                                 args['burnIn'])
+                print(model)
 
         except Exception as e:
             print(e, file=sys.stderr)

@@ -320,6 +320,7 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
             $scope.finalChoice.modelName = $scope.data.modelName;
+            $scope.finalChoice.params = $scope.data.parameters;
             console.log($scope.data);
         };
 
@@ -358,10 +359,7 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
             console.log("Name is " + runData.modelName);
 
             $http.get('/api/runmodel', {
-                "params": {
-
-                    "runData": runData
-                }
+                "params": runData
             }).then(function(response) {
                 console.log(response);
             }).catch(function(data) {
