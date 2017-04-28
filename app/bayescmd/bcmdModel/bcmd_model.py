@@ -304,10 +304,13 @@ class ModelBCMD:
 
         for d in csv.DictReader(file_out, delimiter='\t'):
             for key, value in d.items():
-                try:
-                    self.output_dict[key].append(float(value))
-                except (ValueError, TypeError) as e:
-                    self.output_dict[key].append('NaN')
+                if key == 'ERR':
+                    pass
+                else:
+                    try:
+                        self.output_dict[key].append(float(value))
+                    except (ValueError, TypeError) as e:
+                        self.output_dict[key].append('NaN')
 
         self._cleanupTemp()
         return self.output_dict

@@ -1,5 +1,5 @@
 # Lotka-Volterra
-
+@output x y
 # differential equations
 x' = (a*x)-(b*x*y)
 y' = (c*x*y)-(d*y)
@@ -14,4 +14,3 @@ d:= 1
 # initial values
 x := 80
 y := 40
-

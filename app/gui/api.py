@@ -7,6 +7,7 @@ import traceback
 import numpy as np
 
 from bayescmd.bcmdModel import signalGenerator, ModelBCMD
+import bayescmd.jsonParsing as jsonParsing
 
 from app import app
 from app import mongo
@@ -31,15 +32,16 @@ class ModelInfo(Resource):
 
             with app.app_context():
                 if mongo.db.models.find(model_json).count() > 0:
-                    return {"status": 100, "message": "Model already exists"}
+                    return {"message": "Model already exists"}, 250
                 else:
                     fpath = jsonParsing.getDefaultFilePath(
                         model_json['model_name'])
                     mongo.db.models.insert(jsonParsing.modeldefParse(fpath))
-                    return {"status": 200, "message": "Added Model Data"}
+                    print(jsonParsing.modeldefParse(fpath))
+                    return {"message": "Added Model Data"}, 200
 
         except Exception as e:
-            return {"error": str(e)}
+            return {"error": str(e)}, 404
 
     def get(self):
         try:
@@ -116,9 +118,23 @@ class RunModel(Resource):
     @staticmethod
     def request_handler(modelName, inputs, times, params, outputs, burn_in):
 
-        inputs = json.loads(inputs)
-        params = json.loads(params)
-        outputs = json.loads(outputs)
+        if inputs is not None:
+            inputs = json.loads(inputs)
+            parsed_inputs = {'names': inputs.keys()}
+            parsed_inputs['values'] = np.transpose(list(inputs.values()))
+            print("PARSED INPUTS: " + str(parsed_inputs))
+        else:
+            parsed_inputs = None
+
+        if params is not None:
+            params = json.loads(params)
+
+        if outputs is not None:
+            outputs = json.loads(outputs)
+            parsed_outputs = [k for k, v in outputs.items() if v['include']]
+            print("PARSED OUTPUTS: " + str(parsed_outputs))
+        else:
+            parsed_outputs = None
 
         print("MODEL NAME: " + modelName)
         print("INPUTS: " + str(inputs))
@@ -127,11 +143,6 @@ class RunModel(Resource):
         print("OUTPUTS: " + str(outputs))
         print("BURN IN: " + str(burn_in))
 
-        parsed_inputs = {'names': inputs.keys()}
-        parsed_inputs['values'] = np.transpose(list(inputs.values()))
-        print("PARSED INPUTS: " + str(parsed_inputs))
-        parsed_outputs = [k for k, v in outputs.items() if v['include']]
-        print("PARSED OUTPUTS: " + str(parsed_outputs))
         # Handle empty params dict
         if len(params.keys()) == 0:
             params = None
@@ -186,27 +197,29 @@ class RunModel(Resource):
                 model.run_from_buffer()
                 output = model.output_parse()
 
-
                 return jsonify(output)
         except Exception as error:
             traceback.print_exc()
             return {"error": str(error)}, 404
+
 
 class RunDefault(Resource):
 
     @staticmethod
     def request_handler(modelName, inputs, times):
 
-        inputs = json.loads(inputs)
-
+        if inputs is not None:
+            inputs = json.loads(inputs)
+            parsed_inputs = {'names': inputs.keys()}
+            parsed_inputs['values'] = np.transpose(list(inputs.values()))
+            print("PARSED INPUTS: " + str(parsed_inputs))
+        else:
+            parsed_inputs = None
 
         print("MODEL NAME: " + modelName)
         print("INPUTS: " + str(inputs))
         print("TIMES: " + str(times))
 
-        parsed_inputs = {'names': inputs.keys()}
-        parsed_inputs['values'] = np.transpose(list(inputs.values()))
-        print("PARSED INPUTS: " + str(parsed_inputs))
         model = ModelBCMD(modelName,
                           inputs=parsed_inputs,
                           times=[float(x) for x in times],

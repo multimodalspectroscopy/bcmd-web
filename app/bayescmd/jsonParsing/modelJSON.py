@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.join("..", ".."))))
 BASEDIR = os.path.abspath(os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-assert os.path.basename(BASEDIR) == 'BayesCMD', "Incorrect base directory"
+assert os.path.basename(BASEDIR) == 'bcmd-web', "Incorrect base directory"
 print(BASEDIR)
 from ..bcmdModel.bcmd_model import ModelBCMD
 from io import StringIO

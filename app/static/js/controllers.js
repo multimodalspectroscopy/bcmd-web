@@ -36,7 +36,58 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
     }
 ]);
 
+myApp.controller('ModelUploadController', ['$scope', '$http',
+function($scope, $http) {
 
+    // Define variables
+    $scope.defaults = {
+        "inputs": {},
+        "outputs": {},
+        "parameters": {}
+    };
+
+    $scope.data = {
+        choice: null,
+        models: available_models.models
+    };
+    // define functions
+    $scope.submit = function() {
+        var name = $scope.data.choice.model;
+        console.log("Name is " + name);
+        $http({
+            method: 'POST',
+            url: '/api/modelinfo',
+            "params": {
+                "model_name": name
+            }
+        }).then(function(response){
+            console.log(response);
+            if (response.status == 250){
+                $scope.modelExists = true;
+                console.log($scope.modelExists);
+            }
+            $http.get('/api/modelinfo', {
+                "params": {
+                    "model_name": name
+                }
+            }).then(function(response) {
+                $scope.defaults.inputs = response.data.input;
+                $scope.defaults.outputs = response.data.output;
+                $scope.defaults.parameters = response.data.params;
+                $scope.modelUploaded = true;
+                console.log($scope.defaults);
+            }).catch(function(data) {
+                console.log("Error getting model information: ");
+                console.log(data);
+            })
+        }).catch(function(data) {
+        console.log("Error uploading model information: ");
+        console.log(data);
+    });
+
+};
+
+}]);
 myApp.controller('IndexController', ['$scope', '$http', function($scope, $http) {
 
 }]);
@@ -354,9 +405,9 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
         };
 
         $scope.runModel = function(modelType) {
-            if (modelType == 'default'){
+            if (modelType == 'default') {
                 var modelurl = '/api/rundefault';
-            } else if (modelType == "initialised"){
+            } else if (modelType == "initialised") {
                 var modelurl = '/api/runmodel';
             }
             var runData = $scope.finalChoice;
@@ -386,8 +437,9 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
 ]);
 
 myApp.controller("ModelDisplayController", ['$scope', '$http', '$parse', '$window', 'RunModelData',
-        function($scope, $http, $parse, $window, RunModelData) {
-            $scope.modelOutput = RunModelData.getModelOutput();
-            console.log($scope.modelOutput);
-            $scope.modelVariables = Object.keys($scope.modelOutput);
-        }]);
+    function($scope, $http, $parse, $window, RunModelData) {
+        $scope.modelOutput = RunModelData.getModelOutput();
+        console.log($scope.modelOutput);
+        $scope.modelVariables = Object.keys($scope.modelOutput);
+    }
+]);

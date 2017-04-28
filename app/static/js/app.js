@@ -40,9 +40,13 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'ngMaterial', 'n
                 css: ['/static/css/parameter-style.css']
             })
             .when('/model-check', {
-                templateUrl: '/static/partials/model-check-2.html',
+                templateUrl: '/static/partials/model-check.html',
                 controller: 'ModelCheckController',
                 css: ['/static/css/check-style.css', '/static/css/plot-style.css']
+            })
+            .when('/upload-model', {
+                templateUrl: '/static/partials/upload-model.html',
+                controller: 'ModelUploadController'
             })
             .when('/model-display',{
                 templateUrl: '/static/partials/model-display.html',

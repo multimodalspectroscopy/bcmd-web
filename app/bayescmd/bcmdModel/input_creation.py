@@ -30,20 +30,27 @@ class InputCreator:
         params, which are defined at subsequent timepoints.
         :return: Output string buffer
         """
-        assert len(self.times) == len(self.inputs['values']), "Different" \
-            "number of time steps in log and in data:\n \t" \
-            "time steps = %d \n\t" \
-            "input steps = %d" % (len(self.times[:-1]),
-                                  len(self.inputs['values']))
+        if self.inputs is not None:
+            assert len(self.times) == len(self.inputs['values']), "Different" \
+                "number of time steps in log and in data:\n \t" \
+                "time steps = %d \n\t" \
+                "input steps = %d" % (len(self.times[:-1]),
+                                      len(self.inputs['values']))
 
         self.f_out.write('# File created using BayesCMD file creation\n')
         self.f_out.write('@%d\n' % len(self.times[:-1]))
-        self.f_out.write(': %d ' % len(self.inputs['names']) +
-                         ' '.join(self.inputs['names']) + '\n')
-        for ii, time in enumerate(self.times[:-1]):
-            self.f_out.write('= %d %d ' % (self.times[ii],
-                                           self.times[ii + 1]) +
-                             ' '.join(str(v) for v in self.inputs['values'][ii]) + '\n')
+        if self.inputs is not None:
+            self.f_out.write(': %d ' % len(self.inputs['names']) +
+                             ' '.join(self.inputs['names']) + '\n')
+            for ii, time in enumerate(self.times[:-1]):
+                self.f_out.write('= %d %d ' % (self.times[ii],
+                                               self.times[ii + 1]) +
+                                 ' '.join(str(v) for v in self.inputs['values'][ii]) + '\n')
+        else:
+            self.f_out.write(':0\n= -1 0\n')
+            for ii, time in enumerate(self.times[:-1]):
+                self.f_out.write('= %f %f ' %
+                                 (self.times[ii], self.times[ii + 1]) + '\n')
 
         self.f_out.seek(0)
         return self.f_out
@@ -106,7 +113,7 @@ class InputCreator:
             assert len(self.times) == len(self.inputs['values']), "Different " \
                                                                   "number of time steps in log and in data:\n \t" \
                                                                   "time steps = %d \n\t" \
-                                                                  "input steps = %d" % (len(self.times[:-1]),
+                                                                  "input steps = %d" % (len(self.times),
                                                                                         len(self.inputs['values']))
             self.f_out.write(':%d ' % len(self.inputs['names']) +
                              ' '.join(self.inputs['names']) +
