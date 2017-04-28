@@ -122,7 +122,6 @@ class RunModel(Resource):
             inputs = json.loads(inputs)
             parsed_inputs = {'names': inputs.keys()}
             parsed_inputs['values'] = np.transpose(list(inputs.values()))
-            print("PARSED INPUTS: " + str(parsed_inputs))
         else:
             parsed_inputs = None
 
@@ -132,16 +131,9 @@ class RunModel(Resource):
         if outputs is not None:
             outputs = json.loads(outputs)
             parsed_outputs = [k for k, v in outputs.items() if v['include']]
-            print("PARSED OUTPUTS: " + str(parsed_outputs))
         else:
             parsed_outputs = None
 
-        print("MODEL NAME: " + modelName)
-        print("INPUTS: " + str(inputs))
-        print("TIMES: " + str(times))
-        print("PARAMS: " + str(params))
-        print("OUTPUTS: " + str(outputs))
-        print("BURN IN: " + str(burn_in))
 
         # Handle empty params dict
         if len(params.keys()) == 0:
@@ -212,13 +204,8 @@ class RunDefault(Resource):
             inputs = json.loads(inputs)
             parsed_inputs = {'names': inputs.keys()}
             parsed_inputs['values'] = np.transpose(list(inputs.values()))
-            print("PARSED INPUTS: " + str(parsed_inputs))
         else:
             parsed_inputs = None
-
-        print("MODEL NAME: " + modelName)
-        print("INPUTS: " + str(inputs))
-        print("TIMES: " + str(times))
 
         model = ModelBCMD(modelName,
                           inputs=parsed_inputs,
@@ -246,6 +233,7 @@ class RunDefault(Resource):
                                              args['inputs'],
                                              args['times'])
                 model.create_default_input()
+                print(model.input_file)
                 model.run_from_buffer()
                 output = model.output_parse()
                 return jsonify(output)

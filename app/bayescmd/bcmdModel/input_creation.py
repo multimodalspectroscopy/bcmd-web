@@ -38,17 +38,21 @@ class InputCreator:
                                       len(self.inputs['values']))
 
         self.f_out.write('# File created using BayesCMD file creation\n')
-        self.f_out.write('@%d\n' % len(self.times[:-1]))
+        self.f_out.write('@%d\n' % len(self.times))
         if self.inputs is not None:
             self.f_out.write(': %d ' % len(self.inputs['names']) +
                              ' '.join(self.inputs['names']) + '\n')
-            for ii, time in enumerate(self.times[:-1]):
-                self.f_out.write('= %d %d ' % (self.times[ii],
+            self.f_out.write('= -1 ' + str(self.times[0]) + ' ' +
+                             ' '.join(str(v) for v in
+                                      self.inputs['values'][0]) +
+                             '\n')
+            for ii in range(len(self.times[:-1])):
+                self.f_out.write('= %f %f ' % (self.times[ii],
                                                self.times[ii + 1]) +
                                  ' '.join(str(v) for v in self.inputs['values'][ii]) + '\n')
         else:
-            self.f_out.write(':0\n= -1 0\n')
-            for ii, time in enumerate(self.times[:-1]):
+            self.f_out.write(':0\n= -1 ' + self.times[0] + '\n')
+            for ii in range(len(self.times[:-1])):
                 self.f_out.write('= %f %f ' %
                                  (self.times[ii], self.times[ii + 1]) + '\n')
 
@@ -118,19 +122,19 @@ class InputCreator:
             self.f_out.write(':%d ' % len(self.inputs['names']) +
                              ' '.join(self.inputs['names']) +
                              '\n')
-            self.f_out.write('= -1 0 ' +
+            self.f_out.write('= -1 ' + str(self.times[0]) +
                              ' '.join(str(v) for v in
                                       self.inputs['values'][0]) +
                              '\n')
-            for ii, time in enumerate(self.times[:-1]):
+            for ii in range(len(self.times[:-1])):
                 self.f_out.write('= %f %f ' % (self.times[ii],
                                                self.times[ii + 1]) +
                                  ' '.join(str(v) for v in
                                           self.inputs['values'][ii + 1]) +
                                  '\n')
         else:
-            self.f_out.write(':0\n= -1 0\n')
-            for ii, time in enumerate(self.times[:-1]):
+            self.f_out.write(':0\n= -1 %\n' % (self.times[0]))
+            for ii in range(len(self.times[:-1])):
                 self.f_out.write('= %f %f ' %
                                  (self.times[ii], self.times[ii + 1]) + '\n')
 
