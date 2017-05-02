@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
 from flask_restful import Api
+from flask_basicauth import BasicAuth
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 # print("Environment is {}".format(os.environ['APP_SETTINGS']))
@@ -10,7 +11,6 @@ mongo = PyMongo(app)
 
 # Local module import
 from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api
-
 
 # Get array of available models.
 def get_choices():
@@ -40,6 +40,14 @@ api.add_resource(RunDefault, '/api/rundefault')
 def not_found(error):
     return render_template('404.html'), 404
 
+
+# Admin Section
+basic_auth = BasicAuth(app)
+
+@app.route('/admin')
+@basic_auth.required
+def admin():
+    return render_template('admin.html', available_models=available_models)
 
 @app.route('/')
 def index():

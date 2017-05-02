@@ -36,7 +36,7 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
     }
 ]);
 
-myApp.controller('ModelUploadController', ['$scope', '$http',
+adminApp.controller('ModelUploadController', ['$scope', '$http',
 function($scope, $http) {
 
     // Define variables
@@ -88,6 +88,11 @@ function($scope, $http) {
 };
 
 }]);
+
+adminApp.controller('AdminHomeController', ['$scope', '$http', function($scope, $http) {
+
+}]);
+
 myApp.controller('IndexController', ['$scope', '$http', function($scope, $http) {
 
 }]);

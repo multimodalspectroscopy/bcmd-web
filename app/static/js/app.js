@@ -61,3 +61,29 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'ngMaterial', 'n
             });
     }]);
 })(myApp);
+
+var adminApp = angular.module('weBCMD-admin', ['ngRoute', 'routeStyles', 'ngMaterial', 'ngMessages']);
+(function(app) {
+    'use strict';
+    // Declare app level module which depends on views, and components
+
+
+    app.config(['$routeProvider', function($routeProvider) {
+        $routeProvider.when('/', {
+                templateUrl: '/static/partials/admin-home.html',
+                controller: 'AdminHomeController',
+                css: '/static/css/main-style.css'
+            })
+            .when('/upload-model', {
+                templateUrl: '/static/partials/upload-model.html',
+                controller: 'ModelUploadController'
+            })
+            .when('/compile-model', {
+                tempalteUrl: '/static/partials/compile-model.html',
+                controller: 'CompileModelController'
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
+    }]);
+})(adminApp);
