@@ -95,7 +95,7 @@ adminApp.controller('CompileModelController', ['$scope', '$http', function($scop
         $scope.result="";
         $scope.data = {
             choice: null,
-            models: available_models.models
+            models: available_defs.models
         };
         // define functions
         $scope.submit = function() {
