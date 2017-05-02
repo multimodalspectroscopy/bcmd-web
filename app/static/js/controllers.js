@@ -250,12 +250,9 @@ myApp.controller('TimeCreationController', ['$scope', '$http', '$parse', 'RunMod
         };
 
         $scope.generateTime = function() {
-            $scope.timeSignal = _.range($scope.time.startTime, $scope.time.endTime + $scope.time.sampleRate, $scope.time.sampleRate);
+            $scope.timeSignal = _.range($scope.time.startTime, Number($scope.time.endTime) + $scope.time.sampleRate, $scope.time.sampleRate);
             console.log($scope.timeSignal);
             $scope.timeSignalSample = $scope.timeSignal.slice(0, 10);
-        };
-
-        $scope.confirmTime = function() {
             $scope.data.inputs['t'] = $scope.timeSignal;
             $scope.data.inputHeader['t'] = true;
         };
