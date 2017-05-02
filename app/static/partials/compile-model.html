@@ -1,0 +1,11 @@
+<form name="modelForm" ng-submit="submit()">
+    <label for="modelSelect"> Choose a model: </label>
+    <select name="modelSelect" id="modelSelect" ng-options="option.model for option in data.models" ng-model="data.choice"></select>
+    <input class="btn btn-primary" type="submit" for="modelSelect" id="submit" value="Submit" />
+</form>
+<hr>
+<div class="modelData well" ng-if="modelCompiled">
+    <h3> Model Compiled</h3>
+    <h4> Command line output: </h4>
+    <p>{{result}}</p>
+</div>

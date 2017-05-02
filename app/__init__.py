@@ -10,7 +10,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 mongo = PyMongo(app)
 
 # Local module import
-from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api
+from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api, CompileModel
 
 # Get array of available models.
 def get_choices():
@@ -32,7 +32,7 @@ api.add_resource(ModelInfo, '/api/modelinfo')
 api.add_resource(DemandCreator, '/api/demandcreation')
 api.add_resource(RunModel, '/api/runmodel')
 api.add_resource(RunDefault, '/api/rundefault')
-
+api.add_resource(CompileModel, '/api/compilemodel')
 # Sample HTTP error handling
 
 

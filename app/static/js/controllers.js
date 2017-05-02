@@ -89,6 +89,36 @@ function($scope, $http) {
 
 }]);
 
+adminApp.controller('CompileModelController', ['$scope', '$http', function($scope, $http){
+
+        // Define variables
+        $scope.result="";
+        $scope.data = {
+            choice: null,
+            models: available_models.models
+        };
+        // define functions
+        $scope.submit = function() {
+            var name = $scope.data.choice.model;
+            console.log("Name is " + name);
+            $http({
+                method: 'GET',
+                url: '/api/compilemodel',
+                "params": {
+                    "model_name": name
+                }
+            }).then(function(response){
+                var stdout = response.data.stdout;
+                $scope.modelCompiled=true;
+                $scope.result=stdout.substr(2,stdout.length-5);
+                console.log($scope.result);
+            }).catch(function(data) {
+            console.log("Error compiling model: ");
+            console.log(data);
+        });
+    };
+}]);
+
 adminApp.controller('AdminHomeController', ['$scope', '$http', function($scope, $http) {
 
 }]);

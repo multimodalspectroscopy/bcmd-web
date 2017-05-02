@@ -5,6 +5,7 @@ from flask import jsonify, json
 import sys
 import traceback
 import numpy as np
+import subprocess
 
 from bayescmd.bcmdModel import signalGenerator, ModelBCMD
 import bayescmd.jsonParsing as jsonParsing
@@ -134,7 +135,6 @@ class RunModel(Resource):
         else:
             parsed_outputs = None
 
-
         # Handle empty params dict
         if len(params.keys()) == 0:
             params = None
@@ -185,6 +185,7 @@ class RunModel(Resource):
                                              args['params'],
                                              args['outputs'],
                                              args['burnIn'])
+                print(args['times'])
                 model.create_initialised_input()
                 model.run_from_buffer()
                 output = model.output_parse()
@@ -232,12 +233,35 @@ class RunDefault(Resource):
                 model = self.request_handler(args['modelName'],
                                              args['inputs'],
                                              args['times'])
+                print(args['times'])
                 model.create_default_input()
                 print(model.input_file)
                 model.run_from_buffer()
                 output = model.output_parse()
                 return jsonify(output)
 
+        except Exception as error:
+            traceback.print_exc()
+            return {"error": str(error)}, 404
+
+
+class CompileModel(Resource):
+
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('model_name',
+                                type=str,
+                                help="Name of the model to compile.",
+                                required=True)
+            args = parser.parse_args()
+
+            with app.app_context():
+                result = subprocess.run(["make",
+                                         "build/%s.model" % (args.model_name)],
+                                        stdout=subprocess.PIPE)
+                print(str(result.stdout))
+                return {"stdout": str(result.stdout)}
         except Exception as error:
             traceback.print_exc()
             return {"error": str(error)}, 404

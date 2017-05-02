@@ -44,10 +44,6 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'ngMaterial', 'n
                 controller: 'ModelCheckController',
                 css: ['/static/css/check-style.css', '/static/css/plot-style.css']
             })
-            .when('/upload-model', {
-                templateUrl: '/static/partials/upload-model.html',
-                controller: 'ModelUploadController'
-            })
             .when('/model-display',{
                 templateUrl: '/static/partials/model-display.html',
                 controller: 'ModelDisplayController',
@@ -79,7 +75,7 @@ var adminApp = angular.module('weBCMD-admin', ['ngRoute', 'routeStyles', 'ngMate
                 controller: 'ModelUploadController'
             })
             .when('/compile-model', {
-                tempalteUrl: '/static/partials/compile-model.html',
+                templateUrl: '/static/partials/compile-model.html',
                 controller: 'CompileModelController'
             })
             .otherwise({

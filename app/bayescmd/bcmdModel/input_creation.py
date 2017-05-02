@@ -51,7 +51,7 @@ class InputCreator:
                                                self.times[ii + 1]) +
                                  ' '.join(str(v) for v in self.inputs['values'][ii]) + '\n')
         else:
-            self.f_out.write(':0\n= -1 ' + self.times[0] + '\n')
+            self.f_out.write(':0\n= -1 ' + str(self.times[0]) + '\n')
             for ii in range(len(self.times[:-1])):
                 self.f_out.write('= %f %f ' %
                                  (self.times[ii], self.times[ii + 1]) + '\n')
@@ -133,7 +133,7 @@ class InputCreator:
                                           self.inputs['values'][ii + 1]) +
                                  '\n')
         else:
-            self.f_out.write(':0\n= -1 %\n' % (self.times[0]))
+            self.f_out.write(':0\n= -1 %f\n' % (self.times[0]))
             for ii in range(len(self.times[:-1])):
                 self.f_out.write('= %f %f ' %
                                  (self.times[ii], self.times[ii + 1]) + '\n')
