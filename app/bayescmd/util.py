@@ -21,5 +21,5 @@ def findBaseDir(basename, max_depth=5, verbose=False):
         else:
             BASEDIR = os.path.abspath(os.path.dirname(BASEDIR))
         if level == MAX_DEPTH-1:
-            sys.exit('Could not find correct basedir')
+            sys.exit('Could not find correct basedir\n Currently at %s' % BASEDIR)
     return os.path.relpath(BASEDIR)

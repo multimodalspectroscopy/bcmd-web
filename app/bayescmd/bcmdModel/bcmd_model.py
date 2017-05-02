@@ -20,7 +20,7 @@ from ..util import findBaseDir
 TIMEOUT = 30
 # default base directory - this should be a relative directory path
 # leading to bcmd/
-BASEDIR = findBaseDir('bcmd-web')
+BASEDIR = findBaseDir(os.environ['BASEDIR'])
 
 
 class ModelBCMD:
