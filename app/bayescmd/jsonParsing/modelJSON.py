@@ -6,12 +6,10 @@ import subprocess
 import sys
 sys.path.append(os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.join("..", ".."))))
-BASEDIR = os.path.abspath(os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-assert os.path.basename(BASEDIR) == 'bcmd-web', "Incorrect base directory"
-print(BASEDIR)
 from ..bcmdModel.bcmd_model import ModelBCMD
+from ..util import findBaseDir
 from io import StringIO
+BASEDIR = findBaseDir(os.environ['BASEDIR'])
 
 
 def float_or_str(n):
