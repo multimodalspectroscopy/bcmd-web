@@ -1,0 +1,24 @@
+<header>
+    <h2> Parameters </h2>
+    <h4> See model parameters and change if required. </h4>
+</header>
+<section class="parameter-section" ng-cloak>
+    <h3> Parameters </h3>
+    <form>
+    <div class="form-group" ng-repeat="(param, value) in defaultParameters" ng-cloak>
+        <label>{{param}}
+        <input type="text" ng-model="parameters[param]" ng-attr-placeholder="Default: {{value}}" ng-pattern="/^[0-9]+(\.[0-9]{0,7})?$/">
+        </label>
+    </div>
+</form>
+</section>
+<footer>
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="pager">
+                <li><a href="#!demand-creation" ng-click="submitParameters()"> Previous </a></li>
+                <li><a href="#!model-check" ng-click="submitParameters()"> Next </a></li>
+            </ul>
+        </div>
+    </div>
+</footer>

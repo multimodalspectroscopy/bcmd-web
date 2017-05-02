@@ -1,0 +1,44 @@
+<form name="modelForm" ng-submit="submit()">
+    <label for="modelSelect"> Choose a model: </label>
+    <select name="modelSelect" id="modelSelect" ng-options="option.model for option in data.models" ng-model="data.choice"></select>
+    <input class="btn btn-primary" type="submit" for="modelSelect" id="submit" value="Submit" />
+</form>
+<hr>
+<div class="modelData well" ng-if="modelUploaded">
+    <h3 class="exists-warning" ng-if="modelExists"> Model Already Exists - Showing Existing Data </h3>
+    <section class="input-section row">
+        <h2>INPUTS</h2>
+        <h4>Inputs to the selected model </h4>
+        <ul ng-repeat="input in defaults.inputs">
+            <li>{{ input }}</li>
+        </ul>
+    </section>
+
+    <section class="output-section row">
+        <h2>OUTPUTS</h2>
+        <h4>Default outputs from the selected model </h4>
+        <ul ng-repeat="output in defaults.outputs">
+            <li>{{ output}}</li>
+        </ul>
+    </section>
+    <section class="parameter-section row">
+        <h2> PARAMETERS </h2>
+        <h4> All default parameter values</h4>
+        <div class="col-sm-8">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="(key,val) in defaults.parameters">
+                        <td class="col-sm-7">{{key}}</td>
+                        <td class="col-sm-5">{{val}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

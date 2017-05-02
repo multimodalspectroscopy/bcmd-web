@@ -34,6 +34,7 @@ class ModelBCMD:
                  params=None,  # Parameters
                  times=None,  # Times to run simulation at
                  outputs=None,
+                 burn_in=999,
                  create_input=True,
                  input_file=None,
                  suppress=False,
@@ -51,6 +52,7 @@ class ModelBCMD:
         self.inputs = inputs  # any time dependent inputs to the model
         self.times = times
         self.outputs = outputs
+        self.burn_in = burn_in
 
         # Determine if input file is present already or if it needs creating
         self.create_input = create_input
@@ -157,7 +159,7 @@ class ModelBCMD:
                                          params=self.params,
                                          outputs=self.outputs,
                                          filename=new_input)
-            input_creator.initialised_creation()
+            input_creator.initialised_creation(self.burn_in)
             self.input_file = input_creator.input_file_write()
         except AssertionError:
             input_creator = InputCreator(self.times,
@@ -165,7 +167,7 @@ class ModelBCMD:
                                          params=self.params,
                                          outputs=self.outputs,
                                          filename=self.input_file)
-            input_creator.initialised_creation()
+            input_creator.initialised_creation(self.burn_in)
             input_creator.input_file_write()
 
         return True
@@ -177,7 +179,7 @@ class ModelBCMD:
         """
         input_creator = InputCreator(self.times, self.inputs,
                                      params=self.params, outputs=self.outputs)
-        f_out = input_creator.initialised_creation()
+        f_out = input_creator.initialised_creation(self.burn_in)
 
         if self.debug:
             print(f_out.getvalue(), file=sys.stderr)
@@ -302,10 +304,13 @@ class ModelBCMD:
 
         for d in csv.DictReader(file_out, delimiter='\t'):
             for key, value in d.items():
-                try:
-                    self.output_dict[key].append(float(value))
-                except (ValueError, TypeError) as e:
-                    self.output_dict[key].append('NaN')
+                if key == 'ERR':
+                    pass
+                else:
+                    try:
+                        self.output_dict[key].append(float(value))
+                    except (ValueError, TypeError) as e:
+                        self.output_dict[key].append('NaN')
 
         self._cleanupTemp()
         return self.output_dict

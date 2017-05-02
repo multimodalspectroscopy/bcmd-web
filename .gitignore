@@ -10,7 +10,7 @@ __pycache__/
 .Python
 env/
 develop-eggs/
-dist/
+# dist/
 downloads/
 eggs/
 .eggs/
@@ -174,7 +174,3 @@ configure.ac
 aclocal.m4
 autom4te.cache/
 autogen.sh
-
-
-#Ignore node modules
-app/node_modules/

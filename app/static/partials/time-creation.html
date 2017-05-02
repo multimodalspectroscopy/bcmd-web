@@ -1,0 +1,59 @@
+<header>
+    <h2> Time Creation </h2>
+    <h4> If you haven't specified a time course already, and one is needed, you can use the creator below to create a linearly spaced set of time points. <br> If you need anything mroe complex, we recommend generating this and uploading it with your inputs.</h4>
+</header>
+{{data}}
+<div>
+    <h4> Inputs: </h4>
+    <span data-ng-repeat="(key, value) in data.inputs">
+{{key}}
+</span>
+</div>
+<div>
+    <h4> Outputs: </h4>
+    <span data-ng-repeat="(key, value) in data.outputs">
+{{key}}
+</span>
+</div>
+
+<label for="timeNeeded">Time required?</label>
+<input type="checkbox" ng-model="timeNeeded" id="timeNeeded" required/>
+
+<div class="container" ng-if="timeNeeded">
+
+<form ng-submit = "generateTime()">
+    <div class="form-group">
+        <label for="startTime">Start Time</label>
+        <input type="text" ng-model="time.startTime" class="form-control" id="startTime" aria-describedby="startTimeHelp" placeholder="Enter start time (default: 0)">
+        <small id="startTimeHelp" class="form-text text-muted">Enter a start time for your time series (default: 0)</small>
+    </div>
+
+    <div class="form-group">
+        <label for="endTime">End Time</label>
+        <input type="text" ng-model="time.endTime" class="form-control" id="endTime" aria-describedby="endTimeHelp" placeholder="Enter end time" required="">
+        <small id="endTimeHelp" class="form-text text-muted">Enter an end time for your time series. Points will be generated up to and including this value.</small>
+    </div>
+    <div class="form-group">
+        <label for="sampleRate">Sample Rate</label>
+        <input type="text" ng-model="time.sampleRate" class="form-control" id="sampleRate" aria-describedby="sampleRateHelp" placeholder="Enter sample rate(default: 1 Hz)">
+        <small id="sampleRateHelp" class="form-text text-muted">Enter a sample rate for your time series</small>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary"> Generate Time </button>
+</form>
+<span ng-if="timeSignalSample.length !== 0">
+    <h4>First ten time points generated: </h4> <br><p>{{timeSignalSample}}</p> <br><button type="button" class="btn btn-primary" ng-click="confirmTime()"> Confirm Time </button>
+</span>
+</div>
+
+<footer>
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="pager">
+                <li><a href="#!csv-upload" ng-click="saveState()"> Previous </a></li>
+                <li><a href="#!demand-creation" ng-click="saveState()"> Next </a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
