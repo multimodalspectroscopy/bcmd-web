@@ -2,7 +2,7 @@ import os
 import sys
 
 
-def findBaseDir(basename, max_depth=5, verbose=True):
+def findBaseDir(basename, max_depth=5, verbose=False):
     """
     Get relative path to a BASEDIR.
     :param basename: Name of the basedir to path to

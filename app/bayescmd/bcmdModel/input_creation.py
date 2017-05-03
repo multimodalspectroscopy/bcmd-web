@@ -122,7 +122,7 @@ class InputCreator:
             self.f_out.write(':%d ' % len(self.inputs['names']) +
                              ' '.join(self.inputs['names']) +
                              '\n')
-            self.f_out.write('= -1 ' + str(self.times[0]) +
+            self.f_out.write('= -1 %s ' % (self.times[0]) +
                              ' '.join(str(v) for v in
                                       self.inputs['values'][0]) +
                              '\n')
