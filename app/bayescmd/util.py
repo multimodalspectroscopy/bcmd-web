@@ -16,11 +16,12 @@ def findBaseDir(basename, max_depth=5, verbose=True):
     print("STARTING AT: %s\n Looking for: %s" % (BASEDIR, basename))
     for level in range(MAX_DEPTH):
         if verbose:
-            print('LEVEL %d: %s' % (level, BASEDIR))
+            print('LEVEL %d: %s\n Current basename: %s' %
+                  (level, BASEDIR, os.path.basename(BASEDIR)))
         if os.path.basename(BASEDIR) == basename:
             break
         else:
             BASEDIR = os.path.abspath(os.path.dirname(BASEDIR))
-        if level == MAX_DEPTH-1:
+        if level == MAX_DEPTH - 1:
             sys.exit('Could not find correct basedir\n Currently at %s' % BASEDIR)
     return os.path.relpath(BASEDIR)
