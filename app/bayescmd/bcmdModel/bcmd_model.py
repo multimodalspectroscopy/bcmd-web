@@ -16,11 +16,12 @@ import collections
 from .input_creation import InputCreator
 from ..util import findBaseDir
 
+
 # default timeout, in seconds
 TIMEOUT = 30
 # default base directory - this should be a relative directory path
 # leading to bcmd/
-BASEDIR = findBaseDir(config.BASEDIR)
+BASEDIR = findBaseDir(os.environ['BASEDIR'])
 
 
 class ModelBCMD:
