@@ -13,7 +13,7 @@ def findBaseDir(basename, max_depth=5, verbose=True):
     """
     MAX_DEPTH = max_depth
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
-    print("STARTING AT: %s" % BASEDIR)
+    print("STARTING AT: %s\n Looking for: %s" % (BASEDIR, basename))
     for level in range(MAX_DEPTH):
         if verbose:
             print('LEVEL %d: %s' % (level, BASEDIR))
