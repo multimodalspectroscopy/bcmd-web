@@ -21,4 +21,4 @@ install:
   - pip install -r requirements.txt
   - npm install && bower install
 # command to run tests
-script: ./configure && cd app/testing && nosetests --nocapture --with-coverage
+script: ./configure && make build/rc.model && cd app/testing && nosetests --nocapture --with-coverage

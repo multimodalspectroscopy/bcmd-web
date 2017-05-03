@@ -16,6 +16,7 @@ import collections
 from .input_creation import InputCreator
 from ..util import findBaseDir
 
+
 # default timeout, in seconds
 TIMEOUT = 30
 # default base directory - this should be a relative directory path
