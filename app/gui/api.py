@@ -185,10 +185,11 @@ class RunModel(Resource):
                                              args['params'],
                                              args['outputs'],
                                              args['burnIn'])
-                print(args['times'])
                 model.create_initialised_input()
+                print(model.input_file)
                 model.run_from_buffer()
                 output = model.output_parse()
+                print(str(output))
 
                 return jsonify(output)
         except Exception as error:
@@ -233,9 +234,7 @@ class RunDefault(Resource):
                 model = self.request_handler(args['modelName'],
                                              args['inputs'],
                                              args['times'])
-                print(args['times'])
                 model.create_default_input()
-                print(model.input_file)
                 model.run_from_buffer()
                 output = model.output_parse()
                 return jsonify(output)
