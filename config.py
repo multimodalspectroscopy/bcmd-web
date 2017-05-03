@@ -32,6 +32,6 @@ class TestingConfig(Config):
     TESTING = True
 
 class DockerConfig(StagingConfig):
-    HOST='0.0.0.0'
+    HOST = '0.0.0.0'
     BASIC_AUTH_USERNAME = "LOCAL_USER"
     BASIC_AUTH_PASSWORD = "LOCAL_PASSWORD"
