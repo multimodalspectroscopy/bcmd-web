@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(
 from ..bcmdModel.bcmd_model import ModelBCMD
 from ..util import findBaseDir
 from io import StringIO
-BASEDIR = findBaseDir(os.environ['BASEDIR'])
+BASEDIR = findBaseDir(config.BASEDIR)
 
 
 def float_or_str(n):

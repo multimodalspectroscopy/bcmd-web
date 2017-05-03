@@ -11,6 +11,7 @@ class Config(object):
     MONGO_DBNAME = MONGO_URI.split('/')[-1]
     BASIC_AUTH_USERNAME = os.environ['ADMIN_USER']
     BASIC_AUTH_PASSWORD = os.environ['ADMIN_PASS']
+    BASEDIR = os.environ['BASEDIR']
 
 
 class ProductionConfig(Config):
