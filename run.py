@@ -1,7 +1,8 @@
 from app import app
+import pprint
 
 if __name__ == '__main__':
-    if app.config.HOST:
-        app.run(host=app.config.HOST)
-    else:
+    try:
+        app.run(host=app.config['HOST'])
+    except KeyError:
         app.run()

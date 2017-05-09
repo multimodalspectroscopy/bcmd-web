@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="weBCMD-admin">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="/static/css/vendor/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bower_components/angular-material/angular-material.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/main-style.css">
+    <title>WeBCMD - Metabolight</title>
+    <!-- <base href="/"> -->
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
+                        WeBCMD - Admin
+                    </a>
+                </div>
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="#!upload-model">Upload Model Info </a></li>
+                    <li><a href="#!compile-model">Compile Model</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    {% raw %}
+    <div class="container">
+        <div ng-view=""></div>
+    </div>
+    {% endraw %}
+    <!-- Define javascript code -->
+    <!-- Libraries -->
+    <script src="/static/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/static/js/vendor/bootstrap/bootstrap.min.js"></script>
+    <script src="/static/bower_components/angular/angular.js"></script>
+    <script src="/static/bower_components/angular-aria/angular-aria.js"></script>
+	<script src="/static/bower_components/angular-animate/angular-animate.js"></script>
+    <script src="/static/bower_components/angular-material/angular-material.js"></script>
+    <script src="/static/bower_components/angular-messages/angular-messages.js"></script>
+    <script src="/static/bower_components/angular-route/angular-route.js"></script>
+    <script src="/static/bower_components/angular-route-styles/route-styles.js"></script>
+    <script src="/static/bower_components/papaparse/papaparse.js"></script>
+    <script src="/static/bower_components/d3/d3.min.js"></script>
+    <script src="/static/bower_components/lodash/dist/lodash.min.js"></script>
+    <!-- Custom Code -->
+    <script>
+        var available_models = JSON.parse('{{available_models|tojson}}');
+        var available_defs = JSON.parse('{{available_defs|tojson}}');
+    </script>
+    <script src="/static/js/utilityFunctions.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/services.js"></script>
+    <script src="/static/js/controllers.js"></script>
+    <script src="/static/js/directives.js"></script>
+
+</body>
+
+</html>

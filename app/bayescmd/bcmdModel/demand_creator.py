@@ -1,5 +1,5 @@
 import numpy as np
-
+import sys
 
 def topHat(length, peak=2.0, default=1.0):
     """
@@ -70,7 +70,7 @@ def signalGenerator(start, end, peaks,
         'top-hat': topHat,
         'sinusoidal': sinusoidal
     }
-    print((end - start) / sample_rate)
+    print("Number of time points: " + str((end - start) / sample_rate))
     signal = np.ones(int((end - start) / sample_rate)) * default
 
     for idx, demand in enumerate(peaks):
@@ -104,7 +104,7 @@ def signalGenerator(start, end, peaks,
                   'peak': demand[2]}
 
         peak = SIGNAL[demand[3]](**config)
+        signal[int(demand[0]/sample_rate):int(demand[1]/sample_rate)] = peak
 
-        signal[demand[0]:demand[1]] = peak
 
     return signal

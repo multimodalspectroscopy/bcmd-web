@@ -5,14 +5,36 @@ myApp.factory('RunModelData', function() {
     var outputHeader = {};
 
     var data = {
+        modelName: "",
         inputHeader: {},
         inputs: {},
+        inputKeys: [],
         outputHeader: {},
-        outputs: {}
+        outputs: {},
+        outputKeys: [],
+        parameters: {}
     };
 
+    var modelOutput = {};
+
     function getState() {
-        return data;
+        console.log("FROM SERVICE");
+        console.log(data);
+        return Object.assign({}, data);
+    }
+
+    function setModel(model) {
+        data.modelName = model;
+    }
+
+    function setModelOutput(modelResponse){
+        console.log(modelResponse);
+        modelOutput = modelResponse;
+        modelOutput = modelResponse;
+    }
+
+    function getModelOutput(){
+        return Object.assign({}, modelOutput);
     }
 
     function clearInput() {
@@ -25,7 +47,21 @@ myApp.factory('RunModelData', function() {
         data.outputHeader = {};
     }
 
+    function clearData() {
+        data = {
+            modelName: "",
+            inputHeader: {},
+            inputs: {},
+            inputKeys: [],
+            outputHeader: {},
+            outputs: {},
+            outputKeys: [],
+            parameters: {}
+        };
+    }
+
     function setKey(newVal, key) {
+        console.log("SETTING: " + key + " TO: " + JSON.stringify(newVal));
         if (data.hasOwnProperty(key)) {
             data[key] = newVal;
         }
@@ -50,7 +86,11 @@ myApp.factory('RunModelData', function() {
 
     return {
         getState: getState,
+        setModel: setModel,
         setKey: setKey,
+        setModelOutput: setModelOutput,
+        getModelOutput: getModelOutput,
+        clearData: clearData,
         clearInput: clearInput,
         clearOutput: clearOutput,
     };
@@ -63,9 +103,9 @@ myApp.factory('PeakTypes', function() {
             "function": "top-hat"
         },
         {
-          "name": "Wavelet",
-          "image": "/static/images/peaks/wavelet.png",
-          "function": "sinusoidal"
+            "name": "Wavelet",
+            "image": "/static/images/peaks/wavelet.png",
+            "function": "sinusoidal"
         }
     ];
 

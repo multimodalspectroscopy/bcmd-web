@@ -4,12 +4,40 @@
     <input class="btn btn-primary" type="submit" for="modelSelect" id="submit" value="Submit" />
 </form>
 <hr>
-<div class="modelData well" ng-repeat="category in infoCategories">
-    <h4>{{category.name}}</h4>
-    <div ng-repeat="data in category.data">
-        <em class="pull-right">
-              {{ data }}
-            </em><br>
-    </div>
+<div class="modelData well" ng-if="modelSelected">
+    <section class="input-section row">
+        <h2>INPUTS</h2>
+        <h4>Inputs to the selected model </h4>
+        <ul ng-repeat="input in defaults.inputs">
+            <li>{{ input }}</li>
+        </ul>
+    </section>
+
+    <section class="output-section row">
+        <h2>OUTPUTS</h2>
+        <h4>Default outputs from the selected model </h4>
+        <ul ng-repeat="output in defaults.outputs">
+            <li>{{ output}}</li>
+        </ul>
+    </section>
+    <section class="parameter-section row">
+        <h2> PARAMETERS </h2>
+        <h4> All default parameter values</h4>
+        <div class="col-sm-8">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="(key,val) in defaults.parameters">
+                        <td class="col-sm-7">{{key}}</td>
+                        <td class="col-sm-5">{{val}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </div>
-<br/>

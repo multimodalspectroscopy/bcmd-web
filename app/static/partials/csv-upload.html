@@ -13,7 +13,7 @@
 
 <hr>
 <div class="row">
-    <div class="content">
+    <div class="content col-xs-8">
         <h4>Inputs:</h4>
         <div class="form-group">
             <ul>
@@ -21,46 +21,75 @@
                     <input type="checkbox" name="group-check" value="{{input}}" ng-model="data.inputHeader[input]" ng-click="updateLength()" ng-checked="data.inputHeader[input]"> {{input}}
                 </li>
             </ul>
-            <button ng-click="setInputs()" class="btn btn-primary">Submit Inputs</button>
-            <div ng-if="inputSaved">
-                <h4>Input Saved! </h4>
+            <button type="button" ng-click="setInputs()" class="btn btn-primary">Set Inputs</button>
+            <div ng-model="inputSaved">
+                <h4>{{inputSaved}}</h4>
             </div>
         </div>
     </div>
-    <br>
-    <div ng-if="inputsLength != 0">
-        {{data.inputHeader}} {{data.inputs}}
-        <line-graph data="data.inputs"></line-graph>
+</div>
+<div class="row">
+    <div ng-if="inputsLength != 0" class="col-xs-8">
+        <h4> Preview Data </h4>
+        <form name="">
+            <label for="xSelect"> x-axis: </label>
+            <select name="xSelect" id="inXSelect" ng-model="inplotx">
+            <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
+    </select>
+            <label for="ySelect"> y-axis: </label>
+            <select name="ySelect" id="inYSelect" ng-model="inploty">
+            <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
+    </select>
+        </form>
+        <br>
+        <line-graph data="{{data.inputs}}" select-x="{{inplotx}}" select-y="{{inploty}}"></line-graph>
     </div>
 </div>
 <hr>
-<div class="content">
-    <h4>Outputs:</h4>
-    <div class="form-group">
-        <ul>
-            <li ng-repeat="output in fileContent.header">
-                <input type="checkbox" name="group-check" value="{{output}}" ng-model="data.outputHeader[output]" ng-click="updateLength()" ng-checked="data.outputHeader[output]"> {{output}}
-            </li>
-        </ul>
-        <button ng-click="setOutputs()" class="btn btn-primary">Set Outputs </button>
-        <div ng-if="outputSaved">
-            <h4>Output Saved! </h4>
+<div class="row">
+    <div class="content col-xs-8">
+        <h4>Outputs:</h4>
+        <div class="form-group">
+            <ul>
+                <li ng-repeat="output in fileContent.header">
+                    <input type="checkbox" name="group-check" value="{{output}}" ng-model="data.outputHeader[output]" ng-click="updateLength()" ng-checked="data.outputHeader[output]"> {{output}}
+                </li>
+            </ul>
+            <button type="button" ng-click="setOutputs()" class="btn btn-primary">Set Outputs </button>
+            <div ng-model="outputSaved">
+                <h4>{{outputSaved}}</h4>
+            </div>
         </div>
-    </div>
-    <br>
-    <div ng-if="outputsLength != 0">
-        {{data.outputHeader}} {{data.outputs}}
+        <br>
     </div>
 </div>
-<hr> {{parseResult}}
+<br>
+<div class="row">
+    <div ng-if="outputsLength != 0" class="col-xs-8">
+        <h4> Preview Data </h4>
+        <form name="">
+            <label for="xSelect"> x-axis: </label>
+            <select name="xSelect" id="outXSelect" ng-model="outplotx">
+            <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
+    </select>
+            <label for="ySelect"> y-axis: </label>
+            <select name="ySelect" id="outYSelect" ng-model="outploty">
+            <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
+    </select>
+        </form>
+        <br>
+        <line-graph data="{{data.outputs}}" select-x="{{outplotx}}" select-y="{{outploty}}"></line-graph>
+    </div>
+</div>
 
-<footer>
+{{data}}
+<footer class="container">
     <div class="row">
         <div class="col-md-6">
             <ul class="pager">
-                <li><a href="#!demand-creation" ng-click="saveState()"> Next </a></li>
+                <li><a href="#!choose-model" ng-click="saveState()"> Previous </a></li>
+                <li><a href="#!time-creation" ng-click="saveState()"> Next </a></li>
             </ul>
         </div>
     </div>
 </footer>
-</div>
