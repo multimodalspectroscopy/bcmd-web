@@ -9,9 +9,12 @@ class Config(object):
     SECRET_KEY = os.environ['SECRET_KEY']
     MONGO_URI = os.environ['MONGODB_URI']
     MONGO_DBNAME = MONGO_URI.split('/')[-1]
-    BASIC_AUTH_USERNAME = os.environ['ADMIN_USER']
-    BASIC_AUTH_PASSWORD = os.environ['ADMIN_PASS']
-
+    try:
+        BASIC_AUTH_USERNAME = os.environ['ADMIN_USER']
+        BASIC_AUTH_PASSWORD = os.environ['ADMIN_PASS']
+    except KeyError:
+        BASIC_AUTH_USERNAME = "LOCAL_USER"
+        BASIC_AUTH_PASSWORD = "LOCAL_PASSWORD"
 
 class ProductionConfig(Config):
     DEBUG = False
@@ -33,5 +36,3 @@ class TestingConfig(Config):
 
 class DockerConfig(StagingConfig):
     HOST = '0.0.0.0'
-    BASIC_AUTH_USERNAME = "LOCAL_USER"
-    BASIC_AUTH_PASSWORD = "LOCAL_PASSWORD"
