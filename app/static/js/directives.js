@@ -104,6 +104,7 @@ myApp.directive('lineGraph', [function() {
                 }
                 return scope.render(keys);
             }, true);
+
             scope.$watch('selectY', function(newVal, oldVal) {
                 keys.y = newVal;
                 for (var x in keys) {
@@ -121,7 +122,6 @@ myApp.directive('lineGraph', [function() {
             scope.render = function(keys) {
                 // remove all previous items before render
                 svg.selectAll('*').remove();
-                console.log(svg);
 
                 // If we don't pass any data, return out of the element
                 if (!keys || !data) return;
