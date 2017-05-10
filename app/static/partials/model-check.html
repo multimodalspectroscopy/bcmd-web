@@ -129,7 +129,7 @@
                                     <th>Default</th>
                                     <th>Include</th>
                                     <th>Data</th>
-                                    <th>Zero</th>
+                                    <!--<th>Zero</th> Removed until zero functionality added -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -143,9 +143,11 @@
                             <option ng-repeat="(key,val) in data.outputs" ng-value="val" required>{{key}}</option>
                         </select>
                                     </td>
+                                    <!--
                                     <td class="col-sm-2">
                                         <input type="checkbox" ng-checked="false" ng-model="finalChoice.outputs[key].zero">
                                     </td>
+                                    Removed until zero functionality added -->
                                 </tr>
                             </tbody>
                         </table>
