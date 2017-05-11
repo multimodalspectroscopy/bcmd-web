@@ -5,6 +5,7 @@ from flask_restful import Api
 from flask_basicauth import BasicAuth
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
+print(app.config)
 # print("Environment is {}".format(os.environ['APP_SETTINGS']))
 
 mongo = PyMongo(app)
