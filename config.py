@@ -11,7 +11,7 @@ class Config(object):
         MONGO_URI = os.environ['MONGODB_URI']
         MONGO_DBNAME = MONGO_URI.split('/')[-1]
     except KeyError:
-        MONGO_URI = 'mongodb://db:27017'
+        MONGO_URI = 'mongodb://db:27017/bcmd-web'
         MONGO_DBNAME = 'bcmd-web'
 
     try:
