@@ -6,9 +6,14 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = os.environ['SECRET_KEY']
-    MONGO_URI = os.environ['MONGODB_URI']
-    MONGO_DBNAME = MONGO_URI.split('/')[-1]
+    try:
+        SECRET_KEY = os.environ['SECRET_KEY']
+        MONGO_URI = os.environ['MONGODB_URI']
+        MONGO_DBNAME = MONGO_URI.split('/')[-1]
+    except KeyError:
+        MONGO_URI = 'mongodb://db:27017'
+        MONGO_DBNAME = 'bcmd-web'
+
     try:
         BASIC_AUTH_USERNAME = os.environ['ADMIN_USER']
         BASIC_AUTH_PASSWORD = os.environ['ADMIN_PASS']
