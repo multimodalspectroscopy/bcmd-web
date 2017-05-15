@@ -16,18 +16,15 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
         // define functions
         $scope.submit = function() {
             var name = $scope.data.choice.model;
-            console.log("Name is " + name);
             $http.get('/api/modelinfo', {
                 "params": {
                     "model_name": name
                 }
             }).then(function(response) {
-                console.log(response);
                 $scope.defaults.inputs = response.data.input;
                 $scope.defaults.outputs = response.data.output;
                 $scope.defaults.parameters = response.data.params;
                 $scope.modelSelected = true;
-                console.log($scope.defaults);
             }).catch(function(data) {
                 console.log(data);
             });
@@ -53,7 +50,6 @@ adminApp.controller('ModelUploadController', ['$scope', '$http',
         // define functions
         $scope.submit = function() {
             var name = $scope.data.choice.model;
-            console.log("Name is " + name);
             $http({
                 method: 'POST',
                 url: '/api/modelinfo',
@@ -61,10 +57,8 @@ adminApp.controller('ModelUploadController', ['$scope', '$http',
                     "model_name": name
                 }
             }).then(function(response) {
-                console.log(response);
                 if (response.status == 250) {
                     $scope.modelExists = true;
-                    console.log($scope.modelExists);
                 }
                 $http.get('/api/modelinfo', {
                     "params": {
@@ -75,7 +69,6 @@ adminApp.controller('ModelUploadController', ['$scope', '$http',
                     $scope.defaults.outputs = response.data.output;
                     $scope.defaults.parameters = response.data.params;
                     $scope.modelUploaded = true;
-                    console.log($scope.defaults);
                 }).catch(function(data) {
                     console.log("Error getting model information: ");
                     console.log(data);
@@ -101,7 +94,6 @@ adminApp.controller('CompileModelController', ['$scope', '$http', function($scop
     // define functions
     $scope.submit = function() {
         var name = $scope.data.choice.model;
-        console.log("Name is " + name);
         $http({
             method: 'GET',
             url: '/api/compilemodel',
@@ -112,7 +104,6 @@ adminApp.controller('CompileModelController', ['$scope', '$http', function($scop
             var stdout = response.data.stdout;
             $scope.modelCompiled = true;
             $scope.result = stdout.substr(2, stdout.length - 5);
-            console.log($scope.result);
         }).catch(function(data) {
             console.log("Error compiling model: ");
             console.log(data);
@@ -141,7 +132,6 @@ myApp.controller('ChooseModelController', ['$scope', '$http', 'RunModelData',
 
         $scope.chooseModel = function() {
             var name = $scope.data.choice.model;
-            console.log("Name is " + name);
             RunModelData.clearData();
             RunModelData.setModel(name);
         };
@@ -171,9 +161,7 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
             $scope.data.inputs = {};
             $scope.data.outputHeader = {};
             $scope.data.outputs = {};
-            console.log("Getting data after file change");
             $scope.getState();
-            console.log($scope.data);
         });
 
         $scope.$watchCollection("data", function(newData, oldData) {
@@ -217,8 +205,6 @@ myApp.controller('CsvFileController', ['$scope', '$http', '$parse', '$window', '
         // Start of running code.
         // Get inputs and outputs from checkboxes. Get lengths of each for logic checks
         $scope.getState();
-        console.log($scope.data);
-        // plotCSV($scope.data.inputs);
 
 
     }
@@ -240,19 +226,15 @@ myApp.controller('TimeCreationController', ['$scope', '$http', '$parse', 'RunMod
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
             $scope.timeNeeded = !$scope.data.inputs.hasOwnProperty('t');
-            console.log($scope.data);
         };
 
         $scope.saveState = function() {
-            console.log("SAVING STATE");
-            console.log($scope.data);
             RunModelData.setKey($scope.data.inputs, "inputs");
             RunModelData.setKey($scope.data.inputHeader, "inputHeader");
         };
 
         $scope.generateTime = function() {
             $scope.timeSignal = _.range($scope.time.startTime, Number($scope.time.endTime) + $scope.time.sampleRate, $scope.time.sampleRate);
-            console.log($scope.timeSignal);
             $scope.timeSignalSample = $scope.timeSignal.slice(0, 10);
             $scope.data.inputs['t'] = $scope.timeSignal;
             $scope.data.inputHeader['t'] = true;
@@ -292,14 +274,10 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
             if ($scope.data.hasOwnProperty('inputs')) {
                 $scope.demandNeeded = !$scope.data.inputs.hasOwnProperty('u');
             }
-            console.log("REPEAT? " + $scope.demandNeeded)
-            console.log($scope.data);
             $scope.demand.endTime = $scope.data.inputs.t[$scope.data.inputs.t.length - 1];
             $scope.demand.sampleRate = $scope.data.inputs.t[1] - $scope.data.inputs.t[0];
         };
         $scope.saveState = function() {
-            console.log("SAVING STATE");
-            console.log($scope.data);
             RunModelData.setKey($scope.data.inputs, "inputs");
             RunModelData.setKey($scope.data.outputs, "outputs");
             RunModelData.setKey($scope.data.inputHeader, "inputHeader");
@@ -320,20 +298,18 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
         };
 
         $scope.getDemandTrace = function() {
-            console.log($scope.demand);
             $http.get('/api/demandcreation', {
                     "params": {
                         "demand_dict": $scope.demand
                     }
                 }).then(function(response) {
-                    console.log(response);
                     $scope.demandSignal.demand = response.data.demand_signal;
                     for (var i = $scope.demand.startTime; i <= $scope.demand.endTime; i += $scope.demand.sampleRate) {
                         $scope.demandSignal.time.push(i);
                     }
-                    console.log($scope.demandSignal);
                 })
                 .catch(function(data) {
+                    console.log("Error getting trace");
                     console.log(data);
                     $scope.response = data;
                 });
@@ -357,7 +333,6 @@ myApp.controller('ParameterController', ['$scope', '$http', '$parse', 'RunModelD
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
             $scope.parameters = $scope.data.parameters;
-            console.log($scope.data);
         };
 
         $scope.getDefaultParameters = function() {
@@ -367,7 +342,6 @@ myApp.controller('ParameterController', ['$scope', '$http', '$parse', 'RunModelD
                 }
             }).then(function(response) {
                 $scope.defaultParameters = response.data.params;
-                console.log($scope.defaultParameters);
             }).catch(function(data) {
                 console.log(data);
                 $scope.error = data;
@@ -405,12 +379,10 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
             $scope.data = RunModelData.getState();
             $scope.finalChoice.modelName = $scope.data.modelName;
             $scope.finalChoice.params = $scope.data.parameters;
-            console.log($scope.data);
+
         };
 
         $scope.saveState = function() {
-            console.log("SAVING STATE");
-            console.log($scope.data);
             RunModelData.setKey($scope.data.inputs, "inputs");
             RunModelData.setKey($scope.data.outputs, "outputs");
             RunModelData.setKey($scope.data.inputHeader, "inputHeader");
@@ -419,7 +391,6 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
 
         $scope.getDefaults = function() {
             var name = $scope.data.modelName;
-            console.log("Name is " + name);
             $http.get('/api/modelinfo', {
                 "params": {
                     "model_name": name
@@ -428,8 +399,6 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
                 $scope.defaults.inputs = response.data.input;
                 $scope.defaults.outputs = response.data.output;
                 $scope.defaults.parameters = response.data.params;
-                console.log("DEFAULTS");
-                console.log($scope.defaults);
             }).catch(function(data) {
                 console.log("Error in getting defaults: ");
                 console.log(data);
@@ -444,7 +413,6 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
                 var modelurl = '/api/runmodel';
             }
             var runData = $scope.finalChoice;
-            console.log("Name is " + runData.modelName);
 
             $http.get(modelurl, {
                 "params": runData
@@ -481,7 +449,6 @@ myApp.controller("ModelDisplayController", ['$scope', '$http', '$parse', '$windo
                 csv = 'data:text/csv;charset=utf-8,' + csv;
             }
             var data = encodeURI(csv);
-            console.log(data);
 
             link = document.createElement('a');
             link.setAttribute('href', data);

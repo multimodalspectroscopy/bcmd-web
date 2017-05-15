@@ -2,7 +2,7 @@
     <h2> Time Creation </h2>
     <h4> If you haven't specified a time course already, and one is needed, you can use the creator below to create a linearly spaced set of time points. <br> If you need anything mroe complex, we recommend generating this and uploading it with your inputs.</h4>
 </header>
-{{data}}
+
 <div>
     <h4> Inputs: </h4>
     <span data-ng-repeat="(key, value) in data.inputs">
@@ -15,7 +15,7 @@
 {{key}}
 </span>
 </div>
-
+<hr>
 <label for="timeNeeded">Time required?</label>
 <input type="checkbox" ng-model="timeNeeded" id="timeNeeded" required/>
 

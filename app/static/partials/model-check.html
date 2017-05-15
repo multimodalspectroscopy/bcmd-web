@@ -5,7 +5,7 @@
     <h2> Model: {{finalChoice.modelName}}</h2>
 </header>
 
-<div ng-cloak>
+<div ng-cloak layout-fill>
 
     <md-tabs md-dynamic-height md-stretch-tabs="always" md-border-bottom md-no-pagination="true" md-selected="0">
         <md-tab label="default">
@@ -141,6 +141,7 @@
                                     <td class="col-sm-4">
                                         <select name="outputSelect" id="outputSelect" ng-model="finalChoice.outputs[key].data">
                             <option ng-repeat="(key,val) in data.outputs" ng-value="val" required>{{key}}</option>
+                            <option value=""></option>
                         </select>
                                     </td>
                                     <!--
@@ -199,8 +200,6 @@
                         <input type="text" ng-model="finalChoice.burnIn" ng-pattern="/^[0-9]+(\.[0-9]{0,3})?$/">
                     </div>
                 </section>
-                {{finalChoice}}
-
                 <section>
                     <h2>Run Model </h2>
                     <button ng-click="runModel('initialised')">Run Model </button>

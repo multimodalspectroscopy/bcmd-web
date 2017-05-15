@@ -44,8 +44,6 @@ myApp.directive('peakSelect', function() {
         require: 'ngModel',
         templateUrl: '/static/partials/peak-select.html',
         link: function(scope, element, attrs){
-            console.log(scope.peakTypes);
-            console.log(scope.selectedPeak);
         }
     };
 });
@@ -185,7 +183,6 @@ myApp.directive('lineGraph', [function() {
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                     .call(yAxis);
 
-                console.log(svg);
             };
             //});
         }

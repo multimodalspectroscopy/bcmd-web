@@ -2,7 +2,6 @@
     <h2> Demand Creation </h2>
     <h4> If you haven't specified a demand function already, and one is needed, you can use the creator below to create specific demand steps at specified time points.</h4>
 </header>
-{{data}}
 <div>
     <h4> Inputs: </h4>
     <span data-ng-repeat="(key, value) in data.inputs">
@@ -15,7 +14,7 @@
 {{key}}
 </span>
 </div>
-
+<hr>
 <label for="demandNeeded">Demand required?</label>
 <input type="checkbox" ng-model="demandNeeded" id="demandNeeded"/>
 

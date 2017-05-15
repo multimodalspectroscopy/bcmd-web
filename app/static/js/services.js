@@ -18,8 +18,6 @@ myApp.factory('RunModelData', function() {
     var modelOutput = {};
 
     function getState() {
-        console.log("FROM SERVICE");
-        console.log(data);
         return Object.assign({}, data);
     }
 
@@ -28,7 +26,6 @@ myApp.factory('RunModelData', function() {
     }
 
     function setModelOutput(modelResponse){
-        console.log(modelResponse);
         modelOutput = modelResponse;
         modelOutput = modelResponse;
     }
