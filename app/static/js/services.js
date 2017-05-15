@@ -58,7 +58,6 @@ myApp.factory('RunModelData', function() {
     }
 
     function setKey(newVal, key) {
-        console.log("SETTING: " + key + " TO: " + JSON.stringify(newVal));
         if (data.hasOwnProperty(key)) {
             data[key] = newVal;
         }

@@ -96,7 +96,6 @@ myApp.directive('lineGraph', [function() {
                 keys.x = newVal;
                 for (var x in keys) {
                     if (keys[x] == "") {
-                        console.log(x + " not defined yet");
                         return;
                     }
                 }
@@ -107,7 +106,6 @@ myApp.directive('lineGraph', [function() {
                 keys.y = newVal;
                 for (var x in keys) {
                     if (keys[x] == "") {
-                        console.log(x + " not defined yet");
                         return;
                     }
                 }

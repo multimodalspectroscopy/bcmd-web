@@ -209,12 +209,13 @@
         </md-tab>
     </md-tabs>
 </div>
+{{loading}}
 <footer>
     <div class="row">
         <div class="col-md-6">
             <ul class="pager">
                 <li><a href="#!parameters" ng-click="saveState()"> Previous </a></li>
-                <li><a href="#!model-display" ng-click="saveState()" ng-disabled="loading"> Next </a></li>
+                <li ng-class="{disabled: loading}"><a ng-href="{{loading ? '' : '#!model-display'}}" ng-click="saveState()"> Next </a></li>
             </ul>
         </div>
     </div>
