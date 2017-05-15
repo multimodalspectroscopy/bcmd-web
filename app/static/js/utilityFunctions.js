@@ -17,7 +17,20 @@ function arrayToJSON(array){
   return tsObj;
 }
 
-
+// Create correct JSON to parse into CSV
+function jsonParseToCSV(json){
+    var keys = Object.keys(json);
+    var outArr = [];
+    for (var idx in _.range(json[keys[0]].length)){
+        var d = {};
+        for (var key of keys){
+          d[key] = json[key][idx];
+        }
+        outArr.push(d);
+    }
+    var csv = Papa.unparse(outArr);
+    return csv;
+}
 setObject = function(tsObject, headerObject) {
     var obj = {};
     for (var h in headerObject) {

@@ -37,82 +37,83 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
 ]);
 
 adminApp.controller('ModelUploadController', ['$scope', '$http',
-function($scope, $http) {
-
-    // Define variables
-    $scope.defaults = {
-        "inputs": {},
-        "outputs": {},
-        "parameters": {}
-    };
-
-    $scope.data = {
-        choice: null,
-        models: available_models.models
-    };
-    // define functions
-    $scope.submit = function() {
-        var name = $scope.data.choice.model;
-        console.log("Name is " + name);
-        $http({
-            method: 'POST',
-            url: '/api/modelinfo',
-            "params": {
-                "model_name": name
-            }
-        }).then(function(response){
-            console.log(response);
-            if (response.status == 250){
-                $scope.modelExists = true;
-                console.log($scope.modelExists);
-            }
-            $http.get('/api/modelinfo', {
-                "params": {
-                    "model_name": name
-                }
-            }).then(function(response) {
-                $scope.defaults.inputs = response.data.input;
-                $scope.defaults.outputs = response.data.output;
-                $scope.defaults.parameters = response.data.params;
-                $scope.modelUploaded = true;
-                console.log($scope.defaults);
-            }).catch(function(data) {
-                console.log("Error getting model information: ");
-                console.log(data);
-            })
-        }).catch(function(data) {
-        console.log("Error uploading model information: ");
-        console.log(data);
-    });
-
-};
-
-}]);
-
-adminApp.controller('CompileModelController', ['$scope', '$http', function($scope, $http){
+    function($scope, $http) {
 
         // Define variables
-        $scope.result="";
+        $scope.defaults = {
+            "inputs": {},
+            "outputs": {},
+            "parameters": {}
+        };
+
         $scope.data = {
             choice: null,
-            models: available_defs.models
+            models: available_models.models
         };
         // define functions
         $scope.submit = function() {
             var name = $scope.data.choice.model;
             console.log("Name is " + name);
             $http({
-                method: 'GET',
-                url: '/api/compilemodel',
+                method: 'POST',
+                url: '/api/modelinfo',
                 "params": {
                     "model_name": name
                 }
-            }).then(function(response){
-                var stdout = response.data.stdout;
-                $scope.modelCompiled=true;
-                $scope.result=stdout.substr(2,stdout.length-5);
-                console.log($scope.result);
+            }).then(function(response) {
+                console.log(response);
+                if (response.status == 250) {
+                    $scope.modelExists = true;
+                    console.log($scope.modelExists);
+                }
+                $http.get('/api/modelinfo', {
+                    "params": {
+                        "model_name": name
+                    }
+                }).then(function(response) {
+                    $scope.defaults.inputs = response.data.input;
+                    $scope.defaults.outputs = response.data.output;
+                    $scope.defaults.parameters = response.data.params;
+                    $scope.modelUploaded = true;
+                    console.log($scope.defaults);
+                }).catch(function(data) {
+                    console.log("Error getting model information: ");
+                    console.log(data);
+                })
             }).catch(function(data) {
+                console.log("Error uploading model information: ");
+                console.log(data);
+            });
+
+        };
+
+    }
+]);
+
+adminApp.controller('CompileModelController', ['$scope', '$http', function($scope, $http) {
+
+    // Define variables
+    $scope.result = "";
+    $scope.data = {
+        choice: null,
+        models: available_defs.models
+    };
+    // define functions
+    $scope.submit = function() {
+        var name = $scope.data.choice.model;
+        console.log("Name is " + name);
+        $http({
+            method: 'GET',
+            url: '/api/compilemodel',
+            "params": {
+                "model_name": name
+            }
+        }).then(function(response) {
+            var stdout = response.data.stdout;
+            $scope.modelCompiled = true;
+            $scope.result = stdout.substr(2, stdout.length - 5);
+            console.log($scope.result);
+        }).catch(function(data) {
             console.log("Error compiling model: ");
             console.log(data);
         });
@@ -470,8 +471,30 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
 
 myApp.controller("ModelDisplayController", ['$scope', '$http', '$parse', '$window', 'RunModelData',
     function($scope, $http, $parse, $window, RunModelData) {
+        $scope.downloadCSV = function(args) {
+            var filename, link;
+            var csv = args.csv;
+            if (csv === null) return;
+            filename = args.filename || 'export.csv';
+
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+            var data = encodeURI(csv);
+            console.log(data);
+
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        };
+
         $scope.modelOutput = RunModelData.getModelOutput();
-        console.log($scope.modelOutput);
+        //var keys = Object.keys($scope.modelOutput);
+        $scope.csvOut = jsonParseToCSV($scope.modelOutput);
         $scope.modelVariables = Object.keys($scope.modelOutput);
     }
 ]);

@@ -17,6 +17,7 @@
     <br>
     <line-graph data="{{modelOutput}}" select-x="{{inplotx}}" select-y="{{inploty}}"></line-graph>
 </div>
+<button ng-click="downloadCSV({ filename: 'model-data.csv', csv: csvOut });">Download Model Data</button>
 <footer>
     <div class="row">
         <div class="col-md-6">
