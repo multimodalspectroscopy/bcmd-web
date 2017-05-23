@@ -6,7 +6,8 @@ from flask_basicauth import BasicAuth
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 # print("Environment is {}".format(os.environ['APP_SETTINGS']))
-
+print("Current dir %s" % os.getcwd())
+print("CONTENTS:\t %s" % os.listdir())
 mongo = PyMongo(app)
 
 # Local module import
