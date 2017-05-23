@@ -66,8 +66,6 @@
     </div>
     <button type="submit" class="btn btn-primary"> Generate Demand </button>
 </form>
-{{demand}} <br>
-{{response}}
 </div>
 <div ng-if="demandSignal.demand">
 <line-graph data="{{demandSignal}}" select-x="time" select-y="demand"></line-graph>

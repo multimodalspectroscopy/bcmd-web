@@ -3,6 +3,7 @@ from flask_restful import reqparse
 from flask import jsonify, json
 
 import sys
+import os
 import traceback
 import numpy as np
 import subprocess
@@ -14,6 +15,46 @@ from app import app
 from app import mongo
 
 api = Api(app)
+
+
+class AvailableModels(Resource):
+
+    def get(self):
+        try:
+            guidir = os.path.abspath(os.path.dirname(
+                os.path.dirname(__file__)))
+            assert os.path.basename(
+                guidir) == 'app', "Incorrect base directory"
+            build_dir = os.path.abspath(os.path.join(os.path.dirname(guidir),
+                                                     'build'))
+            assert os.path.basename(
+                build_dir) == 'build', "Incorrect base directory"
+            model_choices = [{"id": idx, "model": os.path.splitext(file)[0]}
+                             for idx, file in enumerate(os.listdir(build_dir))
+                             if file.endswith('.model')]
+
+            return {"models": model_choices, "count": len(model_choices)}
+        except Exception as e:
+            return {"error": str(e)}
+
+
+class AvailableModelDefs(Resource):
+
+    def get(self):
+        try:
+            guidir = os.path.abspath(os.path.dirname(
+                os.path.dirname(__file__)))
+            examples_dir = os.path.abspath(os.path.join(os.path.dirname(guidir),
+                                                        'examples'))
+            assert os.path.basename(
+                examples_dir) == 'examples', "Incorrect directory"
+            model_choices = [{"id": idx, "model": os.path.splitext(file)[0]}
+                             for idx, file in enumerate(os.listdir(examples_dir))
+                             if file.endswith('.modeldef')]
+
+            return {"models": model_choices, "count": len(model_choices)}
+        except Exception as e:
+            return{"error": str(e)}
 
 
 class ModelInfo(Resource):

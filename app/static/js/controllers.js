@@ -11,7 +11,7 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
 
         $scope.data = {
             choice: null,
-            models: available_models.models
+            models: null
         };
         // define functions
         $scope.submit = function() {
@@ -30,6 +30,21 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
             });
 
         };
+
+        $scope.getModels = function() {
+            $http({
+                method: 'GET',
+                url: '/api/getmodels'
+            }).then(function(response) {
+                console.log(response)
+                $scope.data.models=response.data.models;
+            }).catch(function(data) {
+                console.log("Error getting modeldefs: ");
+                console.log(data);
+            });
+        };
+
+        $scope.getModels();
     }
 ]);
 
@@ -45,7 +60,20 @@ adminApp.controller('ModelUploadController', ['$scope', '$http',
 
         $scope.data = {
             choice: null,
-            models: available_models.models
+            models: null
+        };
+
+        $scope.getModels = function() {
+            $http({
+                method: 'GET',
+                url: '/api/getmodels'
+            }).then(function(response) {
+                console.log(response)
+                $scope.data.models=response.data.models;
+            }).catch(function(data) {
+                console.log("Error getting modeldefs: ");
+                console.log(data);
+            });
         };
         // define functions
         $scope.submit = function() {
@@ -80,6 +108,8 @@ adminApp.controller('ModelUploadController', ['$scope', '$http',
 
         };
 
+        $scope.getModels();
+
     }
 ]);
 
@@ -89,7 +119,19 @@ adminApp.controller('CompileModelController', ['$scope', '$http', function($scop
     $scope.result = "";
     $scope.data = {
         choice: null,
-        models: available_defs.models
+        models: null
+    };
+    $scope.getDefs = function() {
+        $http({
+            method: 'GET',
+            url: '/api/getmodeldefs'
+        }).then(function(response) {
+            console.log(response)
+            $scope.data.models=response.data.models;
+        }).catch(function(data) {
+            console.log("Error getting modeldefs: ");
+            console.log(data);
+        });
     };
     // define functions
     $scope.submit = function() {
@@ -109,6 +151,8 @@ adminApp.controller('CompileModelController', ['$scope', '$http', function($scop
             console.log(data);
         });
     };
+
+    $scope.getDefs();
 }]);
 
 adminApp.controller('AdminHomeController', ['$scope', '$http', function($scope, $http) {
@@ -125,7 +169,20 @@ myApp.controller('ChooseModelController', ['$scope', '$http', 'RunModelData',
 
         $scope.data = {
             choice: null,
-            models: available_models.models
+            models: null
+        };
+
+        $scope.getModels = function() {
+            $http({
+                method: 'GET',
+                url: '/api/getmodels'
+            }).then(function(response) {
+                console.log(response)
+                $scope.data.models=response.data.models;
+            }).catch(function(data) {
+                console.log("Error getting modeldefs: ");
+                console.log(data);
+            });
         };
 
         //Define functions
@@ -135,6 +192,8 @@ myApp.controller('ChooseModelController', ['$scope', '$http', 'RunModelData',
             RunModelData.clearData();
             RunModelData.setModel(name);
         };
+
+        $scope.getModels();
     }
 ]);
 
@@ -372,8 +431,8 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
 
         $scope.finalChoice = {};
 
-        // Set loading variable to false until request is sent
-        $scope.loading = true;
+        // Set finished variable to false until response is returned
+        $scope.finished = false;
         // Define functions
         $scope.getState = function() {
             $scope.data = RunModelData.getState();
@@ -425,7 +484,7 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
                 console.log(data);
             }).finally(function() {
                 // called no matter success or failure
-                $scope.loading = false;
+                $scope.finished = true;
             });
 
         };

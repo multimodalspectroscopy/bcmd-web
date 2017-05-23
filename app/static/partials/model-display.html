@@ -1,9 +1,9 @@
 <header>
-    Visualise Model Output
+    <h4>Visualise Model Output</h4>
 </header>
 
 
-<div class="row">
+<div class="row text-center">
     <form name="">
         <label for="xSelect"> x-axis: </label>
         <select name="xSelect" id="inXSelect" ng-model="inplotx">
@@ -17,10 +17,12 @@
     <br>
     <line-graph data="{{modelOutput}}" select-x="{{inplotx}}" select-y="{{inploty}}"></line-graph>
 </div>
-<button ng-click="downloadCSV({ filename: 'model-data.csv', csv: csvOut });">Download Model Data</button>
+<div class="col-md-offset-4 col-md-4 text-center">
+<button class="btn btn-default" ng-click="downloadCSV({ filename: 'model-data.csv', csv: csvOut });">Download Model Data</button>
+</div>
 <footer>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-offset-4 col-md-4">
             <ul class="pager">
                 <li><a href="#!model-check" ng-click="saveState()"> Previous </a></li>
             </ul>

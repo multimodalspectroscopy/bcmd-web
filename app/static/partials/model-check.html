@@ -52,7 +52,7 @@
                 <section>
                     <h2>Run Model </h2>
                     <button ng-click="runModel('default')">Run Model </button>
-                    <div class="spinner" ng-show="loading"></div>
+                    <div class="spinner" ng-show="finished === false"></div>
                 </section>
             </md-content>
         </md-tab>
@@ -203,19 +203,27 @@
                 <section>
                     <h2>Run Model </h2>
                     <button ng-click="runModel('initialised')">Run Model </button>
-                    <div class="spinner" ng-show="loading"></div>
+                    <div class="spinner" ng-show="finished === false"></div>
                 </section>
             </md-content>
         </md-tab>
     </md-tabs>
 </div>
-{{loading}}
+<div ng-switch="finished">
+  <div ng-switch-when="true" class="text-center">
+      <h4> Model Run Completed! </h4>
+  </div>
+  <div ng-switch-default class="text-center">
+      <h4> Model Run Not Yet Complete!</h4>
+  </div>
+</div>
+
 <footer>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-offset-4 col-md-4">
             <ul class="pager">
                 <li><a href="#!parameters" ng-click="saveState()"> Previous </a></li>
-                <li ng-class="{disabled: loading}"><a ng-href="{{loading ? '' : '#!model-display'}}" ng-click="saveState()"> Next </a></li>
+                <li ng-class="{disabled: loading===false}"><a ng-href="{{finished ? '#!model-display' : ''}}" ng-click="saveState()"> Next </a></li>
             </ul>
         </div>
     </div>

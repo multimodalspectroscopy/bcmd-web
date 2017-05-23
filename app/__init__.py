@@ -10,7 +10,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 mongo = PyMongo(app)
 
 # Local module import
-from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api, CompileModel
+from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api, CompileModel, AvailableModels, AvailableModelDefs
 
 # Get array of available models.
 
@@ -42,6 +42,8 @@ def get_defs():
 
 
 # Add API route for getting models.
+api.add_resource(AvailableModels, '/api/getmodels')
+api.add_resource(AvailableModelDefs, '/api/getmodeldefs')
 api.add_resource(ModelInfo, '/api/modelinfo')
 api.add_resource(DemandCreator, '/api/demandcreation')
 api.add_resource(RunModel, '/api/runmodel')
@@ -62,17 +64,9 @@ basic_auth = BasicAuth(app)
 @app.route('/admin')
 @basic_auth.required
 def admin():
-    available_models = get_choices()
-    print(str(available_models))
-
-    available_defs = get_defs()
-    print(str(available_defs))
-    return render_template('admin.html', available_models=available_models,
-                           available_defs=available_defs,)
+    return render_template('admin.html')
 
 
 @app.route('/')
 def index():
-    available_models = get_choices()
-    print(str(available_models))
-    return render_template("index.html", available_models=available_models)
+    return render_template("index.html")
