@@ -75,8 +75,7 @@ class InputCreator:
         """
 
         self.f_out.write('# File created using BayesCMD file creation\n')
-        self.f_out.write('@ %d\n' % (len(self.times) + 1))
-        self.f_out.write('>>> 0\n!0\n')
+
         # Create lists for initialised names and values
         init_names = []
         init_vals = []
@@ -89,13 +88,18 @@ class InputCreator:
             init_names.extend(self.inputs['names'])
             init_vals.extend(self.inputs['values'][0])
 
-        self.f_out.write(':%d ' % len(init_names) +
-                         ' '.join(init_names) +
-                         '\n')
         if burn_in > 0:
+            self.f_out.write('@ %d\n' % (len(self.times) + 1))
+            self.f_out.write('>>> 0\n!0\n')
+            self.f_out.write(':%d ' % len(init_names) +
+                            ' '.join(init_names) +
+                            '\n')
+
             self.f_out.write('= -%f -1 ' % (burn_in + 1) +
                              ' '.join(str(v) for v in init_vals) +
                              '\n')
+        else:
+            self.f_out.write('@ %d\n' % len(self.times))
         # Set post burn in outputs and values
         if len(self.outputs) == 0:
             self.f_out.write('>>> 1 t \n!!!\n')
