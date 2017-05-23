@@ -227,7 +227,7 @@ class RunModel(Resource):
                                              args['outputs'],
                                              args['burnIn'])
                 model.create_initialised_input()
-                print(model.input_file)
+                print(model.input_file, file=sys.stderr)
                 model.run_from_buffer()
                 output = model.output_parse()
                 print(str(output))
