@@ -1,4 +1,4 @@
-import os
+import os, sys
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
 from flask_restful import Api
@@ -41,5 +41,7 @@ def admin():
 @app.route('/')
 def index():
     print("Current dir %s" % os.getcwd(), file=sys.stderr)
+    curdir = str(os.path.abspath(__file__))
+    contents = str(os.listdir())
     print("CONTENTS:\t %s" % os.listdir(), file=sys.stderr)
-    return render_template("index.html")
+    return render_template("index.html", contents=contents, curdir=curdir)
