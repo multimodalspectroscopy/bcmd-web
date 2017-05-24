@@ -1,12 +1,13 @@
 from flask_restful import Api, Resource
 from flask_restful import reqparse
-from flask import jsonify, json
+from flask import jsonify, json, request
 
 import sys
 import os
 import traceback
 import numpy as np
 import subprocess
+from pprint import pprint
 
 from bayescmd.bcmdModel import signalGenerator, ModelBCMD
 import bayescmd.jsonParsing as jsonParsing
@@ -161,17 +162,12 @@ class RunModel(Resource):
     def request_handler(modelName, inputs, times, params, outputs, burn_in):
 
         if inputs is not None:
-            inputs = json.loads(inputs)
             parsed_inputs = {'names': inputs.keys()}
             parsed_inputs['values'] = np.transpose(list(inputs.values()))
         else:
             parsed_inputs = None
 
-        if params is not None:
-            params = json.loads(params)
-
         if outputs is not None:
-            outputs = json.loads(outputs)
             parsed_outputs = [k for k, v in outputs.items() if v['include']]
         else:
             parsed_outputs = None
@@ -198,39 +194,40 @@ class RunModel(Resource):
 
         return model
 
-    def get(self):
+    def post(self):
         try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('burnIn',
-                                help="Model burn in period")
-            parser.add_argument('inputs',
-                                help="Model inputs")
-            parser.add_argument('modelName',
-                                help="Name of model",
-                                required=True)
-            parser.add_argument('params',
-                                help="Non-default model parameters")
-            parser.add_argument('times',
-                                help="Time points for simulation",
-                                action='append',
-                                required=True)
-            parser.add_argument('outputs',
-                                help="Model outputs")
-            parser.add_argument('runData')
-            args = parser.parse_args()
+            json_data = request.get_json(force=True)
+
+            modelName = json_data['modelName']
+            times = json_data['times']
+
+            try:
+                inputs = json_data['inputs']
+            except KeyError:
+                inputs = None
+            try:
+                params = json_data['params']
+            except KeyError:
+                params = None
+            try:
+                outputs = json_data['outputs']
+            except KeyError:
+                outputs = None
+            try:
+                burn_in = json_data['burnIn']
+            except KeyError:
+                burn_in = None
 
             with app.app_context():
-                model = self.request_handler(args['modelName'],
-                                             args['inputs'],
-                                             args['times'],
-                                             args['params'],
-                                             args['outputs'],
-                                             args['burnIn'])
+                model = self.request_handler(modelName,
+                                             inputs,
+                                             times,
+                                             params,
+                                             outputs,
+                                             burn_in)
                 model.create_initialised_input()
-                print(model.input_file, file=sys.stderr)
                 model.run_from_buffer()
                 output = model.output_parse()
-                print(str(output))
 
                 return jsonify(output)
         except Exception as error:
@@ -257,24 +254,22 @@ class RunDefault(Resource):
 
         return model
 
-    def get(self):
+    def post(self):
         try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('inputs',
-                                help="Model inputs")
-            parser.add_argument('modelName',
-                                help="Name of model",
-                                required=True)
-            parser.add_argument('times',
-                                help="Time points for simulation",
-                                action='append',
-                                required=True)
-            args = parser.parse_args()
+
+            json_data = request.get_json(force=True)
+            modelName = json_data['modelName']
+            try:
+                inputs = json_data['inputs']
+            except KeyError:
+                inputs = None
+            times = json_data['times']
+
 
             with app.app_context():
-                model = self.request_handler(args['modelName'],
-                                             args['inputs'],
-                                             args['times'])
+                model = self.request_handler(modelName,
+                                             inputs,
+                                             times)
                 model.create_default_input()
                 model.run_from_buffer()
                 output = model.output_parse()

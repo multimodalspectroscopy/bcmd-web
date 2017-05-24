@@ -37,7 +37,7 @@ myApp.controller('DisplayModelsController', ['$scope', '$http',
                 url: '/api/getmodels'
             }).then(function(response) {
                 console.log(response)
-                $scope.data.models=response.data.models;
+                $scope.data.models = response.data.models;
             }).catch(function(data) {
                 console.log("Error getting modeldefs: ");
                 console.log(data);
@@ -69,7 +69,7 @@ adminApp.controller('ModelUploadController', ['$scope', '$http',
                 url: '/api/getmodels'
             }).then(function(response) {
                 console.log(response)
-                $scope.data.models=response.data.models;
+                $scope.data.models = response.data.models;
             }).catch(function(data) {
                 console.log("Error getting modeldefs: ");
                 console.log(data);
@@ -127,7 +127,7 @@ adminApp.controller('CompileModelController', ['$scope', '$http', function($scop
             url: '/api/getmodeldefs'
         }).then(function(response) {
             console.log(response)
-            $scope.data.models=response.data.models;
+            $scope.data.models = response.data.models;
         }).catch(function(data) {
             console.log("Error getting modeldefs: ");
             console.log(data);
@@ -178,7 +178,7 @@ myApp.controller('ChooseModelController', ['$scope', '$http', 'RunModelData',
                 url: '/api/getmodels'
             }).then(function(response) {
                 console.log(response)
-                $scope.data.models=response.data.models;
+                $scope.data.models = response.data.models;
             }).catch(function(data) {
                 console.log("Error getting modeldefs: ");
                 console.log(data);
@@ -473,8 +473,13 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
             }
             var runData = $scope.finalChoice;
 
-            $http.get(modelurl, {
-                "params": runData
+            $http({
+                method: 'POST',
+                data: runData,
+                url: modelurl,
+                headers: {
+                    'Content-Type': 'applications/json'
+                }
             }).then(function(response) {
                 console.log("Running Model");
                 console.log(response);
