@@ -6,40 +6,10 @@ from flask_basicauth import BasicAuth
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 # print("Environment is {}".format(os.environ['APP_SETTINGS']))
-print("Current dir %s" % os.getcwd())
-print("CONTENTS:\t %s" % os.listdir())
 mongo = PyMongo(app)
 
 # Local module import
 from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api, CompileModel, AvailableModels, AvailableModelDefs
-
-# Get array of available models.
-
-
-def get_choices():
-    guidir = os.path.abspath(os.path.dirname(__file__))
-    build_dir = os.path.abspath(os.path.join(os.path.dirname(guidir),
-                                             'build'))
-    assert os.path.basename(build_dir) == 'build', "Incorrect base directory"
-    model_choices = [{"id": idx, "model": os.path.splitext(file)[0]}
-                     for idx, file in enumerate(os.listdir(build_dir))
-                     if file.endswith('.model')]
-
-    return {"models": model_choices, "count": len(model_choices)}
-
-
-def get_defs():
-    guidir = os.path.abspath(os.path.dirname(__file__))
-    examples_dir = os.path.abspath(os.path.join(os.path.dirname(guidir),
-                                                'examples'))
-    assert os.path.basename(examples_dir) == 'examples', "Incorrect directory"
-    model_choices = [{"id": idx, "model": os.path.splitext(file)[0]}
-                     for idx, file in enumerate(os.listdir(examples_dir))
-                     if file.endswith('.modeldef')]
-
-    return {"models": model_choices, "count": len(model_choices)}
-
-
 
 
 # Add API route for getting models.
@@ -70,4 +40,6 @@ def admin():
 
 @app.route('/')
 def index():
+    print("Current dir %s" % os.getcwd(), file=sys.stderr)
+    print("CONTENTS:\t %s" % os.listdir(), file=sys.stderr)
     return render_template("index.html")
