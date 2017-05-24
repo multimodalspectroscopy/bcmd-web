@@ -241,7 +241,6 @@ class RunDefault(Resource):
     def request_handler(modelName, inputs, times):
 
         if inputs is not None:
-            inputs = json.loads(inputs)
             parsed_inputs = {'names': inputs.keys()}
             parsed_inputs['values'] = np.transpose(list(inputs.values()))
         else:
