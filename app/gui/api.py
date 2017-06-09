@@ -278,6 +278,74 @@ class RunDefault(Resource):
             traceback.print_exc()
             return {"error": str(error)}, 404
 
+class RunSteadyState(Resource):
+
+    @staticmethod
+    def steady_state_input(input, default, max_val, min_val):
+        """
+        Function to create a steady state signal for a specific input
+        :param input: Name of input variable to vary
+        :type input: str
+        :param default: Default value of input
+        :type default: float
+        :param max: Max value to step up to
+        :type max: float
+        :param min: Min value to step down to
+        :type min: float
+        :return: Output signal in form required for model run
+        :rtype: dict
+        """
+        steady_input = {'names': input}
+        if (min == default) or (min > default):
+            steady_input['values'] = np.concatenate((np.linspace(default, max_val, 50),
+                                                     np.linspace(max_val, default, 50)))
+        elif min < default:
+            steady_input['values']=np.concatenate(
+                            (np.linspace(default, max_val, 50),
+                            np.linspace(max_val, default, 50),
+                            np.linspace(default, min_val, 50),
+                            np.linspace(min_val, default, 50)))
+
+    @staticmethod
+    def request_handler(modelName, input, default, max_val, min_val, params={}):
+
+        inputs = self.steady_state_input(input, default, max_val, min_val)
+
+        if len(params.keys()) == 0:
+            params = None
+
+        model = ModelBCMD(modelName,
+                          inputs=inputs,
+                          times=[float(x) for x in np.arange(0,len(inputs['values'])+100, 100)],
+                          params=params,
+                          debug=False)
+
+        return model
+
+    def post(self):
+        try:
+
+            json_data = request.get_json(force=True)
+            modelName = json_data['modelName']
+            try:
+                inputs = json_data['inputs']
+            except KeyError:
+                inputs = None
+            times = json_data['times']
+
+
+            with app.app_context():
+                model = self.request_handler(modelName,
+                                             inputs,
+                                             times)
+                model.create_default_input()
+                model.run_from_buffer()
+                output = model.output_parse()
+                return jsonify(output)
+
+        except Exception as error:
+            traceback.print_exc()
+            return {"error": str(error)}, 404
 
 class CompileModel(Resource):
 
