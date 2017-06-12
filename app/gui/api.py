@@ -264,7 +264,6 @@ class RunDefault(Resource):
                 inputs = None
             times = json_data['times']
 
-
             with app.app_context():
                 model = self.request_handler(modelName,
                                              inputs,
@@ -278,45 +277,55 @@ class RunDefault(Resource):
             traceback.print_exc()
             return {"error": str(error)}, 404
 
+
 class RunSteadyState(Resource):
 
     @staticmethod
-    def steady_state_input(input, default, max_val, min_val):
-        """
-        Function to create a steady state signal for a specific input
-        :param input: Name of input variable to vary
-        :type input: str
-        :param default: Default value of input
-        :type default: float
-        :param max: Max value to step up to
-        :type max: float
-        :param min: Min value to step down to
-        :type min: float
-        :return: Output signal in form required for model run
-        :rtype: dict
-        """
-        steady_input = {'names': input}
-        if (min == default) or (min > default):
-            steady_input['values'] = np.concatenate((np.linspace(default, max_val, 50),
-                                                     np.linspace(max_val, default, 50)))
-        elif min < default:
-            steady_input['values']=np.concatenate(
-                            (np.linspace(default, max_val, 50),
-                            np.linspace(max_val, default, 50),
-                            np.linspace(default, min_val, 50),
-                            np.linspace(min_val, default, 50)))
+    def request_handler(modelName, inputs, outputs, max_val, min_val,
+                        params={}, direction='up'):
 
-    @staticmethod
-    def request_handler(modelName, input, default, max_val, min_val, params={}):
+        def _reorder(_min, _max):
+            """
+            Ensures correct ordering of min_val and max_val
+            """
+            if _max<_min:
+                return (_max, _min)
+            else:
+                return (_min, _max)
 
-        inputs = self.steady_state_input(input, default, max_val, min_val)
+        min_val, max_val = _reorder(min_val, max_val)
 
+        dirs = ['up', 'down', 'both']
+        if direction not in dirs:
+            raise ValueError("Invalid direction. Expected one of: %s" % dirs)
+
+        steady_input = {'names': [inputs]}
+
+        steps = np.linspace(min_val, max_val, 50)
+        print(steps)
+
+        if direction == 'up':
+            steady_input['values'] = steps.reshape(len(steps), 1)
+
+        elif direction == 'down':
+            steady_input['values'] = steps[::-1].reshape(len(steps), 1)
+
+        elif direction == 'both':
+            x = np.concatenate((steps, steps[-2::-1]))
+            steady_input['values'] = x.reshape(len(x), 1)
+
+        else:
+            steady_input['values'] = np.array([default] * 50).reshape(50, 1)
+
+        steady_input['values'] = steady_input['values'].tolist()
         if len(params.keys()) == 0:
             params = None
 
         model = ModelBCMD(modelName,
-                          inputs=inputs,
-                          times=[float(x) for x in np.arange(0,len(inputs['values'])+100, 100)],
+                          inputs=steady_input,
+                          outputs=outputs,
+                          times=np.arange((len(steady_input['values'])) * 100,
+                                          step=100),
                           params=params,
                           debug=False)
 
@@ -324,28 +333,34 @@ class RunSteadyState(Resource):
 
     def post(self):
         try:
-
             json_data = request.get_json(force=True)
-            modelName = json_data['modelName']
-            try:
-                inputs = json_data['inputs']
-            except KeyError:
-                inputs = None
-            times = json_data['times']
 
+            modelName = json_data['modelName']
+            params = json_data['params']
+            max_val = json_data['max']
+            min_val = json_data['min']
+            direction = json_data['direction']
+            inputs = json_data['inputs']
+            outputs = json_data['outputs']
 
             with app.app_context():
                 model = self.request_handler(modelName,
                                              inputs,
-                                             times)
-                model.create_default_input()
+                                             outputs,
+                                             max_val,
+                                             min_val,
+                                             params,
+                                             direction)
+                model.create_initialised_input()
                 model.run_from_buffer()
                 output = model.output_parse()
+                #pprint(output)
                 return jsonify(output)
 
         except Exception as error:
             traceback.print_exc()
             return {"error": str(error)}, 404
+
 
 class CompileModel(Resource):
 

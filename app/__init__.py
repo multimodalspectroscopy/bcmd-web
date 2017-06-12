@@ -9,7 +9,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 mongo = PyMongo(app)
 
 # Local module import
-from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api, CompileModel, AvailableModels, AvailableModelDefs
+from app.gui.api import ModelInfo, DemandCreator, RunModel, RunDefault, api, CompileModel, AvailableModels, AvailableModelDefs, RunSteadyState
 
 
 # Add API route for getting models.
@@ -20,6 +20,7 @@ api.add_resource(DemandCreator, '/api/demandcreation')
 api.add_resource(RunModel, '/api/runmodel')
 api.add_resource(RunDefault, '/api/rundefault')
 api.add_resource(CompileModel, '/api/compilemodel')
+api.add_resource(RunSteadyState, '/api/steadystate')
 # Sample HTTP error handling
 
 

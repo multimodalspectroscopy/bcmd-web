@@ -49,6 +49,23 @@ var myApp = angular.module('weBCMD', ['ngRoute', 'routeStyles', 'ngMaterial', 'n
                 controller: 'ModelDisplayController',
                 css:['/static/css/plot-style.css']
             })
+            .when('/steady-state', {
+                templateUrl: '/static/partials/steadystate-choose-model.html',
+                controller: 'ChooseModelController'
+            })
+            .when('/steadystate-parameters', {
+                templateUrl: '/static/partials/steadystate-parameters.html',
+                controller: 'ParameterController'
+            })
+            .when('/steadystate-model-check', {
+                templateUrl: '/static/partials/steadystate-model-check.html',
+                controller: 'SteadyStateController'
+            })
+            .when('/steadystate-model-display', {
+                templateUrl: '/static/partials/steadystate-model-display.html',
+                controller: 'SteadyStateDisplayController',
+                css:['/static/css/plot-style.css']
+            })
             .when('/about', {
                 templateUrl: '/static/partials/about.html',
             })

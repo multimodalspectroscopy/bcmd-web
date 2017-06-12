@@ -187,7 +187,7 @@ class ModelBCMD:
             f_out.seek(0)
 
         self.input_file = f_out.getvalue()
-
+        pprint.pprint(self.input_file)
         return self.input_file
 
     def run_from_file(self):

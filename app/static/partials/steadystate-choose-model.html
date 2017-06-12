@@ -1,0 +1,20 @@
+<header>
+    <h2> Choose Model </h2>
+    <h4> Choose a model from the available choices: </h4>
+</header>
+
+<form name="modelForm">
+    <label for="modelSelect"> Choose a model: </label>
+    <select name="modelSelect" id="modelSelect" ng-options="option.model for option in data.models" ng-model="data.choice" required></select>
+</form>
+<br/>
+
+<footer>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4">
+            <ul class="pager">
+                <li><a href="#!steadystate-parameters" ng-click="chooseModel()"> Next </a></li>
+            </ul>
+        </div>
+    </div>
+</footer>

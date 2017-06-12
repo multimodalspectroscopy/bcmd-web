@@ -27,11 +27,14 @@ myApp.factory('RunModelData', function() {
 
     function setModelOutput(modelResponse){
         modelOutput = modelResponse;
-        modelOutput = modelResponse;
     }
 
     function getModelOutput(){
         return Object.assign({}, modelOutput);
+    }
+
+    function setSteadyStateOutput(input, modelResponse){
+      modelOutput[input] = modelResponse;
     }
 
     function clearInput() {
@@ -85,6 +88,7 @@ myApp.factory('RunModelData', function() {
         setModel: setModel,
         setKey: setKey,
         setModelOutput: setModelOutput,
+        setSteadyStateOutput: setSteadyStateOutput,
         getModelOutput: getModelOutput,
         clearData: clearData,
         clearInput: clearInput,

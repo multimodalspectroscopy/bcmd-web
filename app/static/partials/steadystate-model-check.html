@@ -1,0 +1,92 @@
+<header>
+  <h2> Model Summary </h2>
+  <h4> Check your model information below before submitting to run.</h4>
+  <hr>
+  <h2> Model: {{data.modelName}}</h2>
+</header>
+<div ng-cloak>
+  <section class="parameter-section row">
+    <h2> PARAMETERS </h2>
+    <h4> Any non-default parameters as set on the previous page </h4>
+    <div class="col-sm-10">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="(key,val) in data.parameters">
+            <td class="col-sm-7">{{key}}</td>
+            <td class="col-sm-5">{{val}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <hr>
+  <section>
+    <h2> Model Variance </h2>
+    <h4> Select how much to vary each input value. </h4>
+    <div class="col-sm-10">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Min</th>
+            <th>Max</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-sm-6">Blood Pressure - P_a</td>
+            <td class="col-sm-3"><input ng-model="pa.min" type="number" ng-min="{{pa_min}}" ng-max="{{pa_max}}" ng-step="{{(pa_max-pa_min)/100}}" /></td>
+            <td class="col-sm-3"><input ng-model="pa.max" type="number" ng-min="{{pa_min}}" ng-max="{{pa_max}}" ng-step="{{(pa_max-pa_min)/100}}" /></td>
+          </tr>
+          <tr>
+            <td class="col-sm-6">Partial CO2 Pressure - Pa_CO2</td>
+            <td class="col-sm-3"><input ng-model="paco2.min" type="number" ng-min="{{paco2_min}}" ng-max="{{paco2_max}}" ng-step="{{(paco2_max-paco2_min)/100}}" /></td>
+            <td class="col-sm-3"><input ng-model="paco2.max" type="number" ng-min="{{paco2_min}}" ng-max="{{paco2_max}}" ng-step="{{(paco2_max-paco2_min)/100}}" /></td>
+          </tr>
+          <tr>
+            <td class="col-sm-6">Oxygen Saturation - SaO2sup</td>
+            <td class="col-sm-3"><input ng-model="sao2.min" type="number" ng-min="0" max="1.0" step="0.01" /></td>
+            <td class="col-sm-3"><input ng-model="sao2.max" type="number" min="0" ng-max="1.0" step="0.01" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br/>
+    <form>
+    <label><input type="radio" ng-model="direction" value="up" required>Up</label>
+    <label><input type="radio" ng-model="direction" value="down">Down</label>
+    <label><input type="radio" ng-model="direction" value="both">Both</label>
+  </form>
+  </section>
+  <hr>
+  <section>
+    <h2>Run Model </h2>
+    <button ng-click="submit()"> Run Model </button>
+    <div class="spinner" ng-show="finished === false"></div>
+  </section>
+</div>
+<div ng-switch="finished">
+  <div ng-switch-when="true" class="text-center">
+    <h4> Model Run Completed! </h4>
+  </div>
+  <div ng-switch-default class="text-center">
+    <h4> Model Run Not Yet Complete!</h4>
+  </div>
+</div>
+
+<footer>
+  <div class="row">
+    <div class="col-md-offset-4 col-md-4">
+      <ul class="pager">
+        <li><a href="#!steadystate-parameters" ng-click="saveState()"> Previous </a></li>
+        <li ng-class="{disabled: loading===false}"><a ng-href="{{finished ? '#!steadystate-model-display' : ''}}" ng-click="saveState()"> Next </a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
