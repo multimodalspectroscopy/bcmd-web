@@ -1,19 +1,25 @@
 .line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 2px;
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+
+#bsPath {
+    stroke-dasharray: 3;
+    stroke-width: 3px;
+    stroke: black;
 }
 
 .grid line {
-  stroke: lightgrey;
-  stroke-opacity: 0.7;
-  shape-rendering: crispEdges;
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
 }
 
 .grid path {
-  stroke-width: 0;
+    stroke-width: 0;
 }
 
 .chart {
-  background-color: white;
+    background-color: white;
 }

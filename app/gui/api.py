@@ -288,7 +288,7 @@ class RunSteadyState(Resource):
             """
             Ensures correct ordering of min_val and max_val
             """
-            if _max<_min:
+            if _max < _min:
                 return (_max, _min)
             else:
                 return (_min, _max)
