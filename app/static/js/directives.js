@@ -43,8 +43,7 @@ myApp.directive('peakSelect', function() {
         },
         require: 'ngModel',
         templateUrl: '/static/partials/peak-select.html',
-        link: function(scope, element, attrs){
-        }
+        link: function(scope, element, attrs) {}
     };
 });
 
@@ -194,7 +193,8 @@ myApp.directive('steadyStateLineGraph', [function() {
         scope: {
             data: "@",
             selectY: "@",
-            selectX: "@"
+            selectX: "@",
+            direction: "@"
         },
         link: function(scope, element, attrs) {
             //d3Service.d3().then(function(d3) {
@@ -212,6 +212,24 @@ myApp.directive('steadyStateLineGraph', [function() {
                     dArray[idx][x] = element;
                 });
             }
+
+            var bsArray = [];
+            var bsData = {};
+            $.get("static/data/json/brainsignals-" + scope.direction + "-autoreg.json", function(in_data) {
+                bsData = in_data[keys.x];
+            });
+            for (var i in bsData) {
+                bsData[i].forEach(function(element, idx) {
+                    if (typeof bsArray[idx] === "undefined") {
+                        bsArray[idx] = {};
+                    }
+                    bsArray[idx][i] = element;
+                });
+            }
+            console.log(bsData);
+            console.log("BSARRAY");
+            console.log(bsArray);
+
             // set the style of the the element to have a width of 100%
             var svg = d3.select(element[0])
                 .append('svg')
@@ -248,6 +266,12 @@ myApp.directive('steadyStateLineGraph', [function() {
                 }
                 return scope.render(keys);
             }, true);
+
+            var input_enc = {
+                sao2: 'SaO2sup',
+                pa: "P_a",
+                paco2: "Pa_CO2"
+            };
 
             // Custom d3 code
             scope.render = function(keys) {
@@ -286,7 +310,7 @@ myApp.directive('steadyStateLineGraph', [function() {
                 // Define the line
                 var valueline = d3.line()
                     .x(function(d) {
-                        return x(d[keys.x]);
+                        return x(d[input_enc[keys.x]]);
                     })
                     .y(function(d) {
                         return y(d[keys.y]);
@@ -301,17 +325,28 @@ myApp.directive('steadyStateLineGraph', [function() {
                     .attr("d", valueline(dArray))
                     .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
+                // Add the BSline path.
+                svg.append("path")
+                    .data([bsData])
+                    .attr("class", "line")
+                    .attr("id", "bsPath")
+                    .style("stroke-dasharray", ("3, 3"))
+                    .style("color", "black")
+                    .attr("d", valueline(bsArray))
+                    .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
                 // Add the X Axis
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
+                    .text(input_enc[keys.x])
                     .call(xAxis);
 
                 // Add the Y Axis
                 svg.append("g")
                     .attr("class", "y axis")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                    .text("CBF")
                     .call(yAxis);
 
             };

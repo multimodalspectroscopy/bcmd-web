@@ -17,6 +17,8 @@ myApp.factory('RunModelData', function() {
 
     var modelOutput = {};
 
+    var dir;
+
     function getState() {
         return Object.assign({}, data);
     }
@@ -27,6 +29,14 @@ myApp.factory('RunModelData', function() {
 
     function setModelOutput(modelResponse){
         modelOutput = modelResponse;
+    }
+
+    function setDirection(direction){
+        dir = direction;
+    }
+
+    function getDirection(direction){
+        return dir;
     }
 
     function getModelOutput(){
@@ -93,6 +103,8 @@ myApp.factory('RunModelData', function() {
         clearData: clearData,
         clearInput: clearInput,
         clearOutput: clearOutput,
+        setDirection: setDirection,
+        getDirection: getDirection
     };
 });
 

@@ -5,11 +5,11 @@
 
 <div class="row text-center">
     <h3> Arterial Oxygen Saturation - SaO2sup </h3>
-    <steady-state-line-graph data="{{modelOutput.sao2}}" select-x="SaO2sup" select-y="CBF"></steady-state-line-graph>
+    <steady-state-line-graph data="{{modelOutput.sao2}}" select-x="sao2" select-y="CBF" direction="{{direction}}"></steady-state-line-graph>
     <h3> Blood Pressure - Pa </h3>
-    <steady-state-line-graph data="{{modelOutput.pa}}" select-x="P_a" select-y="CBF"></steady-state-line-graph>
+    <steady-state-line-graph data="{{modelOutput.pa}}" select-x="pa" select-y="CBF" direction="{{direction}}"></steady-state-line-graph>
     <h3> Partial Pressure of CO2 - PaCO2 </h3>
-    <steady-state-line-graph data="{{modelOutput.paco2}}" select-x="Pa_CO2" select-y="CBF"></steady-state-line-graph>
+    <steady-state-line-graph data="{{modelOutput.paco2}}" select-x="paco2" select-y="CBF" direction="{{direction}}"></steady-state-line-graph>
 </div>
 <footer>
     <div class="row">

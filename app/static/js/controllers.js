@@ -580,6 +580,7 @@ myApp.controller('SteadyStateController', ['$scope', '$http', '$parse', 'RunMode
         }
       }).then(function(response) {
         RunModelData.setSteadyStateOutput(input, response.data);
+        RunModelData.setDirection($scope.direction);
         var results = RunModelData.getModelOutput();
         console.log(results);
         if (Object.keys(results).length === 3){
@@ -609,6 +610,7 @@ myApp.controller("SteadyStateDisplayController", ['$scope', '$http', '$parse', '
 
 
     $scope.modelOutput = RunModelData.getModelOutput();
+    $scope.direction = RunModelData.getDirection();
     console.log($scope.modelOutput);
     var keys = Object.keys($scope.modelOutput);
     $scope.csvOut = jsonParseToCSV($scope.modelOutput);
