@@ -100,6 +100,14 @@ class InputCreator:
                              '\n')
         else:
             self.f_out.write('@ %d\n' % len(self.times))
+            self.f_out.write('>>> 0\n!0\n')
+            self.f_out.write(':%d ' % len(init_names) +
+                            ' '.join(init_names) +
+                            '\n')
+
+            self.f_out.write('= -2 -1 ' +
+                             ' '.join(str(v) for v in init_vals) +
+                             '\n')
         # Set post burn in outputs and values
         if len(self.outputs) == 0:
             self.f_out.write('>>> 1 t \n!!!\n')

@@ -376,7 +376,7 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
 
     $scope.confirmDemand = function() {
       $scope.data.inputs['u'] = $scope.demandSignal.demand;
-      $scope.inputHeader.push['u'];
+      $scope.data.inputHeader.push['u'];
     }
 
     $scope.getState();

@@ -71,7 +71,7 @@ def signalGenerator(start, end, peaks,
         'sinusoidal': sinusoidal
     }
     print("Number of time points: " + str((end - start) / sample_rate))
-    signal = np.ones(int((end - start) / sample_rate)) * default
+    signal = np.ones(int((end - start) / sample_rate) + 1) * default
 
     for idx, demand in enumerate(peaks):
         try:

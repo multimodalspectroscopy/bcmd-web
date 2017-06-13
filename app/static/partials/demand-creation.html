@@ -69,6 +69,7 @@
 </div>
 <div ng-if="demandSignal.demand">
 <line-graph data="{{demandSignal}}" select-x="time" select-y="demand"></line-graph>
+<button ng-click="confirmDemand()" class="btn btn-primary"> Confirm Demand </button>
 </div>
 <footer>
     <div class="row">
