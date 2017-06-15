@@ -111,9 +111,9 @@ class DemandCreator(Resource):
         # Convert from JSON string to dict using flask.json.loads
         request = json.loads(request)
         parsedReq = {}
-        parsedReq['start'] = request["startTime"]
-        parsedReq['end'] = request["endTime"]
-        parsedReq['sample_rate'] = request["sampleRate"]
+        parsedReq['start'] = float(request["startTime"])
+        parsedReq['end'] = float(request["endTime"])
+        parsedReq['sample_rate'] = float(request["sampleRate"])
         parsedReq['peaks'] = []
         for peak in request['peaks']:
             length = float(peak['end']) - float(peak['start'])
@@ -126,7 +126,7 @@ class DemandCreator(Resource):
             if 'nRepeats' in peak.keys():
                 while (i < int(peak['nRepeats']) and
                        parsedReq['peaks'][i - 1][1] +
-                       float(peak['interval']) < request["endTime"]):
+                       float(peak['interval']) < parsedReq["end"]):
                     newStart = parsedReq['peaks'][
                         i - 1][1] + float(peak['interval'])
                     newEnd = newStart + length

@@ -13,14 +13,21 @@
                 <section class="time-section row">
                     <h2> Time </h2>
                     <h4> Select time data </h4>
-                    <form>
-                        <div class="form-group">
-                            <label for="timeSelect">Time: </label>
-                            <select name="timeSelect" id="timeSelect" ng-model="finalChoice.times">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="col-sm-4">
+                                    <label for="timeSelect">Time: </label>
+                                    <select name="timeSelect" id="timeSelect" ng-model="finalChoice.times" ng-change="getLengths({'t': finalChoice.times})">
                 <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
             </select>
-                        </div>
-                    </form>
+                                </td>
+                                <td class="col-sm-4">
+                                    Length: {{lengths.t}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </section>
                 <hr>
                 <section class="input-section row">
@@ -32,17 +39,19 @@
                                 <tr>
                                     <th>Default</th>
                                     <th>Data</th>
+                                    <th>Length</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat=" key in defaults.inputs">
-                                    <td class="col-sm-6">{{key}}</td>
-                                    <td class="col-sm-6">
-                                        <select name="inputSelect" id="inputSelect" ng-model="finalChoice.inputs[key]">
+                                <tr ng-repeat="key in defaults.inputs">
+                                    <td class="col-sm-4">{{key}}</td>
+                                    <td class="col-sm-4">
+                                        <select name="inputSelect" id="inputSelect" ng-model="finalChoice.inputs[key]" ng-change="getLengths(finalChoice.inputs)">
                             <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
                             <option value=""></option>
                         </select>
                                     </td>
+                                    <td class="col-sm-4">{{lengths[key]}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -51,7 +60,7 @@
 
                 <section>
                     <h2>Run Model </h2>
-                    <button ng-click="runModel('default')">Run Model </button>
+                    <button ng-class="{disabled: sameLengths===false}" ng-click="runModel('default')">Run Model </button>
                     <div class="spinner" ng-show="finished === false"></div>
                 </section>
             </md-content>
@@ -61,14 +70,21 @@
                 <section class="time-section row">
                     <h2> Time </h2>
                     <h4> Select time data </h4>
-                    <form>
-                        <div class="form-group">
-                            <label for="timeSelect">Time: </label>
-                            <select name="timeSelect" id="timeSelect" ng-model="finalChoice.times">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="col-sm-4">
+                                    <label for="timeSelect">Time: </label>
+                                    <select name="timeSelect" id="timeSelect" ng-model="finalChoice.times" ng-change="getLengths({'t': finalChoice.times})">
                 <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
             </select>
-                        </div>
-                    </form>
+                                </td>
+                                <td class="col-sm-4">
+                                    Length: {{lengths.t}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </section>
                 <hr>
                 <section class="input-section row">
@@ -80,17 +96,19 @@
                                 <tr>
                                     <th>Default</th>
                                     <th>Data</th>
+                                    <th>Length</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat=" key in defaults.inputs">
-                                    <td class="col-sm-6">{{key}}</td>
-                                    <td class="col-sm-6">
-                                        <select name="inputSelect" id="inputSelect" ng-model="finalChoice.inputs[key]">
+                                <tr ng-repeat="key in defaults.inputs">
+                                    <td class="col-sm-4">{{key}}</td>
+                                    <td class="col-sm-4">
+                                        <select name="inputSelect" id="inputSelect" ng-model="finalChoice.inputs[key]" ng-change="getLengths(finalChoice.inputs)">
                             <option ng-repeat="(key,val) in data.inputs" ng-value="val" required>{{key}}</option>
                             <option value=""></option>
                         </select>
                                     </td>
+                                    <td class="col-sm-4">{{lengths[key]}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,21 +147,24 @@
                                     <th>Default</th>
                                     <th>Include</th>
                                     <th>Data</th>
+                                    <th>Length</th>
                                     <!--<th>Zero</th> Removed until zero functionality added -->
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat=" key in defaults.outputs">
+                                <tr ng-repeat="key in defaults.outputs">
                                     <td class="col-sm-4">{{key}}</td>
                                     <td class="col-sm-2">
                                         <input type="checkbox" ng-model="finalChoice.outputs[key].include" ng-init="finalChoice.outputs[key].include=true">
                                     </td>
-                                    <td class="col-sm-4">
-                                        <select name="outputSelect" id="outputSelect" ng-model="finalChoice.outputs[key].data">
+                                    <td class="col-sm-3">
+                                        <!-- TODO: get key to pass through to get Lengths correctly -->
+                                        <select name="outputSelect" id="outputSelect" ng-model="finalChoice.outputs[key].data" ng-change="getLengths({ {{key}} : finalChoice.outputs[key].data})">
                             <option ng-repeat="(key,val) in data.outputs" ng-value="val" required>{{key}}</option>
                             <option value=""></option>
                         </select>
                                     </td>
+                                    <td class="col-sm-2">{{lengths[key]}}</td>
                                     <!--
                                     <td class="col-sm-2">
                                         <input type="checkbox" ng-checked="false" ng-model="finalChoice.outputs[key].zero">
@@ -202,7 +223,7 @@
                 </section>
                 <section>
                     <h2>Run Model </h2>
-                    <button ng-click="runModel('initialised')">Run Model </button>
+                    <button ng-class="{disabled: sameLengths===false}"ng-click="runModel('initialised')">Run Model </button>
                     <div class="spinner" ng-show="finished === false"></div>
                 </section>
             </md-content>
@@ -210,12 +231,12 @@
     </md-tabs>
 </div>
 <div ng-switch="finished">
-  <div ng-switch-when="true" class="text-center">
-      <h4> Model Run Completed! </h4>
-  </div>
-  <div ng-switch-default class="text-center">
-      <h4> Model Run Not Yet Complete!</h4>
-  </div>
+    <div ng-switch-when="true" class="text-center">
+        <h4> Model Run Completed! </h4>
+    </div>
+    <div ng-switch-default class="text-center">
+        <h4> Model Run Not Yet Complete!</h4>
+    </div>
 </div>
 
 <footer>
