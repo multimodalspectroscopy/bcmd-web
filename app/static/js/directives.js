@@ -340,12 +340,10 @@ myApp.directive('steadyStateLineGraph', [function() {
                         .append('path')
                         .attr("class", "line")
                         .attr("d", function(d, i) {
-                            console.log(d.label);
-                            console.log(d.array);
                             return valueline(d.array);
                         })
                         .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")")
-                        .attr("id", function(d) {return d.label === 'BrainSignals' ? 'bsPath' : '' ;})
+                        .attr("id", function(d) {return d.label === 'Default BrainSignals' ? 'bsPath' : '' ;})
                         .attr('stroke', function(d, i) {
                             return color(d.label);
                         });

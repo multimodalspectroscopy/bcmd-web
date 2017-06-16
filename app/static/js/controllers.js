@@ -598,7 +598,6 @@ myApp.controller('SteadyStateController', ['$scope', '$http', '$parse', 'RunMode
                 RunModelData.setSteadyStateOutput(input, response.data);
                 RunModelData.setDirection($scope.direction);
                 var results = RunModelData.getModelOutput();
-                console.log(results);
                 if (Object.keys(results).length === 3) {
                     $scope.finished = true;
                 }

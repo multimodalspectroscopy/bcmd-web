@@ -7,6 +7,7 @@ import os
 import traceback
 import numpy as np
 import subprocess
+import itertools
 from pprint import pprint
 
 from bayescmd.bcmdModel import signalGenerator, ModelBCMD
@@ -301,8 +302,8 @@ class RunSteadyState(Resource):
 
         steady_input = {'names': [inputs]}
 
-        steps = np.linspace(min_val, max_val, 50)
-        print(steps)
+        steps = np.array(list(itertools.chain(
+            *[[x] * 100 for x in np.linspace(min_val, max_val, 50)])))
 
         if direction == 'up':
             steady_input['values'] = steps.reshape(len(steps), 1)
@@ -315,7 +316,7 @@ class RunSteadyState(Resource):
             steady_input['values'] = x.reshape(len(x), 1)
 
         else:
-            steady_input['values'] = np.array([default] * 50).reshape(50, 1)
+            steady_input['values'] = np.array([default] * len(steps)).reshape(len(steps), 1)
 
         steady_input['values'] = steady_input['values'].tolist()
         if len(params.keys()) == 0:
@@ -324,8 +325,7 @@ class RunSteadyState(Resource):
         model = ModelBCMD(modelName,
                           inputs=steady_input,
                           outputs=outputs,
-                          times=np.arange((len(steady_input['values'])) * 100,
-                                          step=100),
+                          times=np.arange((len(steady_input['values']))),
                           params=params,
                           debug=False)
 
@@ -354,8 +354,11 @@ class RunSteadyState(Resource):
                 model.create_initialised_input()
                 model.run_from_buffer()
                 output = model.output_parse()
-                #pprint(output)
-                return jsonify(output)
+                pprint(output)
+                parsed_output = {key: list(np.array(val)[99::100])
+                                 for (key, val) in output.items()}
+                # pprint(output)
+                return jsonify(parsed_output)
 
         except Exception as error:
             traceback.print_exc()
