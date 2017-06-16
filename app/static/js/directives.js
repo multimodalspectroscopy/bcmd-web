@@ -323,7 +323,7 @@ myApp.directive('steadyStateLineGraph', [function() {
                     var bsArray = objectConversion(bsData);
 
                     var dataset = [{
-                            "label": 'BrainSignals',
+                            "label": 'Default BrainSignals',
                             "data": bsData,
                             "array": bsArray
                         },
