@@ -202,16 +202,27 @@ myApp.directive('steadyStateLineGraph', [function() {
                 "x": scope.selectX,
                 "y": scope.selectY
             };
+            var legendRectSize = 18;
+            var legendSpacing = 4;
             var data = JSON.parse(scope.data);
-            var dArray = [];
-            for (var x in data) {
-                data[x].forEach(function(element, idx) {
-                    if (typeof dArray[idx] === "undefined") {
-                        dArray[idx] = {};
-                    }
-                    dArray[idx][x] = element;
-                });
-            }
+
+            // Set color range
+            var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            var objectConversion = function(d) {
+                var dArray = [];
+                for (var x in d) {
+                    d[x].forEach(function(element, idx) {
+                        if (typeof dArray[idx] === "undefined") {
+                            dArray[idx] = {};
+                        }
+                        dArray[idx][x] = element;
+                    });
+                }
+                return dArray;
+            };
+
+            var dArray = objectConversion(data);
 
 
             // set the style of the the element to have a width of 100%
@@ -272,10 +283,10 @@ myApp.directive('steadyStateLineGraph', [function() {
                         left: 75
                     },
                     width = 600 - margin.left - margin.right,
-                    height = 270 - margin.top - margin.bottom;
+                    mainHeight = 270 - margin.top - margin.bottom;
 
                 svg.attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("height", mainHeight + margin.top + margin.bottom)
                     .attr("class", "chart");
 
                 svg.append("g")
@@ -283,27 +294,24 @@ myApp.directive('steadyStateLineGraph', [function() {
                 // Add the BSline path.
                 $.get("static/data/json/brainsignals-" + scope.direction + "-autoreg.json", function(in_data) {
                     var bsData = in_data[keys.x];
-                    var bsArray = [];
+                    //var bsArray = [];
                     var x = d3.scaleLinear().range([0, width]);
-                    var y = d3.scaleLinear().range([height, 0]);
-                    console.log(data);
-                    console.log(bsData);
+                    var y = d3.scaleLinear().range([mainHeight, 0]);
+
                     x.domain([
                         d3.min([d3.min(data[input_enc[keys.x]]), d3.min(bsData[input_enc[keys.x]])]),
                         d3.max([d3.max(data[input_enc[keys.x]]), d3.max(bsData[input_enc[keys.x]])])
                     ]);
-                    console.log(d3.min([d3.min(data[keys.y]), d3.min(bsData[keys.y])]));
+
                     y.domain([
                         d3.min([d3.min(data[keys.y]), d3.min(bsData[keys.y])]),
                         d3.max([d3.max(data[keys.y]), d3.max(bsData[keys.y])]) * 1.025
                     ]);
                     // Define the axes
                     var xAxis = d3.axisBottom().scale(x).ticks(5);
-
                     var yAxis = d3.axisLeft().scale(y).ticks(5);
-                    // Add the valueline path.
+                    // Add the valueline function.
 
-                    // Define the line
                     var valueline = d3.line()
                         .x(function(d) {
                             return x(d[input_enc[keys.x]]);
@@ -312,18 +320,41 @@ myApp.directive('steadyStateLineGraph', [function() {
                             return y(d[keys.y]);
                         });
 
-                    console.log(dArray);
-                    svg.append("path")
-                        .data([data])
+                    var bsArray = objectConversion(bsData);
+
+                    var dataset = [{
+                            "label": 'BrainSignals',
+                            "data": bsData,
+                            "array": bsArray
+                        },
+                        {
+                            "label": 'Model Run',
+                            "data": data,
+                            "array": dArray
+                        }
+                    ];
+
+                    var path = svg.selectAll('path')
+                        .data(dataset, function(d){return d; })
+                        .enter()
+                        .append('path')
                         .attr("class", "line")
-                        .attr("id", "dataPath")
-                        .attr("d", valueline(dArray))
-                        .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
+                        .attr("d", function(d, i) {
+                            console.log(d.label);
+                            console.log(d.array);
+                            return valueline(d.array);
+                        })
+                        .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")")
+                        .attr("id", function(d) {return d.label === 'BrainSignals' ? 'bsPath' : '' ;})
+                        .attr('stroke', function(d, i) {
+                            return color(d.label);
+                        });
+
 
                     // Add the X Axis
                     svg.append("g")
                         .attr("class", "x axis")
-                        .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
+                        .attr("transform", "translate(" + margin.left + "," + (mainHeight + margin.top) + ")")
                         .call(xAxis)
                         .append("text")
                         .attr("x", 6)
@@ -337,32 +368,43 @@ myApp.directive('steadyStateLineGraph', [function() {
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                         .call(yAxis);
 
-                    for (var i in bsData) {
-                        bsData[i].forEach(function(element, idx) {
-                            if (typeof bsArray[idx] === "undefined") {
-                                bsArray[idx] = {};
-                            }
-                            bsArray[idx][i] = element;
-                        });
-                    }
-                    svg.append("path")
-                        .data([bsData])
-                        .attr("class", "line")
-                        .attr("id", "bsPath")
-                        .attr("d", valueline(bsArray))
-                        .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
-
                     // y-axis label
                     svg.append("text")
                         .attr("text-anchor", "middle") // this makes it easy to centre the text as the transform is applied to the anchor
-                        .attr("transform", "translate(" + (margin.left / 3) + "," + (height / 2) + ")rotate(-90)") // text is drawn off the screen top left, move down and out and rotate
+                        .attr("transform", "translate(" + (margin.left / 3) + "," + (mainHeight / 2) + ")rotate(-90)") // text is drawn off the screen top left, move down and out and rotate
                         .text("CBF");
 
                     // x-axis label
                     svg.append("text")
                         .attr("text-anchor", "middle") // this makes it easy to centre the text as the transform is applied to the anchor
-                        .attr("transform", "translate(" + (margin.left + width/2) + "," + (height + margin.top + margin.bottom / 1.5) + ")") // text is drawn off the screen top left, move down and out and rotate
+                        .attr("transform", "translate(" + (margin.left + width / 2) + "," + (mainHeight + margin.top + margin.bottom / 1.5) + ")") // text is drawn off the screen top left, move down and out and rotate
                         .text(input_enc[keys.x]);
+
+                    var legend = svg.selectAll('.legend') // NEW
+                        .data(color.domain()) // NEW
+                        .enter() // NEW
+                        .append('g') // NEW
+                        .attr('class', 'legend') // NEW
+                        .attr('transform', function(d, i) { // NEW
+                            var height = legendRectSize + legendSpacing; // NEW
+                            var offset = height * color.domain().length / 2; // NEW
+                            var horz =  width + margin.left // NEW
+                            var vert = i * height - offset; // NEW
+                            return 'translate(' + horz + ',' + (vert + mainHeight/2) + ')'; // NEW
+                        });
+
+                    legend.append('rect') // NEW
+                        .attr('width', legendRectSize) // NEW
+                        .attr('height', legendRectSize) // NEW
+                        .style('fill', color) // NEW
+                        .style('stroke', color); // NEW
+
+                    legend.append('text') // NEW
+                        .attr('x', legendRectSize + legendSpacing) // NEW
+                        .attr('y', legendRectSize - legendSpacing) // NEW
+                        .text(function(d) {
+                            return d;
+                        });
                 });
 
 

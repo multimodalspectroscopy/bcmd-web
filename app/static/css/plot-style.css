@@ -1,13 +1,11 @@
 .line {
     fill: none;
-    stroke: steelblue;
     stroke-width: 2px;
 }
 
 #bsPath {
     stroke-dasharray: 3;
-    stroke-width: 3px;
-    stroke: black;
+    stroke-width: 4px;
 }
 
 .grid line {
@@ -22,4 +20,12 @@
 
 .chart {
     background-color: white;
+}
+
+.legend {
+    font-size: 12px;
+}
+
+rect {
+    stroke-width: 2;
 }
