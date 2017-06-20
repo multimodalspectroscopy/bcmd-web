@@ -116,6 +116,7 @@ class DemandCreator(Resource):
         parsedReq['end'] = float(request["endTime"])
         parsedReq['sample_rate'] = float(request["sampleRate"])
         parsedReq['peaks'] = []
+        j = 0
         for peak in request['peaks']:
             length = float(peak['end']) - float(peak['start'])
             i = 1
@@ -124,18 +125,24 @@ class DemandCreator(Resource):
                  float(peak['end']),
                  float(peak['height']),
                  peak['type']))
+            j += 1
+            print("BEFORE: ", file=sys.stderr)
+            pprint(parsedReq)
             if 'nRepeats' in peak.keys():
                 while (i < int(peak['nRepeats']) and
-                       parsedReq['peaks'][i - 1][1] +
+                       parsedReq['peaks'][j-1][1] +
                        float(peak['interval']) < parsedReq["end"]):
-                    newStart = parsedReq['peaks'][
-                        i - 1][1] + float(peak['interval'])
+                    pprint(parsedReq['peaks'])
+                    print(parsedReq['peaks'][j-1][1], file=sys.stderr)
+                    newStart = parsedReq['peaks'][j-1][1] + float(peak['interval'])
                     newEnd = newStart + length
                     parsedReq['peaks'].append((newStart,
                                                newEnd,
                                                float(peak['height']),
                                                peak['type']))
                     i += 1
+                    j += 1
+        pprint(parsedReq)
         return parsedReq
 
     def get(self):
@@ -150,10 +157,11 @@ class DemandCreator(Resource):
                 parsedReq = self.request_handler(args['demand_dict'])
                 response["demand_signal"] = signalGenerator(
                     **parsedReq).tolist()
-                print(response["demand_signal"], file=sys.stderr)
+                #print(response["demand_signal"], file=sys.stderr)
             return jsonify(response)
 
         except Exception as e:
+            traceback.print_exc()
             return {"error": str(e)}, 404
 
 
@@ -229,7 +237,7 @@ class RunModel(Resource):
                 model.create_initialised_input()
                 model.run_from_buffer()
                 output = model.output_parse()
-
+                pprint(output)
                 return jsonify(output)
         except Exception as error:
             traceback.print_exc()

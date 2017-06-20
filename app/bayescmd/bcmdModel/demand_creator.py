@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+from pprint import pprint
 
 def topHat(length, peak=2.0, default=1.0):
     """
@@ -39,7 +40,7 @@ def sinusoidal(length, peak=2.0, default=1.0):
     """
 
     t = np.arange(0, length)
-    return (peak * np.sin(np.pi * t / length)) + default
+    return ((peak-default) * np.sin(np.pi * t / length)) + default
 
 
 def signalGenerator(start, end, peaks,
@@ -70,10 +71,9 @@ def signalGenerator(start, end, peaks,
         'top-hat': topHat,
         'sinusoidal': sinusoidal
     }
-    print("Number of time points: " + str((end - start) / sample_rate))
     signal = np.ones(int((end - start) / sample_rate) + 1) * default
-
     for idx, demand in enumerate(peaks):
+
         try:
             float(demand[0])
         except ValueError:

@@ -347,23 +347,31 @@ myApp.controller('DemandCreationController', ['$scope', '$http', '$parse', 'RunM
             $scope.demand.peaks.push({
                 'id': 'peak' + newItemNo
             });
+            console.log($scope.demand);
         };
 
         $scope.removeChoice = function() {
             var lastItem = $scope.demand.peaks.length - 1;
             $scope.demand.peaks.splice(lastItem);
+            console.log($scope.demand);
         };
 
         $scope.getDemandTrace = function() {
+            console.log($scope.demand);
+            $scope.demandSignal = {
+                "time": []
+            };
             $http.get('/api/demandcreation', {
                     "params": {
                         "demand_dict": $scope.demand
                     }
                 }).then(function(response) {
+                    console.log(response);
                     $scope.demandSignal.demand = response.data.demand_signal;
                     for (var i = $scope.demand.startTime; i <= $scope.demand.endTime; i += $scope.demand.sampleRate) {
                         $scope.demandSignal.time.push(i);
                     }
+                    console.log($scope.demandSignal);
                 })
                 .catch(function(data) {
                     console.log("Error getting trace");
@@ -486,12 +494,11 @@ myApp.controller('ModelCheckController', ['$scope', '$http', '$parse', 'RunModel
                 console.log("Running Model");
                 console.log(response);
                 RunModelData.setModelOutput(response.data);
+                $scope.finished = true;
             }).catch(function(data) {
                 console.log("Error in running model");
                 console.log(data);
-            }).finally(function() {
-                // called no matter success or failure
-                $scope.finished = true;
+                $scope.finished = "error";
             });
 
         };

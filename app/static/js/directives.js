@@ -165,6 +165,7 @@ myApp.directive('lineGraph', [function() {
                     .attr("class", "line")
                     .attr("id", "dataPath")
                     .attr("d", valueline(dArray))
+                    .attr("stroke", "steelblue")
                     .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
 
