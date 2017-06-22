@@ -173,13 +173,26 @@ myApp.directive('lineGraph', [function() {
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
-                    .call(xAxis);
+                    .call(xAxis)
+                    .append("text");
 
                 // Add the Y Axis
                 svg.append("g")
                     .attr("class", "y axis")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                     .call(yAxis);
+
+                // y-axis label
+                svg.append("text")
+                    .attr("text-anchor", "middle") // this makes it easy to centre the text as the transform is applied to the anchor
+                    .attr("transform", "translate(" + (margin.left / 3) + "," + (height / 2) + ")rotate(-90)") // text is drawn off the screen top left, move down and out and rotate
+                    .text(keys.y);
+
+                // x-axis label
+                svg.append("text")
+                    .attr("text-anchor", "middle") // this makes it easy to centre the text as the transform is applied to the anchor
+                    .attr("transform", "translate(" + (margin.left + width / 2) + "," + (height + margin.top + margin.bottom / 1.5) + ")") // text is drawn off the screen top left, move down and out and rotate
+                    .text(keys.x);
 
             };
             //});
