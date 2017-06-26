@@ -85,6 +85,7 @@ myApp.directive('lineGraph', [function() {
             };
             // Watch for resize event
             scope.$watch(function() {
+                console.log(angular.element(window)[0].innerWidth);
                 return angular.element(window)[0].innerWidth;
             }, function() {
                 scope.render(scope.keys);
@@ -166,6 +167,8 @@ myApp.directive('lineGraph', [function() {
                     .attr("id", "dataPath")
                     .attr("d", valueline(dArray))
                     .attr("stroke", "steelblue")
+                    .attr("fill","none")
+                    .attr("stroke-width","2px")
                     .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
 
@@ -357,6 +360,9 @@ myApp.directive('steadyStateLineGraph', [function() {
                             return valueline(d.array);
                         })
                         .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")")
+                        .attr("fill","none")
+                        .attr("stroke-width",function(d) {return d.label === 'Default BrainSignals' ? '5px' : '2px' ;})
+                        .attr("stroke-dasharray",function(d) {return d.label === 'Default BrainSignals' ? '3' : '' ;})
                         .attr("id", function(d) {return d.label === 'Default BrainSignals' ? 'bsPath' : '' ;})
                         .attr('stroke', function(d, i) {
                             return color(d.label);
@@ -397,6 +403,7 @@ myApp.directive('steadyStateLineGraph', [function() {
                         .enter() // NEW
                         .append('g') // NEW
                         .attr('class', 'legend') // NEW
+                        .attr("font-size", "12px")
                         .attr('transform', function(d, i) { // NEW
                             var height = legendRectSize + legendSpacing; // NEW
                             var offset = height * color.domain().length / 2; // NEW
@@ -408,6 +415,7 @@ myApp.directive('steadyStateLineGraph', [function() {
                     legend.append('rect') // NEW
                         .attr('width', legendRectSize) // NEW
                         .attr('height', legendRectSize) // NEW
+                        .attr('stroke-width','2')
                         .style('fill', color) // NEW
                         .style('stroke', color); // NEW
 
