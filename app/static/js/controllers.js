@@ -568,7 +568,7 @@ myApp.controller('SteadyStateController', ['$scope', '$http', '$parse', 'RunMode
                 $scope.pa.max = $scope.P_an * 2.5;
                 $scope.pa.min = $scope.P_an * 0.2;
                 $scope.sao2.max = 1.0;
-                $scope.sao2.min = 0.0;
+                $scope.sao2.min = 0.2;
             }).catch(function(data) {
                 console.log("Error in getting defaults: ");
                 console.log(data);
