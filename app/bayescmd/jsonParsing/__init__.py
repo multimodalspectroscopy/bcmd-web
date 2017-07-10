@@ -1,1 +1,1 @@
-from .modelJSON import getDefaultFilePath, modeldefParse
+from .modelJSON import getModelFilePath, modeldefParse

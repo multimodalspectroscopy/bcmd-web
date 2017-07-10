@@ -61,6 +61,12 @@ def getDefaultFilePath(model_name):
                 print(modelPath)
     return modelPath
 
+def getModelFilePath(model_name):
+    def_path = os.path.join(BASEDIR, 'examples')
+    modelPath = os.path.join(def_path, model_name+'.modeldef')
+    print(modelPath)
+    return modelPath
+
 if __name__ == '__main__':
     import argparse
     ap = argparse.ArgumentParser(description='Process some integers.')

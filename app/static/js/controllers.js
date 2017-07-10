@@ -563,9 +563,9 @@ myApp.controller('SteadyStateController', ['$scope', '$http', '$parse', 'RunMode
                 $scope.Pa_co2n = Number($scope.defaults.parameters.Pa_CO2n);
                 $scope.SaO2_n = Number($scope.defaults.parameters.SaO2_n);
                 $scope.P_an = Number($scope.defaults.parameters.P_an);
-                $scope.paco2.max = $scope.Pa_co2n * 2.5;
+                $scope.paco2.max = $scope.Pa_co2n * 2;
                 $scope.paco2.min = $scope.Pa_co2n * 0.2;
-                $scope.pa.max = $scope.P_an * 2.5;
+                $scope.pa.max = $scope.P_an * 1.5;
                 $scope.pa.min = $scope.P_an * 0.2;
                 $scope.sao2.max = 1.0;
                 $scope.sao2.min = 0.2;

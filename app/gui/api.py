@@ -78,7 +78,7 @@ class ModelInfo(Resource):
                 if mongo.db.models.find(model_json).count() > 0:
                     return {"message": "Model already exists"}, 250
                 else:
-                    fpath = jsonParsing.getDefaultFilePath(
+                    fpath = jsonParsing.getModelFilePath(
                         model_json['model_name'])
                     mongo.db.models.insert(jsonParsing.modeldefParse(fpath))
                     print(jsonParsing.modeldefParse(fpath))
@@ -127,7 +127,6 @@ class DemandCreator(Resource):
                  peak['type']))
             j += 1
             print("BEFORE: ", file=sys.stderr)
-            pprint(parsedReq)
             if 'nRepeats' in peak.keys():
                 while (i < int(peak['nRepeats']) and
                        parsedReq['peaks'][j-1][1] +
@@ -142,7 +141,6 @@ class DemandCreator(Resource):
                                                peak['type']))
                     i += 1
                     j += 1
-        pprint(parsedReq)
         return parsedReq
 
     def get(self):
@@ -237,7 +235,6 @@ class RunModel(Resource):
                 model.create_initialised_input()
                 model.run_from_buffer()
                 output = model.output_parse()
-                pprint(output)
                 return jsonify(output)
         except Exception as error:
             traceback.print_exc()
@@ -362,7 +359,6 @@ class RunSteadyState(Resource):
                 model.create_initialised_input()
                 model.run_from_buffer()
                 output = model.output_parse()
-                pprint(output)
                 parsed_output = {key: list(np.array(val)[99::100])
                                  for (key, val) in output.items()}
                 # pprint(output)
