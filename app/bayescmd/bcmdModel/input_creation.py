@@ -99,7 +99,7 @@ class InputCreator:
                              ' '.join(str(v) for v in init_vals) +
                              '\n')
         else:
-            self.f_out.write('@ %d\n' % len(self.times))
+            self.f_out.write('@ %d\n' % (len(self.times) + 1))
             self.f_out.write('>>> 0\n!0\n')
             self.f_out.write(':%d ' % len(init_names) +
                             ' '.join(init_names) +
