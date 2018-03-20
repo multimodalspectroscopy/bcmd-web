@@ -11,9 +11,9 @@
 ## @
 
 # Return inputs to be plotted against
-@output SaO2sup P_a u Pa_CO2
+@input SaO2sup P_a u Pa_CO2 temp
 # NIRS measurements
-@output CMRO2 Vmca TOI DHHb DHbO2 DHbT CBF XOa DHbdiff
+@output CMRO2 Vmca TOI DHHb DHbO2 DHbT CBF XOa DHbdiff CCO
 # Hypothermia parameters
 @output Q_10 Z D_O2 Q_temp
 # Temp regulated reactions

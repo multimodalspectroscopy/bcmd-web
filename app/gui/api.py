@@ -75,11 +75,17 @@ class ModelInfo(Resource):
             model_json = {"model_name": _modelName}
 
             with app.app_context():
+                fpath = jsonParsing.getModelFilePath(
+                    model_json['model_name'])
                 if mongo.db.models.find(model_json).count() > 0:
-                    return {"message": "Model already exists"}, 250
+                    _id = mongo.db.models.find_one(model_json)['_id']
+                    mongo.db.models.update_one({
+                        '_id': _id
+                    }, {
+                        '$set': jsonParsing.modeldefParse(fpath)
+                    }, upsert=False)
+                    return {"message": "Model updated"}, 200
                 else:
-                    fpath = jsonParsing.getModelFilePath(
-                        model_json['model_name'])
                     mongo.db.models.insert(jsonParsing.modeldefParse(fpath))
                     print(jsonParsing.modeldefParse(fpath))
                     return {"message": "Added Model Data"}, 200
@@ -129,11 +135,11 @@ class DemandCreator(Resource):
             print("BEFORE: ", file=sys.stderr)
             if 'nRepeats' in peak.keys():
                 while (i < int(peak['nRepeats']) and
-                       parsedReq['peaks'][j-1][1] +
+                       parsedReq['peaks'][j - 1][1] +
                        float(peak['interval']) < parsedReq["end"]):
                     pprint(parsedReq['peaks'])
-                    print(parsedReq['peaks'][j-1][1], file=sys.stderr)
-                    newStart = parsedReq['peaks'][j-1][1] + float(peak['interval'])
+                    print(parsedReq['peaks'][j - 1][1], file=sys.stderr)
+                    newStart = parsedReq['peaks'][j - 1][1] + float(peak['interval'])
                     newEnd = newStart + length
                     parsedReq['peaks'].append((newStart,
                                                newEnd,
@@ -155,7 +161,7 @@ class DemandCreator(Resource):
                 parsedReq = self.request_handler(args['demand_dict'])
                 response["demand_signal"] = signalGenerator(
                     **parsedReq).tolist()
-                #print(response["demand_signal"], file=sys.stderr)
+                # print(response["demand_signal"], file=sys.stderr)
             return jsonify(response)
 
         except Exception as e:
@@ -321,7 +327,8 @@ class RunSteadyState(Resource):
             steady_input['values'] = x.reshape(len(x), 1)
 
         else:
-            steady_input['values'] = np.array([default] * len(steps)).reshape(len(steps), 1)
+            steady_input['values'] = np.array(
+                [default] * len(steps)).reshape(len(steps), 1)
 
         steady_input['values'] = steady_input['values'].tolist()
         if len(params.keys()) == 0:

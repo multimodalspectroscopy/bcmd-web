@@ -415,6 +415,14 @@ myApp.controller('ParameterController', ['$scope', '$http', '$parse', 'RunModelD
         };
 
         $scope.submitParameters = function() {
+            console.log($scope.parameters)
+            for (var p in $scope.parameters){
+                if ($scope.parameters[p]==""){
+                    console.log("Removing empty parameter", p)
+                    delete $scope.parameters[p]
+                }
+            }
+            
             RunModelData.setKey($scope.parameters, "parameters");
         };
 
