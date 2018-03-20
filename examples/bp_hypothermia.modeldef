@@ -1,0 +1,2161 @@
+# BrainPiglet 2.0 model with inclusion of hypothermia
+# J. Russell-Buckland
+# joshua.russell-buckland.15@ucl.ac.uk
+# 29/01/2018
+# v0.1
+
+## BPHypothermia
+##
+## BrainPiglet is a computational model of the piglet brain. This version includes
+## the effects of hypothermia
+## @
+
+# Return inputs to be plotted against
+@output SaO2sup P_a u Pa_CO2
+# NIRS measurements
+@output CMRO2 Vmca TOI DHHb DHbO2 DHbT CBF XOa DHbdiff
+# Hypothermia parameters
+@output Q_10 Z D_O2 Q_temp
+# Temp regulated reactions
+@output _gluc _ADP _P NADcyt _ATP _Py0 _Hy
+
+# Import insult submodel - remove for original behaviour
+@import bp20_insult
+
+# Chemical reactions
+
+# adenkin2
+# aden1
+2.0 [_ADP] <-> [_ATP] + [_AMP] {MA: k_ADPATP, 2.0} {MA: k_nADPATP}
+
+# funcact
+# a_red
+4.0 [a] + (p1+10.0/6.0)/R_Hi [H] -> 2.0 [NAD] + (p1+4.0)/(R_Hic/Vol_mit) [_Hy] {f1}
+# a_ox
+p2/R_Hi [H] -> 4.0 [a] + 4.0 [bred] + p2/(R_Hic/Vol_mit) [_Hy] {f2}
+# b_ox
+[O2] + 4.0 [bred] + p3/R_Hi [H] -> {f3}
+# psi_out
+1.0/(R_Hic/Vol_mit) [_Hy] -> 1.0/R_Hi [H] {L}
+# O2_in
+-> 1.0/((1-df)*Vol_mit) [O2] {J_O2}
+
+# glycol
+# glycol
+2.0 [_ADP] + 2.0 [_P] + [_gluc] + 2.0 [NADcyt] -> 2.0 [_ATP] + 2.0 [_Py0] + 4.0/R_Hic [_Hy]
+	{MM : Vmax_glucN, Km_glucNA, Km_glucNP, Km_glucNgl, Km_glucNN}
+# PytoLac
+[_Py0] + 1.0/R_Hic [_Hy] <-> [_L0] + [NADcyt] {MA: k_PytoLac} {MA: k_nPytoLac}
+# TCA
+1.0/(1.0/Vol_mit) [_Py0] + 5.0 [NAD] + 1.0/(R_Hic/Vol_mit) [_Hy] -> 4.0/R_Hi [H] {k_TCA}
+# glucose_in
+-> [_gluc] {v_gluc_in*v_gluc_trans}
+# glucose_out
+[_gluc] -> {MM : v_gluc_trans, k_gluc_trans}
+# lactate_in
+-> [_L0] + 1.0/R_Hic [_Hy] {v_lac_in*v_lac_trans}
+# lactate_out
+[_L0] + 1.0/R_Hic [_Hy] ->
+	{v_lac_trans*_L0*_Hy/((k_lac_trans + _L0)*(k_lac_h + _Hy))}
+# MAshut
+1.0/R_Hic [_Hy] + 1.0/Vol_mit [NAD] <-> [NADcyt] + 1.0/(R_Hi*Vol_mit) [H]
+	{MA: k_MAshut} {MA: k_nMAshut}
+# PCrtoATP
+[_PCr] + [_ADP] + 1.0/R_Hic [_Hy] <-> [_ATP] + [_Cr] {MA: k_PCrATP} {MA: k_nPCrATP}
+# ADPtoATP
+[_ADP] + [_P] -> [_ATP] {kATP}
+# ATPtoADP
+[_ATP] -> [_ADP] + [_P] {MM : v_ATP, kmATP}
+
+
+# Algorithmic relations
+
+# XOvrel
+XOv : 0 = CBF*(XOa-XOv)-J_O2
+# O2crel
+O2c : 0 = phi*pow(ScO2/(1.0-ScO2), 1.0/n_h)-O2c
+# r_rel
+r : 0 = T_e + T_m - (P_1-P_ic)*r
+
+# Explicit differential equations
+
+# v_prel
+v_p' = 1.0/t_p*(P_a2 - v_p)
+# v_urel
+v_u' = 1.0/t_u*(u - v_u)
+# v_crel
+v_c' = 1.0/t_c*(Pa_CO2 - v_c)
+# v_orel
+v_o' = 1.0/t_o*(O2c - v_o)
+# Dpsirel
+Dpsi' = (p2*f2+p1*f1+p3*f3-L)/C_im
+
+
+# Intermediates
+
+## Arterio-venous volume ratio
+## ~ dimensionless
+## $AVR$
+## + BloodFlow Oxygen
+AVR = Vol_art/Vol_ven
+
+## Cerebral Blood Flow
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ s$^{-1}$
+## $CBF$
+## + BloodFlow Oxygen
+CBF = G*(P_a2-P_v)
+CBF := CBFn
+
+## Cytochrome c oxidase signal measured by NIRS.
+## ~ $\mu$M
+## $\Delta{}oxCCO$
+## + NIRS Measurement
+CCO = CCO_offset+1000.0*Vol_mit*((1-df)*a-a_n)
+
+## Rate of cerebral oxygen metabolism.
+## ~ mM s$^{-1}$
+## $CMRO_{2}$
+## + NIRS Measurement
+CMRO2 = (1-df) * f3 * Vol_mit
+
+## Natural buffering capacity of protons in mitochondria.
+## ~ dimensionless
+## $C_{0i,m}$
+## + Metabolism
+C_0i = ((pow(10.0,(-pH_m))) - (pow(10.0,(-pH_m-dpH))))/dpH
+
+## Natural buffering capacity of protons in the cytoplasm.
+## ~ dimensionless
+## $C_{0i,c}$
+## + Metabolism
+C_0ic = ((pow(10.0,(-pH_o))) - (pow(10.0,(-pH_o-dpH))))/dpH
+
+## Excess redox potential for NADH at normal demand.
+## ~ mV
+## $C_{NADH}$
+## + Metabolism
+C_NADH = Z/2.0*log10(1.0/NADNADHrat)
+
+## Gibbs free energy of ATP hydrolysis
+## ~ J mol$^{-1}$
+## $\Delta{}G$
+## + Metabolism
+DGp = Gp0 + Z*Fdy*log10(gp)
+
+## Change in total deoxygenated haemoglobin signal measured by NIRS
+## ~ $\mu$M
+## $\Delta{}HHb$
+## + NIRS Measurement
+DHHb = DHHb_offset + HHb-HHbn
+
+## Change in total oxygenated haemoglobin signal measured by NIRS
+## ~ $\mu$M
+## $\Delta{}HbO_2$
+## + NIRS Measurement
+DHbO2 = DHbO2_offset + HbO2-HbO2n
+
+## Change in total haemoglobin as measured by NIRS
+## ~ $\mu$M
+## $\Delta{}HbT$
+## + NIRS Measurement
+DHbT = DHbT_offset + HbT-HbTn
+
+## Change in Hbdiff signal as measured by NIRS
+## ~ $\mu$M
+## $\Delta{}HbD$
+## + NIRS Measurement
+DHbdiff = DHbdiff_offset + (DHbO2 - DHHb)
+
+
+## Proton motive force across the mitochondrial inner membrane.
+## ~ mV
+## $\Delta{}p$
+## + Metabolism
+Dp = Dpsi+ Z*DpH
+
+## Difference between mitochondrial and extra-mitochondrial pH
+## ~ dimensionless
+## $\Delta{}pH$
+## + Metabolism
+DpH = pH_m-pH_o
+
+## Value of $E_1$ when the reducing substrate is NADH.
+## ~ mV
+## $E_{1,NADH}$
+## + Metabolism
+E1NADH = (E_c0 - E_N0) + C_NADH
+
+## The energy provided by electron transfer to Cu$_{A,r}$.
+## ~ mV
+## $E_{1}$
+## + Metabolism
+E_1 = E1NADH
+
+## Effective conductance of the whole blood flow compartment.
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G$
+## + Autoregulation
+G = K_G*pow(r, 4.0)
+
+## Absolute deoxyhaemoglobin signal as measured by NIRS
+## ~ $\mu$M
+## $HHb$
+## + NIRS Measurement
+HHb = (Vol_art*Xa + Vol_ven*Xv)/4.0*blood_frac*1000.0
+HHb := HHbn
+
+## Absolute oxyhaemoglobin signal as measured by NIRS
+## ~ $\mu$M
+## $HbO_2$
+## + NIRS Measurement
+HbO2 = (Vol_art*XOa + Vol_ven*XOv)/4.0*blood_frac*1000.0
+HbO2 := HbO2n
+
+## Absolute total haemoglobin signal as measured by NIRS
+## ~ $\mu$M
+## $HbT$
+## + NIRS Measurement
+HbT = (Vol_art+Vol_ven)*Xtot/4.0*blood_frac*1000.0
+HbT := HbTn
+
+## Rate at which oxygen is supplied to the mitochondria, minimum of diffusion rate and delivery rate
+## ~ $mM s^{-1}$
+## $J_{O_{2},min}$
+## + Oxygen
+JO2 = fmin(D_O2*(O2c-O2), CBF*XOa)
+
+## Rate at which oxygen is supplied to the mitochondria
+## ~ $mM s^{-1}$
+## $J_{O_{2}}$
+## + Oxygen
+J_O2 = JO2
+
+## Equilibrium constant for the Cu$_A$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_1}$
+## + Metabolism
+Keq1 = pow(10.0, (-1.0/Z*(p1*Dp/4.0 - E_1)))
+
+## Equilibrium constant for the a$_3$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_2}$
+## + Metabolism
+Keq2 = pow(10.0, (-1.0/Z*(p2*Dp/4.0 - E_2)))
+
+## Rate of proton return to the mitochondrial matrix.
+## ~ mM s$^{-1}$
+## $L$
+## + Metabolism
+L = L_CV+L_lk
+
+## Rate at which protons re-enter the mitochondrial matrix due to ADP phosphorylation.
+## ~ mM s$^{-1}$
+## $L_{CV}$
+## + Metabolism
+L_CV = CVinh*L_CVmax*(1.0 - exp(-theta))/(1.0 + r_CV*exp(-theta))
+
+## Rate at which protons re-enter the mitochondrial matrix via leak channels.
+## ~ mM s$^{-1}$
+## $L_{lk}$
+## + Metabolism
+L_lk = k_unc*L_lk0*(exp(Dp*k_lk2)-1.0)
+
+## Concentration of NADH in the mitochondria.
+## ~ mM
+## $NADH$
+## + Metabolism
+NADH = NADpool - NAD
+
+## NAD/NADH ratio.
+## ~ dimensionless
+## $\frac{NAD}{NADH}$
+## + Metabolism
+NADNADHrat = NAD/NADH
+
+## Average pressure in the blood vessels.
+## ~ mm Hg
+## $P_{1}$
+## + Autoregulation
+P_1 = (P_a2 + P_v) / 2.0
+P_1 := P_1n
+
+## Venous blood pressure.
+## ~ mmHg
+## $P_{v}$
+## + Oxygen Link
+P_v = ((Gt/G_v)*(P_a-P_vs)+P_vs)
+P_v := P_vn
+
+## Relative mitochondrial volume for protons
+## ~ dimensionless
+## $R_{Hi}$
+## + Metabolism
+R_Hi = r_buffi
+
+## Relative cytoplasmic volume for protons
+## ~ dimensionless
+## $R_{Hi,c}$
+## + Metabolism
+R_Hic = r_buffic
+
+## Capillary oxygen saturation.
+## ~ dimensionless
+## $S_{c,O_2}$
+## + Oxygen
+ScO2 = (SaO2sup + SvO2)/2.0
+
+## Venous oxygen saturation.
+## ~ dimensionless
+## $S_{v,O_2}$
+## + Oxygen
+SvO2 = XOv/Xtot
+
+## Total oxygenation index.
+## ~ dimensionless
+## $TOI$
+## + NIRS Measurement
+TOI = 100.0*((pow((r/r_n), 2.0)/(pow((r/r_n), 2.0) + (Vol_ven/Vol_artn)))*XOa+((Vol_ven/Vol_artn)/(pow((r/r_n), 2.0) + (Vol_ven/Vol_artn)))*XOv)/Xtot
+
+## Elastic tension in the blood vessel walls.
+## ~ mm Hg cm
+## $T_{e}$
+## + Autoregulation
+T_e = sigma_e*h
+
+## Muscular tension in the blood vessel walls.
+## ~ mm Hg cm
+## $T_{m}$
+## + Autoregulation
+T_m = T_max*exp(-pow(fabs((r-r_m)/(r_t-r_m)), n_m))
+
+## Maximal muscular tension in the blood vessel walls.
+## ~ mm Hg cm
+## $T_{max}$
+## + Autoregulation
+T_max = T_max0*(1.0+k_aut*mu)
+
+## Blood velocity in the middle cerebral artery.
+## ~ cm s$^{-1}$
+## $V_{mca}$
+## + NIRS_blood
+Vmca = CBF*CBFscale
+
+## Relative arterial blood volume.
+## ~ dimensionless
+## $V_{a}$
+## + NIRS
+Vol_art = Vol_artn*pow((r/r_n), 2.0)
+
+## Normalised total blood volume
+## ~ dimensionless
+## $V_{t}$
+## + NIRS
+Vol_tot = Vol_art + Vol_ven
+
+## Venous blood volume as a fraction of total blood volume
+## ~ dimensionless
+## $V_{v}$
+## + NIRS
+Vol_ven = Vol_venn+C_v*(P_v-P_vn)
+
+## Concentration of deoxyhaemoglobin in the veins
+## ~ mM
+## $[HHb_v]$
+Xv = Xtot-XOv
+
+## Concentration of reduced Cu$_A$.
+## ~ mM
+## $Cu_{A,r}$
+## + Metabolism
+ared = cytox_tot - a
+
+## Concentration of oxidised cytochrome a$_3$.
+## ~ mM
+## $a_{3,o}$
+## + Metabolism
+b = cytox_tot - bred
+
+## Merged autoregulation stimulus.
+## ~ dimensionless
+## $\eta$
+## + Autoregulation
+eta = R_autp*(v_p/v_pn - 1.0) + R_auto*(v_o/v_on-1.0) + R_autu*(1.0-v_u/v_un) + R_autc*(1.0 - v_c/v_cn)
+
+## Reaction rate for the reduction of Cu$_A$.
+## ~ mM s$^{-1}$
+## $f_1$
+## + Metabolism
+f1 = k1*a-kn1*ared
+
+## Reaction rate for the reduction of a$_3$.
+## ~ mM s$^{-1}$
+## $f_2$
+## + Metabolism
+f2 = k2*ared*b-kn2*a*bred
+
+## Reaction rate for the reduction of O$_2$.
+## ~ mM s$^{-1}$
+## $f_3$
+## + Metabolism
+f3 = k3*O2*bred*exp(-c3*(Dp-Dp_30))/(1.0+exp(-c3*(Dp-Dp_30)))
+
+## (Normalised) phophorylation potential (or ADP/ATP ratio)
+## ~ dimensionless
+## $g_{p}$
+## + Metabolism
+gp = (_ADP*_P)/(_ATP*1000.0)
+
+## Thickness of the blood vessel walls.
+## ~ cm
+## $h$
+## + Autoregulation
+h = -r + sqrt(pow(r,2.0) + 2.0*r_0*h_0 + h_0*h_0)
+
+## Forward reaction rate constant for the reduction of Cu$_A$.
+## ~ s$^{-1}$
+## $k_1$
+## + Metabolism
+k1 = Q_temp * k10*exp(-ck1*(Dp-Dp_n))
+
+## Forward reaction rate constant for the reduction of Cu$_A$ at normal $\Delta p$.
+## ~ s$^{-1}$
+## $k_{1,0}$
+## + Metabolism
+k10 = Q_temp * k1_n*(NADpool/(1.0+NADNADHrat))/NADHn
+
+## Reaction rate constant for the reduction of a$_3$.
+## ~ mM s$^{-1}$
+## $k_2$
+## + Metabolism
+k2 = Q_temp * k2_n*exp(-ck2*(Dp-Dp_n))
+
+## Reverse reaction rate constant for the reduction of Cu$_A$.
+## ~ s$^{-1}$
+## $k_{-1}$
+## + Metabolism
+kn1 = Q_temp * k1/Keq1
+
+## Reverse reaction rate constant for the reduction of a$_3$.
+## ~ s$^{-1}$
+## $k_{-2}$
+## + Metabolism
+kn2 = Q_temp * k2/Keq2
+
+## Effective strength of the autoregulation reponse.
+## ~ dimensionless
+## $\mu$
+## + Autoregulation
+mu = (mu_min + mu_max*exp(eta))/(1.0 + exp(eta))
+
+## Mitochondrial pH.
+## ~ dimensionless
+## $pH_{m}$
+## + Metabolism
+pH_m = -log10(H/1000.0)
+
+## Extra-mitochondrial pH.
+## ~ dimensionless
+## $pH_{o}$
+## + Metabolism
+pH_o = -log10(_Hy/1000.0)
+
+## Buffering capacity for protons in mitochondria.
+## ~ dimensionless
+## $r_{buffi,m}$
+## + Metabolism
+r_buffi = C_buffi/C_0i
+
+## Buffering capacity for protons in cytoplasm.
+## ~ dimensionless
+## $r_{buffi,c}$
+## + Metabolism
+r_buffic = C_buffic/C_0ic
+
+## Elastic stress in blood vessel walls.
+## ~ mm Hg
+## $\sigma_e$
+## + Autoregulation
+sigma_e = sigma_e0*(exp(K_sigma*(r-r_0)/r_0) - 1.0) - sigma_coll
+
+## Driving force Complex V.
+## ~ dimensionless
+## $\theta$
+## + Metabolism
+theta = kCV*(Dp + Z/na*log10(gp/gp_n)-Dp_CV0)
+
+## Total conductance of the cerebral blood vessel walls
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G_t$
+## + Autoregulation
+Gt = ((G*G0*G_v)/(G*G0+G*G_v+G_v*G0))
+
+## Pressure at the start of the cerebral artery compartment
+## ~ mmHg
+## $P_{a2}$
+## + Autoregulation
+P_a2 = ((G0*P_a+G*P_v)/(G+G0))
+
+## Vmax for glycolysis
+## ~ mMs$^{-1}$
+## $v_{glyc}$
+## + Metabolism
+Vmax_glucN = Vmax_glucNn*(Inh_glucN + 1.0)/(1.0 + Inh_glucN*(_ATP/_ATPn)*(_AMPn/_AMP))
+
+## Rate of the TCA cycle
+## ~ mMs$^{-1}$
+## $k_{TCA}$
+## + Metabolism
+k_TCA = v_TCA*_Py0*NAD/((Km_NAD + NAD)*(Km_Py+_Py0))
+
+## Concentration of NADH in the cytoplasm
+## ~ mM
+## $[NADH_{cyt}]$
+## + Metabolism
+NADHcyt= (NADcytn + NADHcytn) - NADcyt
+
+## Rate of forward reaction in the malate-aspartate shuttle
+## ~ mM$^{-1}$s$^{-1}$
+## $k_{MAshut}$
+## + Metabolism
+k_MAshut = Q_temp*((CMRO2_n*NADHcyt)/3.0)/(NADn*_Hyn*NADHcyt - (1.0/Keq_MAshut)*NADcytn*H_n*NADH)
+
+## Rate of backward reaction in the malate-aspartate shuttle
+## ~ mM$^{-1}$s$^{-1}$
+## $k^{-}_{MAshut}$
+## + Metabolism
+k_nMAshut = Q_temp*((k_MAshut*NADH/NADHcyt)/Keq_MAshut)
+
+## Rate of forward reaction in the pyruvate lactate equlibirum
+## ~ mM$^{-1}$s$^{-1}$
+## $k_{pl}$
+## + Metabolism
+k_PytoLac = Q_temp*((2.0*CMRglucn-CMRO2_n/3.0)+k_nPytoLac*_L0n*NADcytn)/(_Py0n*_Hyn)*(NADHcyt/NADHcytn)
+
+## Vmax of ATP use
+## ~ mMs$^{-1}$
+## $V_{max,ATP}$
+## + Metabolism
+v_ATP = (L_CVn*Vol_mit/na+2.0*CMRglucn)*(1.0+km)*u
+
+## Rate of ATP synthesis by Complex V
+## ~ mM$^{-1}$s$^{-1}$
+## $k_{ATP,C_{V}}$
+## + Metabolism
+kATP = L_CV*Vol_mit/na
+
+## Total exchangeable phosphate pool
+## ~ mM
+## $ EPP
+## + Metabolism
+EPP = _Pn + _PCrn + 2*_ATPn + _ADPn
+
+## The ratio of [ATP]/EPP
+## ~ dimensionless
+## $NTP/EPP$
+## + Metabolism
+NTP_EPP = (1-df) * _ATP/EPP
+
+## The ratio of [PCr]/EPP
+## ~ dimensionless
+## $PCR/EPP$
+## + Metabolism
+PCr_EPP = (1-df) * _PCr/EPP
+
+## The ratio of [Pi]/EPP
+## ~ dimensionless
+## $P_{i}/EPP$
+## + Metabolism
+Pi_EPP = (1-df) * _P/EPP + df
+
+
+# Initial values of root variables
+
+## AMP concentration in cytoplasm
+## ~ mM
+## $[AMP]$
+## + Metabolism
+_AMP := _AMPn
+
+## Typical blood vessel radius.
+## ~ cm
+## $r$
+## + Autoregulation
+r := r_init
+r >= 0
+
+## Concentration of oxidised cytochrome c oxidase.
+## ~ mM
+## $Cu_{A,o}$
+## + Metabolism
+a := a_init
+
+## Concentration of reduced cytochrome a$_3$.
+## ~ mM
+## $[a_{3,r}]$
+## + Metabolism
+bred := bred_init
+
+## Mitochondrial oxygen concentration.
+## ~ mM
+## $O_2$
+## + Metabolism
+O2 := O2_init
+
+## Venous concentration of oxygen bound to haemoglobin.
+## ~ mM
+## $HbO_{2,v}$
+## + Oxygen
+XOv := XOv_init
+XOv >= 0
+
+## Capillary oxygen concentration.
+## ~ mM
+## $O_{2,c}$
+## + Oxygen
+O2c := O2c_init
+O2c >= 0
+
+## Mitochondrial proton concentration.
+## ~ mM
+## $H^{+}_{m}$
+## + Metabolism
+H := H_init
+
+## Hydrogen ion concentration in the cytoplasm
+## ~ mM
+## $[H^{+}]$
+## + Metabolism
+_Hy := _Hyn
+
+## Filtered arterial blood pressure.
+## ~ mmHg
+## $\nu_{P_a}$
+## + Autoregulation
+v_p := v_pn
+
+## Filtered demand.
+## ~ dimensionless
+## $\nu_{u}$
+## + Autoregulation
+v_u := v_un
+
+## Filtered carbon dioxide partial pressure.
+## ~ mmHg
+## $\nu_{CO_2}$
+## + Autoregulation
+v_c := v_cn
+
+## Filtered capillary oxygen concentration.
+## ~ mM
+## $\nu_{O_2}$
+## + Autoregulation
+v_o := v_on
+
+## Mitochondrial inner membrane potential.
+## Varies as charge (in the form of protons) is transferred across the membrane capacitance.
+## ~ mV
+## $\psi$
+## + Metabolism
+Dpsi := Dpsi_init
+
+## Concentration of NAD in the mitochondria
+## ~ mM
+## $$[NAD]
+## + Metabolism
+NAD := NADn
+
+## Concentration of pyruvate in the cytoplasm
+## ~ mM
+## $$ [Py]
+### + Metabolism
+_Py0 := _Py0n
+
+## Concentration of lactate in the cytoplasm
+## ~ mM
+## $[lac]$
+## + Metabolism
+_L0 := _L0n
+
+## Concentration of glucose in the cytoplasm
+## ~ mM
+## $[gluc]$
+## + Metabolism
+_gluc := _glucn
+
+## Concentration of NAD in the cytoplasm
+## ~ mM
+## $[NAD_{cyt}]$
+## + Metabolism
+NADcyt := NADcytn
+
+## Concentration of phosphocreatine in the cytoplasm
+## ~ mM
+## $[PCr]$
+## + Metabolism
+_PCr := _PCrn
+
+## Concentration of ADP in the cytoplasm
+## ~ mM
+## $[ADP]$
+## + Metabolism
+_ADP := _ADPn
+
+## Concentration of ATP in the cytoplasm
+## ~ mM
+## $[ATP]$
+## + Metabolism
+_ATP := _ATPn
+
+## Concentration of inorganic phosphate in the cytoplasm
+## ~ mM
+## $[P_{i}]$
+## + Metabolism
+_P := _Pn
+
+## Concentration of creatine in the cytoplasm
+## ~ mM
+## $[Cr]$
+## + Metabolism
+_Cr := _Crn
+
+# Parameters
+
+# Parameters that may depend on input parameters
+
+## Initial concentration of oxidised cytochrome c oxidase.
+## ~ mM
+## $Cu_{A,o,init}$
+## + Metabolism
+a_init = a_n
+
+## Normal concentration of AMP in the cytoplasm
+## ~ mM
+## $[AMP]_{n}$
+## + Metabolism
+_AMPn = k_ADPATP_eq*pow(_ADPn, 2.0)/_ATPn
+
+## Normal concentration of oxidised cytochrome-c-oxidase.
+## ~ mM
+## $Cu_{A,o,n}$
+## + Metabolism
+a_n = cytox_tot*a_frac_n
+
+## Normal concentration of reduced Cu$_A$.
+## ~ mM
+## $Cu_{A,r,n}$
+## + Metabolism
+ared_n = cytox_tot - a_n
+
+## Normal oxidised fraction of reduced cytochrome-c-oxidase
+## ~ dimensionless
+## $a3_{frac,n}$
+## + Metabolism
+b_frac_n = 1.0 - bred_n/cytox_tot
+
+## Initial concentration of reduced cytochrome-c-oxidase
+## ~ mM
+## $a3_{frac,init}$
+## + Metabolism
+b_init = b_n
+
+## Normal concentration of reduced cytochrome-c-oxidase
+## ~ mM
+## $a3_{frac,n}$
+## + Metabolism
+b_n = cytox_tot - bred_n
+
+## Initial concentration of reduced cytochrome a$_3$.
+## ~ mM
+## $[a_{3,r}]_{init}$
+## + Metabolism
+bred_init = bred_n
+
+## Normal concentration of reduced cytochrome a$_3$.
+## ~ mM
+## $[a_{3,r}]_{n}$
+## + Metabolism
+bred_n = f_n/k3/O2_n/(exp(-c3*(Dp_n-Dp_30))/(1.0+exp(-c3*(Dp_n-Dp_30))))
+
+## Normal value of $C_{NADH}$.
+## ~ mV
+## $C_{NADH,n}$
+## + Metabolism
+C_NADH_n = Z/2.0*log10(1.0/NADNADHratn)
+
+## Normal concentration of creatine in the cytoplasm
+## ~ mM
+## $[Cr]_{n}$
+## + Metabolism
+_Crn = (k_PCrATP_eq_ef*_ADPn*_PCrn)/_ATPn
+
+## Concentration of cytochrome c oxidase in mitochondria.
+## ~ mM
+## $CCO_{mit}$
+## + Metabolism
+cytox_tot = cytox_tot_tis/Vol_mit
+
+## Normal value of Gibbs free energy of ATP hydrolysis
+## ~ J mol$^{-1}$
+## $\Delta{}G_{n}$
+## + Metabolism
+DGpn = Gp0 + Z*Fdy*log10(gp_n)
+
+
+
+## Value of $\Delta{}p$ to which a$_3$ reduction reaction is maximally sensitive.
+## ~ mV
+## $\Delta{}p_{30}$
+## + Metabolism
+Dp_30 = Dp_n + Dp3_corr
+
+## Value of $\Delta{}p$ at which $L_{CV}$ is zero under normal demand.
+## ~ mV
+## $\Delta{}p_{CV,0}$
+## + Metabolism
+Dp_CV0 = -DGpn/(na*Fdy)
+
+## Normal pH difference across the mitochondrial inner membrane.
+## ~ dimensionless
+## $\Delta{}pH_n$
+## + Metabolism
+DpH_n = pH_mn - pH_on
+
+## Initial value of $\Delta{}p$
+## ~ mV
+## $\Delta{}p_{init}$
+## + Metabolism
+Dp_init = Dp_n
+
+## Normal value of $\Delta{}p$
+## ~ mV
+## $\Delta{}p_n$
+## + Metabolism
+Dp_n = Dpsi_n+Z*DpH_n
+
+## Initial mitochondrial inner membrane potential.
+## ~ mV
+## $\psi_{init}$
+## + Metabolism
+Dpsi_init = Dpsi_n
+
+## Normal mitochondrial inner membrane potential.
+## ~ mV
+## $\psi_n$
+## + Metabolism
+Dpsi_n := 145.0
+
+## Normal value of $E_{1,NADH}$.
+## ~ mV
+## $E_{1,NADH,n}$
+## + Metabolism
+E1NADH_n = (E_c0 - E_N0) + C_NADH_n
+
+## Normal value of $E_1$.
+## ~ mV
+## $E_{1,n}$
+## + Metabolism
+E_1n := E1NADH_n
+
+## Energy provided by the transfer of four electrons from Cu$_{A,r}$ to a$_{3,o}$.
+## ~ mV
+## $E_{2}$
+## + Metabolism
+E_2 = (E_a30 - E_c0)
+
+## Normal resting value of $f_1$ and $f_2$.
+## ~ mM s$^{-1}$
+## $f_{n}$
+## + Metabolism
+f_n = CMRO2_n/Vol_mit
+
+## Conductance of the supplying artery compartment
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G_0$
+## + Autoregulation
+G0 = G0n*r0*r0*r0*r0
+
+## Normal conductance of the supplying artery compartment
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G_0$
+## + Autoregulation
+G0n = G0rat*Gn
+
+## Term in the expression for normal glycolysis rate related to [ADP]
+## ~ dimensionless
+## $glyc_{a,n}$
+## + Metabolism
+glyc_an = pow(_ADPn,2.0)/(pow(Km_glucNA,2.0)+pow(_ADPn, 2.0))
+
+## Term in the expression for normal glycolysis rate related to [gluc]
+## ~ dimensionless
+## $glyc_{g,n}$
+## + Metabolism
+glyc_gn = _glucn/(Km_glucNgl+_glucn)
+
+## Term in the expression for normal glycolysis rate related to [NAD]
+## ~ dimensionless
+## $glyc_{n,n}$
+## + Metabolism
+glyc_nn = pow(NADcytn,2.0)/(pow(Km_glucNN,2.0)+pow(NADcytn, 2.0))
+
+## Term in the expression for normal glycolysis rate related to [P]
+## ~ dimensionless
+## $glyc_{p,n}$
+## + Metabolism
+glyc_pn = pow(_Pn,2.0)/(pow(Km_glucNP,2.0)+pow(_Pn, 2.0))
+
+###  Normal blood vessel conductance.
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G_n$
+## + Autoregulation
+Gn = CBFn/(P_an-P_vs)*(1.0+1.0/G0rat+1.0/G_VAratn)
+
+## Normal (normalised) phophorylation potential (or ADP/ATP ratio)
+## ~ dimensionless
+## $g_{p,n}$
+## + Metabolism
+gp_n = (_ADPn*_Pn)/(_ATPn*1000.0)
+
+## Normal value of the total conductance of all blood vessel compartments
+## ~  ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G_{t,n}$
+## + Autoregulation
+Gtn = Gn*G0n*G_v/(Gn*G0n+Gn*G_v+G_v*G0n)
+
+## Conductance of the veins
+## ~  ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G_v$
+## + Autoregulation
+G_v = G_VAratn*Gn
+
+## Normal oxygenated haemoglobin signal measured by NIRS
+## ~ $\mu$M
+## $HbO_{2,n}$
+## + NIRS Measurement
+HbO2n = (Vol_artn*XOa_n + Vol_venn*XOv_n)/4.0*blood_frac*1000.0
+
+## Normal total haemoglobin signal measured by NIRS
+## ~ $\mu$M
+## $HbT_n$
+## + NIRS Measurement
+HbTn = (Vol_artn+Vol_venn)*Xtot_n/4.0*blood_frac*1000.0
+
+# Normal deoxygenated haemoglobin signal measured by NIRS.
+## ~ uM
+## $HHb_{n}$
+## + NIRS
+HHbn = (Vol_artn*Xa_n + Vol_venn*Xv_n)/4.0*blood_frac*1000.0
+
+## Initial mitochondrial proton concentration.
+## ~ mM
+## $H^+_{m,init}$
+## + Metabolism
+H_init = H_n
+
+## Initial mitochondrial proton concentration.
+## ~ mM
+## $H^+_{m,n}$
+## + Metabolism
+H_n = pow(10.0, 3.0-pH_mn)
+
+## Normal wall  thickness of cerebral vessels
+## ~ cm
+## $h_{n}$
+## + Autoregulation
+h_n = -r_n + sqrt(pow(r_n,2.0) + 2.0*r_0*h_0 + h_0*h_0)
+
+
+## Normal hydrogen ion concentration in the cytoplasm
+## ~ mM
+## $[H^{+}]_{n}$
+## + Metabolism
+_Hyn = 1000.0*pow(10.0,-pH_on)
+
+## Normal oxygen flux from blood to tissue.
+## ~ mM s$^{-1}$
+## $J_{O_{2,n}}$
+## + Link
+J_O2n = CMRO2_n
+
+## Normal forward reaction rate for the reduction of Cu$_A$ at normal $\Delta p$ and NADH.
+## ~ s$^{-1}$
+## $k_{1,n}$
+## + Metabolism
+k1_n = f_n/(a_n-1.0/Keq1_n*ared_n)
+
+## Normal forward reaction rate for the reduction of a$_3$.
+## ~ s$^{-1}$
+## $k_{2,n}$
+## + Metabolism
+k2_n = f_n/(ared_n*b_n-1.0/Keq2_n*a_n*bred_n)
+
+## Forward reaction rate for the reduction of O$_2$.
+## ~ s$^{-1}$
+## $k_3$
+## + Metabolism
+k3 = k30/(exp(-c3*(Dp_n-Dp_30))/(1.0+exp(-c3*(Dp_n-Dp_30))))
+
+## Equilibrium constant for the conversion of ADP to ATP and AMP
+## ~ dimensionless
+## $Keq_{ADPATP}$
+## + Metabolism
+k_ADPATP_eq = k_ADPATP/k_nADPATP
+
+## Paramater controlling the sensitivity of Complex V flux to driving force
+## ~ $mV^{-1}$
+## $k_{CV}$
+## + Metabolism
+kCV = -1.0/(Dp_n-Dp_CV0)*log((1.0-L_CV0)/(1.0+r_CV*L_CV0))
+
+## Normal equilibrium constant for the Cu$_A$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_{1,n}}$
+## + Metabolism
+Keq1_n = pow(10.0, (-1.0/Z*(p1*Dp_n/4.0 - E_1n)))
+
+## Normal equilibrium constant for the a$_3$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_{2,n}}$
+## + Metabolism
+Keq2_n = pow(10.0, (-1.0/Z*(p2*Dp_n/4.0 - E_2)))
+
+## Proportionality constant in Poiseuille relation for conductance.
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$ cm$^{-4}$
+## $K_G$
+## + Autoregulation
+K_G = Gn/pow(r_n, 4.0)
+
+## The $k_m$ value for ATP use
+## ~ mM
+## $k_{m,ATP}$
+## + Metabolism
+kmATP = Q_temp*_ATPn*km
+
+## The $k_m$ value for ADP in the caricature of glycolysis
+## ~ mM
+## $k_{m,glycA}$
+## + Metabolism
+Km_glucNA = Q_temp*Km_glucNAf*_ADPn
+
+## The $k_m$ value for inorganic phosphate in the caricature of glycolysis
+## ~ mM
+## $k_{m,glycP}$
+## + Metabolism
+Km_glucNP = Q_temp*Km_glucNPf*_Pn
+
+## The $k_m$ value for NAD in the TCA cycle
+## ~ mM
+## $k_{m,tcaN}$
+## + Metabolism
+Km_NAD = Q_temp*Km_NADf*NADn
+
+## The $k_m$ value for pyruvate in the TCA cycle
+## ~ mM
+## $k_{m,tcaP}$
+## + Metabolism
+Km_Py = Q_temp*Km_Pyf*_Py0n
+
+## Normal reverse reaction rate for the reduction of Cu$_A$.
+## ~ s$^{-1}$
+## $k_{-1,n}$
+## + Metabolism
+kn1_n = f_n/(Keq1_n*a_n-ared_n)
+
+## Reverse reaction rate for the reduction of a$_3$
+## ~ s$^{-1}$
+## $k_{-2,n}$
+## + Metabolism
+kn2_n = f_n/(Keq2_n*ared_n*b_n-a_n*bred_n)
+
+## The backward reaction rate in which phosphocreatine combaines with ADP to give creatine and ATP
+## ~ $mM^{-1}s^{-1}$
+## $k^{-}_{PCr}$
+## + Metabolism
+k_nPCrATP = Q_temp*log(2.0)/((k_PCrATP_eq*(_PCrn+_ADPn+(_Hyn/(R_Hic)))+_Crn+_ATPn)*k_PCrATP_ht)
+
+## The backward reaction rate in the pyruvate lactate equilibrium
+## ~ $mM^{-1}s^{-1}$
+## $k^{-}_{pl}$
+## + Metabolism
+k_nPytoLac = Q_temp*k_PytoLac_ht
+
+## Equilibrium of the reaction in which phosphocreatine combines with ADP to give creatine and ATP
+## ~ $mM^{-1}$
+## $K_{eq,PCr}$
+## + Metabolism
+k_PCrATP_eq = k_PCrATP_eq_ef/_Hyn
+
+## The forward reaction rate in which phosphocreatine combaines with ADP to give creatine and ATP
+## ~ $mM^{-2}s^{-1}$
+## $k_{PCr}$
+## + Metabolism
+k_PCrATP = Q_temp*log(2.0)/((_PCrn+_ADPn+(_Hyn/(R_Hic))+(_Crn+_ATPn)/k_PCrATP_eq)*k_PCrATP_ht)
+
+## Normal reaction rate of the TCA cycle
+## ~ $mMs^{-1}$
+## $k_{TCA_{n}}$
+## + Metabolism
+k_TCAn = (1.00/3.00)*(CMRO2_n/Vol_mit)
+
+## Normal fraction of proton entry into mitochondria which is due to ADP phosphorylation.
+## ~ dimensionless
+## $L_{CV,frac}$
+## + Metabolism
+L_CVfrac = 1.0 - L_lkfrac
+
+## The maximum rate of proton flow through Complex V.
+## ~ mM s$^{-1}$
+## $L_{CV,max}$
+## + Metabolism
+L_CVmax = L_CVn/L_CV0
+
+## The resting flow of protons into the matrix through Complex V.
+## ~ mM s$^{-1}$
+## $L_{CV,n}$
+## + Metabolism
+L_CVn = L_n*L_CVfrac
+
+## Constant controlling the depending of the leak rate $L_{lk}$ on $\Delta p$.
+## ~ mM s$^{-1}$
+## $L_{lk0}$
+## + Metabolism
+L_lk0 = L_lkn/(exp(Dp_n*k_lk2)-1.0)
+
+## The resting flow of protons into the matrix via leak channels.
+## ~ mM s$^{-1}$
+## $L_{lk,n}$
+## + Metabolism
+L_lkn = L_n*L_lkfrac
+
+## The normal total flow of protons back into mitochondria.
+## ~ mM s$^{-1}$
+## $L_{n}$
+## + Metabolism
+L_n = p_tot*f_n
+
+## Normal concentration of NADH in the mitochondria.
+## ~ mM
+## $[NADH]_n$
+## + Metabolism
+NADHn = NADpool - NADn
+
+## Normal concentration of NAD in the mitochondria
+## ~ mM
+## $[NAD]_n$
+## + Metabolism
+NADn = NADpool/(1.0 + 1.0/NADNADHratn)
+
+## Arterial dissolved oxygen concentration
+## ~ mM
+## $[O_{2,a}]$
+## + Autoregulation
+O2a = phi*pow(SaO2sup/(1.0-SaO2sup), 1.0/n_h)
+
+## Initial capillary oxygen concentration.
+## ~ mM
+## $[O_{2,c}]_{init}$
+## + Oxygen
+O2c_init = O2c_n
+
+## Normal capillary oxygen concentration.
+## ~ mM
+## $[O_{2,c}]_n$
+## + Oxygen
+O2c_n = phi*pow(ScO2_n/(1.0-ScO2_n), 1.0/n_h)
+
+## Initial mitochondrial oxygen concentration.
+## ~ mM
+## $[O_{2}]_{init}$
+## + Metabolism
+O2_init = O2_n
+
+## Normal value for the average pressure in the blood vessels.
+## ~ mm Hg
+## $P_{1,n}$
+## + Autoregulation
+P_1n = (P_a2n+P_vn)/2.0
+
+## Number of protons pumped during the reduction of $Cu_A$
+## ~ dimensionless
+## $p_1$
+## + Metabolism
+p1 = p_tot - p23
+
+## Number of protons pumped during the reaction in which $O_2$ oxidises cyt a$_{3,r}$ and $p_3$ protons are pumped out of the matrix
+## ~ dimensionless
+## $p_3$
+## + Metabolism
+p3 = p23-p2
+
+## Normal pressure at the start of the cerebral artery compartment
+## ~ mmHg
+## $P_{a2}$
+## + Autoregulation
+P_a2n = (G0n*P_an+Gn*P_vn)/(Gn+G0n)
+
+## Partial pressure of oxygen in the arteries
+## ~ mmHg
+## $PaO_2$
+## + Autoregulation
+PaO2 = O2a/henry_O2
+
+## Normal concentration of inorganic phosphate in the cytoplasm
+## ~ mM
+## $[P_{i}]$
+## + Metabolism
+_Pn = _PCrn/PCrPn
+
+## Normal venous blood pressure.
+## ~ mmHg
+## $P_{v,n}$
+## + Link
+P_vn = (Gtn/G_v)*(P_an-P_vs)+P_vs
+
+## Radius of the supplying artery compartment
+## ~ dimensionless
+## $r0$
+## + Autoregulation Insult_Submodel
+r0 = (1.0-rfrac*rocc)
+
+## Fraction by which the radius of the supplying artery compartment is reduced if the carotid arteries are fully occluded
+## ~ dimensionless
+## $r_{frac}$
+## + Autoregulation Insult_Submodel
+rfrac = 1.0-sqrt(sqrt(1.0-c_frac))
+
+## Initial blood vessel radius.
+## ~ cm
+## $r_{init}$
+## + Autoregulation
+r_init = r_n
+
+## Normal capillary oxygen saturation.
+## ~ dimensionless
+## $S_{c,O_2,n}$
+## + Oxygen
+ScO2_n = (SaO2_n + SvO2_n)/2.0
+
+## Normal elastic stress in blood vessel walls.
+## ~ mm Hg
+## $\sigma_{e,n}$
+## + Autoregulation
+sigma_en = sigma_e0*(exp(K_sigma*(r_n-r_0)/r_0) - 1.0) - sigma_coll
+
+## Normal venous oxygen saturation.
+## ~ dimensionless
+## $S_{v,O_2,n}$
+## + Oxygen
+SvO2_n = XOv_n/Xtot_n
+
+## Normal elastic tension in the blood vessel walls.
+## ~ mm Hg cm
+## $T_{e,n}$
+## + Autoregulation
+T_en = sigma_en*h_n
+
+## Maximal muscular tension under normal regulatory stimulus ($\mu = \mu_n$).
+## ~ mm Hg cm
+## $T_{max,0}$
+## + Autoregulatio
+T_max0 = T_maxn/(1.0+k_aut*mu_n)
+
+## Normal maximal muscular tension.
+## ~ mm Hg cm
+## $T_{max,n}$
+## + Autoregulation
+T_maxn = T_mn/exp(-pow(fabs((r_n-r_m)/(r_t-r_m)), n_m))
+
+## Normal muscular tension in the blood vessel walls.
+## ~ mm Hg cm
+## $T_{m,n}$
+## + Autoregulation
+T_mn = (P_1n-P_icn)*r_n - T_en
+
+## Normal filtered carbon dioxide partial pressure.
+## ~ mmHg
+## $\nu_{CO_2,n}$
+## + Autoregulation
+v_cn = Pa_CO2n
+
+## Rate term for glucose transported into the cell
+## This is a michaelis menten term, but fixed because blood glucose concentration is fixed
+## ~ dimensionless
+## $V_{glucosein}$
+## + Metabolism
+v_gluc_in = gluc_c / (k_gluc_trans+ gluc_c)
+
+## Vmax for glucose transport both in and out of the cell from the capillary
+## ~ mMs$^{-1}$
+## $v_{glut}$
+## + Metabolism
+v_gluc_trans = CMRglucn/(v_gluc_in - _glucn/(_glucn+k_gluc_trans))
+
+## Rate of lactate transport into the cell
+## ~ dimensionless
+## $V_{lac,in}$
+## + Metabolism
+v_lac_in = lac_c/(k_lac_trans+lac_c)
+
+## Rate constant for lactate transport. If less than 0, is NaN
+## ~ mMs$^{-1}$
+## $v_{MCT}$
+## + Metabolism
+v_lac_trans = (2.0*CMRglucn-CMRO2_n/3.0)/((_L0n*_Hyn)/((_L0n+k_lac_trans)*(_Hyn+k_lac_h))-v_lac_in)
+v_lac_trans > 0
+
+## Normal Vmax for glycolysis which is assumed to be modified by the ratio of AMP to ATP
+## ~ mMs$^{-1}$
+## $v_{glyc,n}$
+## + Metabolism
+Vmax_glucNn =  CMRglucn / (glyc_gn*glyc_pn*glyc_an*glyc_nn)
+
+## Normal relative arterial blood volume.
+## ~ dimensionless
+## $V_{a,n}$
+## + NIRS
+Vol_artn = Vol_totn/(1.0+VArat_n)
+
+
+## Normal relative venous blood volume.
+## ~ dimensionless
+## $V_{v,n}$
+## + NIRS
+Vol_venn = Vol_totn*(VArat_n/(1.0+VArat_n))
+
+## Normal filtered capillary oxygen concentration.
+## ~ mM
+## $\nu_{O_2,n}$
+## + Autoregulation
+v_on = O2c_n
+
+## Normal filtered arterial blood pressure.
+## ~ mmHg
+## $\nu_{P_a,n}$
+## + Autoregulation
+v_pn = P_a2n
+
+## Vmax for the TCA cycle
+## ~ mMs$^{-1}$
+## $v_{TCA}$
+## + Metabolism
+v_TCA = k_TCAn/(_Py0n*NADn)*(Km_NAD + NADn)*(Km_Py+_Py0n)
+
+## Normal filtered demand.
+## ~ dimensionless
+## $\nu_{u,n}$
+## + Autoregulation
+v_un = u_n
+
+## Normal unsaturated arterial haemoglobin
+## ~ mM
+## $[HHb_{a}]_{n}$
+## + Oxygen
+Xa_n = Xtot_n*(1.0-SaO2_n)
+
+## Unsaturated arterial haemoglobin
+## ~ mM
+## $[HHb_{a}]$
+## + Oxygen
+Xa = Xtot*(1.0-SaO2sup)
+
+## Normal arterial concentration of oxygen bound to haemoglobin.
+## ~ mM
+## $[HbO_{2,a}]_{n}$
+## + Oxygen
+XOa_n = Xtot_n*SaO2_n
+
+## Arterial concentration of oxygen bound to haemoglobin.
+## ~ mM
+## $[HbO_{2,a}]$
+## + Oxygen
+XOa = Xtot*SaO2sup
+
+## Initial concentration of venous oxyhaemoglobin
+## ~ mM
+## $[HbO_{2,v}]_{init}$
+## + Oxygen
+XOv_init = XOv_n
+
+## Normal concentration of venous oxyhaemoglobin
+## ~ mM
+## $[HbO_{2,v}]_{n}$
+## + Oxygen
+XOv_n = (CBFn*XOa_n-J_O2n)/CBFn
+
+## Total haemoglobin concentration in the arteries and veins
+## ~ mM
+## $[Hbtot]$
+## + Oxygen
+Xtot = Xtot_n
+
+## Normal unsaturated venous haemoglobin
+## ~ mM
+## $[HHb_{v}]_{n}$
+## + Oxygen
+Xv_n = Xtot_n-XOv_n
+
+
+# Fixed value parameters
+
+## Normal concentration of ATP in the cytoplasm
+## ~ mM
+## $[ATP]_n$
+## + Metabolism
+_ATPn := 2.2
+
+## Normal concentration of ADP in the cytoplasm
+## ~ mM
+## $[ADP]_n$
+## + Metabolism
+_ADPn := 0.012
+
+## Normal oxidised fraction of Cu$_A$.
+## ~ dimensionless
+## $Cu_{a,frac,n}$
+## + Metabolism
+a_frac_n := 0.67
+
+## Normal blood volume as a fraction of brain tissue volume
+## ~ dimensionless
+## $V_{blood,n}$
+## + Autoregulation
+blood_frac := 0.0325
+
+## Parameter controlling the sensitivity of the reduction of a$_3$ to $\Delta{}p$.
+## ~ mV$^{-1}$
+## $c_3$
+## + Metabolism
+c3 := 0.11
+
+## Normal cerebral blood flow.
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ s$^{-1}$
+## $CBF_n$
+## + Oxygen
+CBFn := 0.008
+
+## Scale constant relating blood flow to arterial velocity.
+## ~ cm
+## $CBFscale$
+## + NIRS_blood
+CBFscale := 5000.0
+
+## Buffering capacity of protons in mitochondria.
+## ~ dimensionless
+## $C_{buffi,m}$
+## + Metabolism
+C_buffi := 0.022
+
+## Buffering capacity of protons in cytoplasm.
+## ~ dimensionless
+## $C_{buffi,c}$
+## + Metabolism
+C_buffic := 0.025
+
+## An arbitrary baseline offset to the CCO signal
+## ~ $\mu M$
+## $\Delta{}oxCCO_{offset}$
+## + Measurement NIRS
+CCO_offset := 0.0
+
+## Fraction of blood normally passing through carotid arteries
+## ~ dimensionless
+## $occ_frac}$
+## + Insult_submodel
+c_frac := 0.8
+
+## Capacitance of the mitochondrial inner membrane.
+## ~ mM mV$^{-1}$
+## $C_{im}$
+## + Metabolism
+C_im := 0.00675
+
+## Parameter controlling sensitivity of $k_1$ to $\Delta{}p$.
+## ~ mV$^{-1}$
+## $c_{k_1}$
+## + Metabolism
+ck1 := 0.01
+
+## Parameter controlling sensitivity of $k_2$ to $\Delta{}p$.
+## ~ mV$^{-1}$
+## $c_{k_2}$
+## + Metabolism
+ck2 := 0.02
+
+## Normal cerebral metabolic rate of glucose
+## ~ mMs$^{-1}$
+## $CMR_{gluc,n}$
+## + Metabolism
+CMRglucn := 0.0044
+
+## Normal metabolic rate of oxygen consumption.
+## ~ mM s$^{-1}$
+## $CMRO_{2,n}$
+## + Link
+CMRO2_n := 0.02
+
+## Normalised compliance of the veins
+## ~ mmHg$^{-1}$
+## $C_v$
+## + Autoregulation
+C_v := 0.047
+
+## Control parameter representing the action of Complex V inhibitors.
+## ~ dimensionless
+## $CV_{inh}$
+## + Metabolism
+CVinh := 1.0
+
+## Concentration of cytochrome c oxidase in tissue.
+## ~ mM
+## $CCO_{tis}$
+## + Metabolism
+cytox_tot_tis := 0.0022
+
+## An arbitrary baseline offset to the Hbdiff signal
+## ~ $\mu M$
+## $\Delta{}Hbdiff_{offset}$
+## + Measurement NIRS
+DHbdiff_offset := 0.0
+
+## An arbitrary baseline offset to the HbO$_2$ signal
+## ~ $\mu M$
+## $\Delta{}HbO_2_{offset}$
+## + Measurement NIRS
+DHbO2_offset := 0.0
+
+## An arbitrary baseline offset to the HbT signal
+## ~ $\mu M$
+## $\Delta{}HbT_{offset}$
+## + Measurement NIRS
+DHbT_offset := 0.0
+
+## An arbitrary baseline offset to the HHb signal
+## ~ $\mu M$
+## $\Delta{}HHb_{offset}$
+## + Measurement NIRS
+DHHb_offset := 0.0
+
+## Difference between $\Delta{}p_{30}$ and  normal $\Delta{}p$.
+## ~ mV
+## $\Delta{}p_{3,corr}$
+## + Metabolism
+Dp3_corr := -25.0
+
+## Value of $\Delta{}p$ at which $L_{CV}$ is zero under normal demand.
+## ~ mV
+## $\Delta{}p_{CV,0}$
+## + Metabolism
+#Dp_CV0 := 90.0
+
+## Constant in the mitochondrial buffering relationship
+## ~ dimensionless
+## $dpH$
+## + Metabolism
+dpH := 0.001
+
+## Standard redox potential for cytochrome a$_3$.
+## ~ mV
+## $\mathcal{E}_0 (\mathrm{a}_3)$
+## + Metabolism
+E_a30 := 350.0
+
+## Standard redox potential for Cu$_A$.
+## ~ mV
+## $\mathcal{E}_0 (\mathrm{Cu}_A)$
+## + Metabolism
+E_c0 := 247.0
+
+## Standard redox potential for NADH.
+## ~ mV
+## $\mathcal{E}_0 (\mathrm{NADH})$
+## + Metabolism
+E_N0 := -320.0
+
+## Faraday constant
+## C mmol$^{-1}$
+## $F$
+## + Metabolism
+Fdy := 96.4853
+
+## Ratio between conductance of the cerebral  arteries and the supplying artery compartment
+## ~ dimensionless
+## $G_{0,frac}$
+## + Autoregulation
+G0rat := 5.0
+
+## Concentration of glucose in the blood
+## ~ mM
+## $[gluc_c]$
+## + Metabolism
+gluc_c := 5.3
+
+## Normal cellular concentration of glucose in the blood
+## ~ mM
+## $[gluc]_{n}4
+## + Metabolism
+_glucn := 1.2
+
+## Standard Gibbs free energy of ATP hydrolysis
+## ~ J mol$^{-1}$
+## $\Delta{}G^{\circ}4
+## + Metabolism
+Gp0 := -30500.0
+
+## Normal ratio of conductances between arteries and veins
+## ~ dimensionless
+## $G_{VArat,n}$
+## + Autoregulation
+G_VAratn := 4.0
+
+## Thickness of the blood vessel walls at which radius is $r_0$.
+## ~ cm
+## $h_{0}$
+## + Autoregulation
+h_0 := 0.003
+
+## Constant setting relationship between oxygen saturation and oxygen concentration in artery
+## ~ mM mmHg$^{-1}$
+## $k_{H,O_{2}}$
+## + Oxygen
+henry_O2 := 1.4000e-03
+
+## Parameter describing how strongly the AMP/ATP ratio inhibits the conversion of glucose to pyruvate
+## ~ dimensionless
+## $I$
+## + Metabolism
+Inh_glucN := 3.0
+
+## Apparent second order rate constant for reduction of O$_2$ at zero $\Delta{}p$.
+## ~ s$^{-1}$
+## $k_{3,0}$
+## + Metabolism
+k30 := 2.5e+05
+
+## Forward rate constant for the conversion of two molecules of ADP to one of ATP and one of AMP
+## ~ mM$^{-1}$ s$^{-1}$
+## $k_{AK}
+## + Metabolism
+k_ADPATP = Q_temp*1055.0
+
+## Overall functioning of autoregulatory response.
+## ~ dimensionless
+## $k_{aut}$
+## + Autoregulation
+k_aut := 1.0
+
+## Equilibrium constant for the malate-aspartate shuttle
+## ~ dimensionless
+## $Keq_{MAshut}$
+## + Metabolism
+Keq_MAshut := 10.0
+
+## Km for the transport of glucose in and out of the cell
+## ~ mM
+## $k_{glut}$
+## + Metabolism
+k_gluc_trans = Q_temp*6.2
+
+## Km for the transport of a proton coupled with lactate in and out of the cell
+## ~ mM
+## $k_{MCT,H^{+}}$
+## + Metabolism
+k_lac_h = Q_temp*0
+
+## Km for the transport of lactate in and out of the cell
+## ~ mM
+## $k_{MCT}$
+## + Metabolism
+k_lac_trans = Q_temp*2.0
+
+## Second constant controlling rate of L_lk of $\Delta{}p$
+## ~ mV$^{-1}$
+## $k_{lk2}$
+## + Metabolism
+k_lk2 := 0.038
+
+## Km for ATP use as a fraction of normal ATP concentration
+## ~ dimensionless
+## $k_{m,ATP}$
+## + Metabolism
+km = Q_temp*0.025
+
+## Km for ADP in glycolysis as a fraction of normal ADP concentration
+## ~ dimensionless
+## $k_{m,glycA,f}$
+## + Metabolism
+Km_glucNAf = Q_temp*0.2
+
+## Km for glucose in the caricature of glycolysis
+## ~ dimensionless
+## $k_{m,glycG}$
+## + Metabolism
+Km_glucNgl = Q_temp*0.5000e-01
+
+## Km for NAd in the caricature of glycolysis
+## ~ dimensionless
+## $k_{m,glycN}$
+## + Metabolism
+Km_glucNN = Q_temp*0.0
+
+## Km for inorganic phosphate in glycolysis as a fraction of normal phosphate concentration
+## ~ dimensionless
+## $k_{m,glycP,f}$
+## + Metabolism
+Km_glucNPf = Q_temp * 0.2
+
+## Km for NAd in the TCA cycle as a fraction of normal NAD concentration
+## ~ dimensionless
+## $k_{m,tcaN,f}$
+## + Metabolism
+Km_NADf = Q_temp*0.6
+
+## Km for pyruvatein the TCA cycle as a fraction of normal pyruvate concentration
+## ~ dimensionless
+## $k_{m,gtcaP,f}$
+## + Metabolism
+Km_Pyf = Q_temp*0.005
+
+## Backward rate constant for the conversion of two molecules of ADP to one of ATP and one of AMP
+## ~ mM$^{-1}$s$^{-1}$
+## $k^{-}_{AK}
+## + Metabolism
+k_nADPATP = Q_temp*379.0
+
+## Effective equilibrium constant for the reaction in which phosphocreatine combines with ADP to give creatine and ATP
+## ~ dimensionless
+## $K^{*}_{eq,PCr}$
+## + Metabolism
+k_PCrATP_eq_ef := 166.0
+
+## Halftime for the reaction in which phosphocreatine combines with ADP to give creatine and ATP
+## ~ s
+## $t_{1/2,PCr}$
+## + Metabolism
+k_PCrATP_ht := 0.00002
+
+## Time constant for pyruvate to lactate interconvertion
+## ~ mM$^{-1}$s$^{-1}$
+## $t_{1/2,pl}$
+## + Metabolism
+k_PytoLac_ht := 10.0
+
+## Parameter controlling the sensitivity of $\sigma_e$ to vessel radius.
+## ~ dimensionless
+## $K_{\sigma}$
+## + Autoregulation
+K_sigma := 10.0
+
+## Control parameter simulating the effect of adding uncouplers to the system.
+## ~ dimensionless
+## $k_{unc}$
+## + Metabolism
+k_unc := 1.0
+
+## Normal concentration of lactate in the cytoplasm
+## ~ mM
+## $[lac]_{n}$
+## + Metabolism
+_L0n := 3.0
+
+## Capillary lactate concentration
+## ~ mM
+## $[lac_{c}]$
+## + Metabolism
+lac_c := 1.0
+
+## Normal Complex V flux as a fraction of maximum possible flux.
+## ~ dimensionless
+## $L_{CV,0}$
+## + Metabolism
+L_CV0 := 0.4
+
+## Normal fraction of proton entry into mitochondria which is via leak channels.
+## ~ dimensionless
+## $L_{lk,frac}$
+## + Metabolism
+L_lkfrac := 0.25
+
+
+## Upper bound for the transformed stimulus $\mu$.
+## ~ dimensionless
+## $\mu_{max}$
+## + Autoregulation
+mu_max := 1
+
+## Lower bound for the transformed stimulus $\mu$.
+## ~ dimensionless
+## $\mu_{min}$
+## + Autoregulation
+mu_min := -1
+
+## Normal value for the transformed stimulus $\mu$.
+## ~ dimensionless
+## $\mu_n$
+## + Autoregulation
+mu_n := 0.0
+
+## Number of protons passing through Complex V for each ATP synthesised
+## ~ dimensionless
+## $n_a$
+## + Metabolism
+na := 4.33
+
+## Normal concentration of NAD in the cytoplasm
+## ~ mM
+## $[NAD_{cyt,n}]$
+## + Metabolism
+NADcytn := 359.0
+
+## Normal concentration of NADH in the cytoplasm
+## ~ mM
+## $[NADH_{cyt,n}]$
+## + Metabolism
+NADHcytn :=  50.0
+
+## Normal NAD/NADH ratio.
+## ~ dimensionless
+## $\frac{[NAD]_n}{[NADH]_n}$
+## + Metabolism
+NADNADHratn := 9.0
+
+## Total mitochondrial NAD + NADH concentration
+## ~ mM
+## $N_t$
+## + Metabolism
+NADpool := 3.0
+
+## Hill coefficient for oxygen dissociation from haemoglobin.
+## ~ dimensionless
+## $n_{h}$
+## + Oxygen
+n_h := 2.5
+
+## Exponent in the muscular tension relationship.
+## ~ dimensionless
+## $n_{m}$
+## + Autoregulation
+n_m := 1.833
+
+## Normal mitochondrial oxygen concentration.
+## ~ mM
+## $O_{2,n}$
+## + Metabolism
+O2_n := 0.024
+
+## Total protons removed from the mitochondrial matrix by the reductions of a$_3$ and O$_2$.
+## ~ dimensionless
+## $p_{23}$
+## + Metabolism
+p23 := 4.0*2.0
+
+## Proton cost of the reaction reducing a$_3$.
+## ~ dimensionless
+## $p_2$
+## + Metabolism
+p2 := 4.0*1.0
+
+## Mean arterial blood pressure.
+## ~ mmHg
+## $P_{a}$
+## + Link
+P_a := 50.0
+
+## Arterial partial pressure of carbon dioxide.
+## ~ mmHg
+## $Pa_{CO_2}$
+## + Autoregulation
+Pa_CO2 := 40.0
+
+## Normal arterial partial pressure of carbon dioxide.
+## ~ mmHg
+## $Pa_{CO_{2,n}}$
+## + Autoregulation
+Pa_CO2n := 40.0
+
+## Normal arterial blood pressure.
+## ~ mmHg
+## $P_{a,n}$
+## + Link
+P_an := 50.0
+
+## Protons pumped by Complex I.
+## ~ dimensionless
+## $p_{C1}$
+## + Metabolism
+p_C1 := 8.0
+
+## Protons pumped by Complex III.
+## ~ dimensionless
+## $p_{C3}$
+## + Metabolism
+p_C3 := 8.0-4.0
+
+## Normal concentration of phosphocreatine in the cytoplasm
+## ~ mM
+## $[PCr]_n$
+## + Metabolism
+_PCrn := 2.6
+
+## Normal Pcr/Pi concentration in the cytoplasm
+## ~ Dimensionless
+## $[PCr]_n/ [P_i]_n$
+## + Metabolism
+PCrPn := 2.73
+
+## Oxygen concentration at half-maximal saturation.
+## ~ mM
+## $\phi$
+## + Oxygen
+phi := 0.036
+
+## Normal mitochondrial pH.
+## ~ dimensionless
+## $pH_{m,n}$
+## + Metabolism
+pH_mn := 7.4
+
+## Normal extra-mitochondrial pH.
+## ~ dimensionless
+## $pH_{o,n}$
+## + Metabolism
+pH_on := 7.0
+
+
+## Intracranial pressure.
+## ~ mm Hg
+## $P_{ic}$
+## + Autoregulation
+P_ic := 4.5
+
+## Normal intracranial pressure.
+## ~ mm Hg
+## $P_{icn}$
+## + Autoregulation
+P_icn := 4.5
+
+## Total protons removed from the mitochondrial matrix by the three modelled
+## electron transport reactions.
+## ~ dimensionless
+## $p_{tot}$
+## + Metabolism
+p_tot := 18.40
+
+## Pressure in the venous sinuses
+## ~ mmHg
+## $P_{vs}$
+## + Autoregulation
+P_vs := 1.5
+
+##  Normal concentration of pyruvate ions in the cytoplasm
+## mM
+## $[Py]_n$
+## + Metabolism
+_Py0n := 0.1
+
+## Special radius in the elastic tension relationship
+## ~ cm
+## $r_{0}$
+## + Autoregulation
+r_0 := 0.0126
+
+
+## Autoregulatory reactivity to carbon dioxide.
+## ~ dimensionless
+## $R_{CO_2}$
+## + Autoregulation
+R_autc := 2.2
+
+## Autoregulatory reactivity to oxygen.
+## ~ dimensionless
+## $R_{O_2}$
+## + Autoregulation
+R_auto := 1.5
+
+## Autoregulatory reactivity to blood pressure.
+## ~ dimensionless
+## $R_{P_a}$
+## + Autoregulation
+R_autp := 4
+
+## Autoregulatory reactivity to demand.
+## ~ dimensionless
+## $R_{u}$
+## + Autoregulation
+R_autu := 0.0
+
+## Parameter controlling the ratio of maximal to minimal rates of oxidative phosphorylation.
+## ~ dimensionless
+## $r_{CV}$
+## + Metabolism
+r_CV := 5.0
+
+## Vessel radius at which muscular tension is maximal.
+## ~ cm
+## $r_{m}$
+## + Autoregulation
+r_m := 0.027
+
+## Normal effective blood vessel radius.
+## ~ cm
+## $r_n$
+## + Autoregulation
+r_n := 0.0187
+
+## Radius in the muscular tension relationship.
+## ~ cm
+## $r_{t}$
+## + Autoregulation
+r_t := 0.018
+
+## Normal arterial oxygen saturation.
+## ~ dimensionless
+## $S_{a,O_2,n}$
+## + Oxygen
+SaO2_n := 0.96
+
+## Arterial oxygen saturation.
+## ~ dimensionless
+## $S_{a,O_2}$
+## + Oxygen
+SaO2sup := SaO2_n
+
+## Normal capillary oxygen saturation.
+## ~ dimensionless
+## $S_{c,O_2,n}$
+## + Oxygen
+ScO2_n := (SaO2_n + SvO2_n) / 2
+
+## Pressure at which blood vessels collapse.
+## ~ mm Hg
+## $\sigma_{coll}$
+## + Autoregulation
+sigma_coll := 62.79
+
+## Parameter in the elastic tension relationship.
+## ~ mm Hg
+## $\sigma_{e,0}$
+## + Autoregulation
+sigma_e0 := 0.1425
+
+## Filter time constant for stimulus effect of carbon dioxide.
+## ~ s
+## $\tau_{CO_2}$
+## + Autoregulation
+t_c := 5.0
+
+## Filter time constant for stimulus effect of capillary oxygen.
+## ~ s
+## $\tau_{O_2}$
+## + Autoregulation
+t_o := 20
+
+## Filter time constant for stimulus effect of blood pressure.
+## ~ s
+## $\tau_{P_a}$
+## + Autoregulation
+t_p := 5
+
+## Filter time constant for stimulus effect of demand.
+## ~ s
+## $\tau_{u}$
+## + Autoregulation
+t_u := 0.5
+
+## Parameter indicating metabolic demand.
+## ~ dimensionless
+## $u$
+## + Link
+u := u_n
+
+## Normal demand.
+## ~ dimensionless
+## $u_{n}$
+## + Link
+u_n := 1
+
+## Normal volume ratio of veins to arteries in brain tissue.
+## ~ dimensionless
+## $VArat_{n}$
+## + NIRS
+VArat_n := 3.0
+
+## Fraction of brain tissue volume that is mitochondria.
+## ~ dimensionless
+## $Vol_{mit}$
+## + Metabolism
+Vol_mit := 0.067
+
+## Normal normalised total blood volume
+## ~ dimensionless
+## $V_{t,n}$
+## + NIRS
+Vol_totn := 1.0
+
+## Normal total concentration of haemoglobin O$_2$ binding sites in blood (4 times haemoglobin concentration).
+## ~ mM
+## $Hb_{tot,n}$
+## + Oxygen
+Xtot_n := 5.4
+
+
+# Equations modified to include temperature
+
+
+# Two alternative diffusion equation versions
+
+## Diffusion rate for oxygen between capillaries and mitochondria.
+## ~ s$^{-1}$
+## $D_{O_{2}}$
+## + Link
+#D_O2 = (k_diff * J_O2n)/(O2c_n-O2_n)
+D_O2 = (Q_temp * J_O2n)/(O2c_n-O2_n)
+
+
+# Temperature related parameters
+
+## Temperature-related rate reaction modulator
+## ~ dimensionless
+## $Q_{temp}$
+## + Hypothermia
+Q_temp = pow(Q_10, (temp-temp_n)/10)
+
+## Ratio of reaction rates measured for the same reaction at two temperatures
+## separated by $10^{\circ}C$. Typically between 2 and 3.
+## ~ dimensionless
+## $Q_{10}$
+## + Hypothermia
+Q_10 := 2.23
+
+## Temperature modulated diffusion rate parameter
+## ~ dimensionless
+## $k_{diff}$
+## + Hypothermia
+k_diff = 1/temp * q_diff
+k_diff > 0
+
+## Parameter defining how much a change in temperature impacts diffusion rate parameter
+## ~ $^{\circ}C^{-1}$
+## $q_{diff}$
+## + Hypothermia
+q_diff := 1
+q_diff > 0
+
+## Body temperature
+## ~ $^{\circ}C$
+## $T_{body}$
+## + Hypothermia
+temp := 37
+
+## Normal body temperature
+## ~ $^{\circ}C$
+## $T_{body,n}$
+## + Hypothermia
+temp_n := 37
+
+## Proportionality constant in calculation of driving forces due to concentration differences.
+## Defined as $2.303 \times RT/F$, where $F$ is Faraday's constant ($9.65 \times 10^4$), $R$
+## the ideal gas constant ($8314 mJ K^{-1} mol^{-1}$) and $T$ is the absolute temperature ($298K$)
+## ~ mV
+## $Z$
+## + Metabolism
+Z := 2.303*(8314/96500) * (temp + 273.15)
