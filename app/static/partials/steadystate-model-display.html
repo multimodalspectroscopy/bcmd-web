@@ -6,11 +6,24 @@
 <div class="row text-center">
     <h3> Arterial Oxygen Saturation - SaO2sup </h3>
     <steady-state-line-graph data="{{modelOutput.sao2}}" select-x="sao2" select-y="CBF" direction="{{direction}}"></steady-state-line-graph>
+    <div class="col-md-offset-4 col-md-4 text-center">
+    <button class="btn btn-default" ng-click="downloadCSV({ filename: 'sao2-data.csv', csv: sao2Out });">Download Steady State Data</button>
+    </div>
+
     <h3> Blood Pressure - Pa </h3>
     <steady-state-line-graph data="{{modelOutput.pa}}" select-x="pa" select-y="CBF" direction="{{direction}}"></steady-state-line-graph>
+    <div class="col-md-offset-4 col-md-4 text-center">
+    <button class="btn btn-default" ng-click="downloadCSV({ filename: 'pa-data.csv', csv: paOut });">Download Steady State Data</button>
+    </div>
+
     <h3> Partial Pressure of CO2 - PaCO2 </h3>
     <steady-state-line-graph data="{{modelOutput.paco2}}" select-x="paco2" select-y="CBF" direction="{{direction}}"></steady-state-line-graph>
+    <div class="col-md-offset-4 col-md-4 text-center">
+    <button class="btn btn-default" ng-click="downloadCSV({ filename: 'paco2-data.csv', csv: paco2Out });">Download Steady State Data</button>
+    </div>
+
 </div>
+
 <footer>
     <div class="row">
         <div class="col-md-offset-4 col-md-4">

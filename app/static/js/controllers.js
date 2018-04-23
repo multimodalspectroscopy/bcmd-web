@@ -422,7 +422,7 @@ myApp.controller('ParameterController', ['$scope', '$http', '$parse', 'RunModelD
                     delete $scope.parameters[p]
                 }
             }
-            
+
             RunModelData.setKey($scope.parameters, "parameters");
         };
 
@@ -638,12 +638,33 @@ myApp.controller('SteadyStateController', ['$scope', '$http', '$parse', 'RunMode
 myApp.controller("SteadyStateDisplayController", ['$scope', '$http', '$parse', '$window', 'RunModelData',
     function($scope, $http, $parse, $window, RunModelData) {
 
+        $scope.downloadCSV = function(args) {
+            var filename, link;
+            var csv = args.csv;
+            if (csv === null) return;
+            filename = args.filename || 'export.csv';
+
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+            var data = encodeURI(csv);
+
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        };
 
         $scope.modelOutput = RunModelData.getModelOutput();
         $scope.direction = RunModelData.getDirection();
-        console.log($scope.modelOutput);
+        console.log($scope.modelOutput.pa);
         var keys = Object.keys($scope.modelOutput);
-        $scope.csvOut = jsonParseToCSV($scope.modelOutput);
+        $scope.paOut = jsonParseToCSV($scope.modelOutput.pa);
+        $scope.sao2Out = jsonParseToCSV($scope.modelOutput.sao2);
+        $scope.paco2Out = jsonParseToCSV($scope.modelOutput.paco2);
         $scope.modelVariables = Object.keys($scope.modelOutput);
     }
 ]);
