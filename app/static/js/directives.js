@@ -79,16 +79,12 @@ myApp.directive('lineGraph', [function () {
                 .style('width', '100%');
 
 
-            // Browser onresize event
-            window.onresize = function () {
-                scope.$apply();
-            };
             // Watch for resize event
             scope.$watch(function () {
-                console.log(angular.element(window)[0].innerWidth);
                 return angular.element(window)[0].innerWidth;
             }, function () {
-                scope.render(scope.keys);
+
+                scope.render(keys);
             });
 
             // Check for changes in bound data
@@ -260,7 +256,7 @@ myApp.directive('steadyStateLineGraph', [function () {
             scope.$watch(function () {
                 return angular.element(window)[0].innerWidth;
             }, function () {
-                scope.render(scope.keys);
+                scope.render(keys);
             });
             // Check for changes in bound data
             scope.$watch('selectX', function (newVal, oldVal) {
