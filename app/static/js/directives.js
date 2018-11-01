@@ -1,22 +1,22 @@
 /*jshint esversion: 6 */
-myApp.directive('fileReader', function() {
+myApp.directive('fileReader', function () {
     return {
         scope: {
             fileReader: "=",
             parseResult: "="
         },
-        link: function(scope, element) {
+        link: function (scope, element) {
             scope.fileReader = {
                 header: null,
                 contents: []
             };
-            $(element).on('change', function(changeEvent) {
+            $(element).on('change', function (changeEvent) {
                 var f = changeEvent.target.files;
                 if (f.length) {
                     var r = new FileReader();
-                    r.onload = function(e) {
+                    r.onload = function (e) {
                         var contents = e.target.result;
-                        scope.$apply(function() {
+                        scope.$apply(function () {
                             result = Papa.parse(contents, {
                                 "skipEmptyLines": true
                             }).data;
@@ -34,7 +34,7 @@ myApp.directive('fileReader', function() {
     };
 });
 
-myApp.directive('peakSelect', function() {
+myApp.directive('peakSelect', function () {
     return {
         restrict: 'E',
         scope: {
@@ -43,11 +43,11 @@ myApp.directive('peakSelect', function() {
         },
         require: 'ngModel',
         templateUrl: '/static/partials/peak-select.html',
-        link: function(scope, element, attrs) {}
+        link: function (scope, element, attrs) { }
     };
 });
 
-myApp.directive('lineGraph', [function() {
+myApp.directive('lineGraph', [function () {
 
     return {
         restrict: 'EA',
@@ -56,7 +56,7 @@ myApp.directive('lineGraph', [function() {
             selectY: "@",
             selectX: "@"
         },
-        link: function(scope, element, attrs) {
+        link: function (scope, element, attrs) {
             //d3Service.d3().then(function(d3) {
             var keys = {
                 "x": scope.selectX,
@@ -65,7 +65,7 @@ myApp.directive('lineGraph', [function() {
             var data = JSON.parse(scope.data);
             var dArray = [];
             for (var x in data) {
-                data[x].forEach(function(element, idx) {
+                data[x].forEach(function (element, idx) {
                     if (typeof dArray[idx] === "undefined") {
                         dArray[idx] = {};
                     }
@@ -79,20 +79,16 @@ myApp.directive('lineGraph', [function() {
                 .style('width', '100%');
 
 
-            // Browser onresize event
-            window.onresize = function() {
-                scope.$apply();
-            };
             // Watch for resize event
-            scope.$watch(function() {
-                console.log(angular.element(window)[0].innerWidth);
+            scope.$watch(function () {
                 return angular.element(window)[0].innerWidth;
-            }, function() {
-                scope.render(scope.keys);
+            }, function () {
+
+                scope.render(keys);
             });
 
             // Check for changes in bound data
-            scope.$watch('selectX', function(newVal, oldVal) {
+            scope.$watch('selectX', function (newVal, oldVal) {
                 keys.x = newVal;
                 for (var x in keys) {
                     if (keys[x] == "") {
@@ -102,7 +98,7 @@ myApp.directive('lineGraph', [function() {
                 return scope.render(keys);
             }, true);
 
-            scope.$watch('selectY', function(newVal, oldVal) {
+            scope.$watch('selectY', function (newVal, oldVal) {
                 keys.y = newVal;
                 for (var x in keys) {
                     if (keys[x] == "") {
@@ -115,7 +111,7 @@ myApp.directive('lineGraph', [function() {
 
 
             // Custom d3 code
-            scope.render = function(keys) {
+            scope.render = function (keys) {
                 // remove all previous items before render
                 svg.selectAll('*').remove();
 
@@ -123,11 +119,11 @@ myApp.directive('lineGraph', [function() {
                 if (!keys || !data) return;
                 // Set the dimensions of the canvas / graph
                 var margin = {
-                        top: 30,
-                        right: 20,
-                        bottom: 30,
-                        left: 50
-                    },
+                    top: 30,
+                    right: 20,
+                    bottom: 30,
+                    left: 50
+                },
                     width = 600 - margin.left - margin.right,
                     height = 270 - margin.top - margin.bottom;
 
@@ -140,7 +136,11 @@ myApp.directive('lineGraph', [function() {
 
                 // Set the ranges
                 var x = d3.scaleLinear().range([0, width]).domain(d3.extent(data[keys.x]));
-                var y = d3.scaleLinear().range([height, 0]).domain([d3.min(data[keys.y]), d3.max(data[keys.y]) * 1.025]);
+                let min_y = d3.min(data[keys.y])
+                let max_y = d3.max(data[keys.y])
+                let data_range = max_y - min_y
+                // Set y data domain to be 5% larger than the data range.
+                var y = d3.scaleLinear().range([height, 0]).domain([min_y - data_range * 0.025, max_y + data_range * 0.025]);
 
                 // Define the axes
                 var xAxis = d3.axisBottom().scale(x).ticks(5);
@@ -150,10 +150,10 @@ myApp.directive('lineGraph', [function() {
 
                 // Define the line
                 var valueline = d3.line()
-                    .x(function(d) {
+                    .x(function (d) {
                         return x(d[keys.x]);
                     })
-                    .y(function(d) {
+                    .y(function (d) {
                         return y(d[keys.y]);
                     });
                 // Scale the range of the data
@@ -167,8 +167,8 @@ myApp.directive('lineGraph', [function() {
                     .attr("id", "dataPath")
                     .attr("d", valueline(dArray))
                     .attr("stroke", "steelblue")
-                    .attr("fill","none")
-                    .attr("stroke-width","2px")
+                    .attr("fill", "none")
+                    .attr("stroke-width", "2px")
                     .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
 
@@ -203,7 +203,7 @@ myApp.directive('lineGraph', [function() {
     };
 }]);
 
-myApp.directive('steadyStateLineGraph', [function() {
+myApp.directive('steadyStateLineGraph', [function () {
 
     return {
         restrict: 'EA',
@@ -213,7 +213,7 @@ myApp.directive('steadyStateLineGraph', [function() {
             selectX: "@",
             direction: "@"
         },
-        link: function(scope, element, attrs) {
+        link: function (scope, element, attrs) {
             //d3Service.d3().then(function(d3) {
             var keys = {
                 "x": scope.selectX,
@@ -226,10 +226,10 @@ myApp.directive('steadyStateLineGraph', [function() {
             // Set color range
             var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-            var objectConversion = function(d) {
+            var objectConversion = function (d) {
                 var dArray = [];
                 for (var x in d) {
-                    d[x].forEach(function(element, idx) {
+                    d[x].forEach(function (element, idx) {
                         if (typeof dArray[idx] === "undefined") {
                             dArray[idx] = {};
                         }
@@ -249,17 +249,17 @@ myApp.directive('steadyStateLineGraph', [function() {
 
 
             // Browser onresize event
-            window.onresize = function() {
+            window.onresize = function () {
                 scope.$apply();
             };
             // Watch for resize event
-            scope.$watch(function() {
+            scope.$watch(function () {
                 return angular.element(window)[0].innerWidth;
-            }, function() {
-                scope.render(scope.keys);
+            }, function () {
+                scope.render(keys);
             });
             // Check for changes in bound data
-            scope.$watch('selectX', function(newVal, oldVal) {
+            scope.$watch('selectX', function (newVal, oldVal) {
                 keys.x = newVal;
                 for (var x in keys) {
                     if (keys[x] == "") {
@@ -269,7 +269,7 @@ myApp.directive('steadyStateLineGraph', [function() {
                 return scope.render(keys);
             }, true);
 
-            scope.$watch('selectY', function(newVal, oldVal) {
+            scope.$watch('selectY', function (newVal, oldVal) {
                 keys.y = newVal;
                 for (var x in keys) {
                     if (keys[x] == "") {
@@ -286,7 +286,7 @@ myApp.directive('steadyStateLineGraph', [function() {
             };
 
             // Custom d3 code
-            scope.render = function(keys) {
+            scope.render = function (keys) {
                 // remove all previous items before render
                 svg.selectAll('*').remove();
 
@@ -294,11 +294,11 @@ myApp.directive('steadyStateLineGraph', [function() {
                 if (!keys || !data) return;
                 // Set the dimensions of the canvas / graph
                 var margin = {
-                        top: 20,
-                        right: 20,
-                        bottom: 50,
-                        left: 75
-                    },
+                    top: 20,
+                    right: 20,
+                    bottom: 50,
+                    left: 75
+                },
                     width = 600 - margin.left - margin.right,
                     mainHeight = 270 - margin.top - margin.bottom;
 
@@ -309,7 +309,7 @@ myApp.directive('steadyStateLineGraph', [function() {
                 svg.append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                 // Add the BSline path.
-                $.get("static/data/json/brainsignals-" + scope.direction + "-autoreg.json", function(in_data) {
+                $.get("static/data/json/brainsignals-" + scope.direction + "-autoreg.json", function (in_data) {
                     var bsData = in_data[keys.x];
                     //var bsArray = [];
                     var x = d3.scaleLinear().range([0, width]);
@@ -330,41 +330,41 @@ myApp.directive('steadyStateLineGraph', [function() {
                     // Add the valueline function.
 
                     var valueline = d3.line()
-                        .x(function(d) {
+                        .x(function (d) {
                             return x(d[input_enc[keys.x]]);
                         })
-                        .y(function(d) {
+                        .y(function (d) {
                             return y(d[keys.y]);
                         });
 
                     var bsArray = objectConversion(bsData);
 
                     var dataset = [{
-                            "label": 'Default BrainSignals',
-                            "data": bsData,
-                            "array": bsArray
-                        },
-                        {
-                            "label": 'Model Run',
-                            "data": data,
-                            "array": dArray
-                        }
+                        "label": 'Default BrainSignals',
+                        "data": bsData,
+                        "array": bsArray
+                    },
+                    {
+                        "label": 'Model Run',
+                        "data": data,
+                        "array": dArray
+                    }
                     ];
 
                     var path = svg.selectAll('path')
-                        .data(dataset, function(d){return d; })
+                        .data(dataset, function (d) { return d; })
                         .enter()
                         .append('path')
                         .attr("class", "line")
-                        .attr("d", function(d, i) {
+                        .attr("d", function (d, i) {
                             return valueline(d.array);
                         })
                         .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")")
-                        .attr("fill","none")
-                        .attr("stroke-width",function(d) {return d.label === 'Default BrainSignals' ? '5px' : '2px' ;})
-                        .attr("stroke-dasharray",function(d) {return d.label === 'Default BrainSignals' ? '3' : '' ;})
-                        .attr("id", function(d) {return d.label === 'Default BrainSignals' ? 'bsPath' : '' ;})
-                        .attr('stroke', function(d, i) {
+                        .attr("fill", "none")
+                        .attr("stroke-width", function (d) { return d.label === 'Default BrainSignals' ? '5px' : '2px'; })
+                        .attr("stroke-dasharray", function (d) { return d.label === 'Default BrainSignals' ? '3' : ''; })
+                        .attr("id", function (d) { return d.label === 'Default BrainSignals' ? 'bsPath' : ''; })
+                        .attr('stroke', function (d, i) {
                             return color(d.label);
                         });
 
@@ -404,25 +404,25 @@ myApp.directive('steadyStateLineGraph', [function() {
                         .append('g') // NEW
                         .attr('class', 'legend') // NEW
                         .attr("font-size", "12px")
-                        .attr('transform', function(d, i) { // NEW
+                        .attr('transform', function (d, i) { // NEW
                             var height = legendRectSize + legendSpacing; // NEW
                             var offset = height * color.domain().length / 2; // NEW
-                            var horz =  width + margin.left // NEW
+                            var horz = width + margin.left // NEW
                             var vert = i * height - offset; // NEW
-                            return 'translate(' + horz + ',' + (vert + mainHeight/2) + ')'; // NEW
+                            return 'translate(' + horz + ',' + (vert + mainHeight / 2) + ')'; // NEW
                         });
 
                     legend.append('rect') // NEW
                         .attr('width', legendRectSize) // NEW
                         .attr('height', legendRectSize) // NEW
-                        .attr('stroke-width','2')
+                        .attr('stroke-width', '2')
                         .style('fill', color) // NEW
                         .style('stroke', color); // NEW
 
                     legend.append('text') // NEW
                         .attr('x', legendRectSize + legendSpacing) // NEW
                         .attr('y', legendRectSize - legendSpacing) // NEW
-                        .text(function(d) {
+                        .text(function (d) {
                             return d;
                         });
                 });
