@@ -10,26 +10,42 @@ myApp.directive('fileReader', function () {
                 header: null,
                 contents: []
             };
-            $(element).on('change', function (changeEvent) {
+
+            var readFile = function (changeEvent) {
                 var f = changeEvent.target.files;
-                if (f.length) {
-                    var r = new FileReader();
-                    r.onload = function (e) {
-                        var contents = e.target.result;
-                        scope.$apply(function () {
-                            result = Papa.parse(contents, {
-                                "skipEmptyLines": true
-                            }).data;
-                            scope.parseResult = arrayToJSON(transposeArray(result));
-                            scope.fileReader.header = result[0];
-                            for (var i = 1; i < result.length; i++) {
-                                scope.fileReader.contents.push(result[i]);
-                            }
-                        });
-                    };
-                    r.readAsText(f[0]);
+                console.log("Uploaded ", f.type)
+
+                if (f.length > 1) {
+                    throw 'Uploaded more than one file'
+                } else if (f.length < 1) {
+                    throw "Did not upload a file."
                 }
-            });
+                if (f[0].type !== 'text/csv') {
+                    throw 'Uploaded file must be a RFC4180-compliant CSV file';
+                }
+                var r = new FileReader();
+                r.onload = function (e) {
+                    var contents = e.target.result;
+                    scope.$apply(function () {
+                        result = Papa.parse(contents, {
+                            "skipEmptyLines": true
+                        }).data;
+                        scope.parseResult = arrayToJSON(transposeArray(result));
+                        scope.fileReader.header = result[0];
+                        for (var i = 1; i < result.length; i++) {
+                            scope.fileReader.contents.push(result[i]);
+                        }
+                    });
+                };
+                r.readAsText(f[0]);
+
+            }
+            try {
+                $(element).on('change', readFile);
+            } catch (error) {
+                console.log(error);
+            }
+
         }
     };
 });
