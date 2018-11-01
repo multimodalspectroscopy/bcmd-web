@@ -5,12 +5,12 @@
 <section class="parameter-section" ng-cloak>
     <h3> Parameters </h3>
     <form>
-    <div class="form-group" ng-repeat="(param, value) in defaultParameters" ng-cloak>
-        <label>{{param}}
-        <input type="text" ng-model="parameters[param]" ng-attr-placeholder="Default: {{value}}" ng-pattern="/^[0-9]+(\.[0-9]{0,7})?$/">
-        </label>
-    </div>
-</form>
+        <div class="form-group" ng-repeat="(param, value) in defaultParameters" ng-cloak>
+            <label>{{param}}
+                <input type="text" ng-model="parameters[param]" ng-attr-placeholder="Default: {{value}}" ng-pattern="/^-{0,1}[0-9]+(\.[0-9]{0,7})?$/">
+            </label>
+        </div>
+    </form>
 </section>
 <footer>
     <div class="row">
