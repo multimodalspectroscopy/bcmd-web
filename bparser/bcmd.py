@@ -319,6 +319,6 @@ if __name__ == '__main__':
         print("C file written to {}".format(codepath))
         cfile.close()
     except IOError as e:
-        logger.error("Error writing file ({0}): {1}\nAttempted to write to\n\t{3}.".format(
+        logger.error("Error writing file ({0}): {1}\nAttempted to write to\n\t{2}.".format(
             e.errno, e.strerror, codepath))
         sys.exit(1)
