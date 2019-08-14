@@ -1,3 +1,6 @@
+from io import StringIO
+from ..util import findBaseDir
+from ..bcmdModel.bcmd_model import ModelBCMD
 import json
 import os.path
 import re
@@ -6,9 +9,6 @@ import subprocess
 import sys
 sys.path.append(os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.join("..", ".."))))
-from ..bcmdModel.bcmd_model import ModelBCMD
-from ..util import findBaseDir
-from io import StringIO
 BASEDIR = findBaseDir(os.environ['BASEDIR'])
 
 
@@ -51,7 +51,7 @@ def modeldefParse(fpath):
     return model_data
 
 
-def getDefaultFilePath(model_name):
+def getModelFilePath(model_name):
     def_path = os.path.join(BASEDIR, 'examples')
     modelPath = None
     for root, dirs, files in os.walk(def_path, topdown=True):
@@ -61,11 +61,13 @@ def getDefaultFilePath(model_name):
                 print(modelPath)
     return modelPath
 
-def getModelFilePath(model_name):
+
+def getDefaultFilePath(model_name):
     def_path = os.path.join(BASEDIR, 'examples')
     modelPath = os.path.join(def_path, model_name+'.modeldef')
     print(modelPath)
     return modelPath
+
 
 if __name__ == '__main__':
     import argparse
