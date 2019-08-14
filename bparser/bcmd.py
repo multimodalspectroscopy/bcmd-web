@@ -288,6 +288,7 @@ def write_graph(config, model):
 
 # ----------------------------------------------------------------------------
 
+
 # main entry point of this compiler script
 if __name__ == '__main__':
     config = process_args()
@@ -317,6 +318,6 @@ if __name__ == '__main__':
         cfile.write(source)
         cfile.close()
     except IOError as e:
-        logger.error("Error writing file ({0}): {1}".format(
-            e.errno, e.strerror))
+        logger.error("Error writing file ({0}): {1}\nAttempted to write to\n\t{2}.".format(
+            e.errno, e.strerror, codepath))
         sys.exit(1)
