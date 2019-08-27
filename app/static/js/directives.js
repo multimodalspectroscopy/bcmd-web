@@ -20,9 +20,9 @@ myApp.directive('fileReader', function () {
                 } else if (f.length < 1) {
                     throw "Did not upload a file."
                 }
-                if (f[0].type !== 'text/csv') {
-                    throw 'Uploaded file must be a RFC4180-compliant CSV file';
-                }
+                // if (f[0].type !== 'text/csv') {
+                //     throw 'Uploaded file must be a RFC4180-compliant CSV file';
+                // }
                 var r = new FileReader();
                 r.onload = function (e) {
                     var contents = e.target.result;

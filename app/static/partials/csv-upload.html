@@ -3,7 +3,8 @@
     <h4> Upload your experimental data and select driving inputs and model outputs.</h4>
 </header>
 <div class="title">
-    <h4>Upload CSV data:</h4></div>
+    <h4>Upload CSV data:</h4>
+</div>
 <form name="selectFileForm" class="form-inline">
     <div class="form-group">
         <label for="fileSelect1"> Select CSV: </label>
@@ -18,7 +19,8 @@
         <div class="form-group">
             <ul>
                 <li ng-repeat="input in fileContent.header">
-                    <input type="checkbox" name="group-check" value="{{input}}" ng-model="data.inputHeader[input]" ng-click="updateLength()" ng-checked="data.inputHeader[input]"> {{input}}
+                    <input type="checkbox" name="group-check" value="{{input}}" ng-model="data.inputHeader[input]"
+                        ng-click="updateLength()" ng-checked="data.inputHeader[input]"> {{input}}
                 </li>
             </ul>
             <button type="button" ng-click="setInputs()" class="btn btn-primary">Set Inputs</button>
@@ -34,12 +36,12 @@
         <form name="">
             <label for="xSelect"> x-axis: </label>
             <select name="xSelect" id="inXSelect" ng-model="inplotx">
-            <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
-    </select>
+                <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
+            </select>
             <label for="ySelect"> y-axis: </label>
             <select name="ySelect" id="inYSelect" ng-model="inploty">
-            <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
-    </select>
+                <option ng-repeat="key in data.inputKeys" value="{{key}}">{{key}}</option>
+            </select>
         </form>
         <br>
         <line-graph data="{{data.inputs}}" select-x="{{inplotx}}" select-y="{{inploty}}"></line-graph>
@@ -52,7 +54,8 @@
         <div class="form-group">
             <ul>
                 <li ng-repeat="output in fileContent.header">
-                    <input type="checkbox" name="group-check" value="{{output}}" ng-model="data.outputHeader[output]" ng-click="updateLength()" ng-checked="data.outputHeader[output]"> {{output}}
+                    <input type="checkbox" name="group-check" value="{{output}}" ng-model="data.outputHeader[output]"
+                        ng-click="updateLength()" ng-checked="data.outputHeader[output]"> {{output}}
                 </li>
             </ul>
             <button type="button" ng-click="setOutputs()" class="btn btn-primary">Set Outputs </button>
@@ -70,12 +73,12 @@
         <form name="">
             <label for="xSelect"> x-axis: </label>
             <select name="xSelect" id="outXSelect" ng-model="outplotx">
-            <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
-    </select>
+                <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
+            </select>
             <label for="ySelect"> y-axis: </label>
             <select name="ySelect" id="outYSelect" ng-model="outploty">
-            <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
-    </select>
+                <option ng-repeat="key in data.outputKeys" value="{{key}}">{{key}}</option>
+            </select>
         </form>
         <br>
         <line-graph data="{{data.outputs}}" select-x="{{outplotx}}" select-y="{{outploty}}"></line-graph>
