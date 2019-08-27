@@ -13,7 +13,8 @@ myApp.directive('fileReader', function () {
 
             var readFile = function (changeEvent) {
                 var f = changeEvent.target.files;
-                console.log("Uploaded ", f.type)
+                console.log(f)
+                console.log("Uploaded ", f[0].type)
 
                 if (f.length > 1) {
                     throw 'Uploaded more than one file'
@@ -30,6 +31,7 @@ myApp.directive('fileReader', function () {
                         result = Papa.parse(contents, {
                             "skipEmptyLines": true
                         }).data;
+                        console.table(result);
                         scope.parseResult = arrayToJSON(transposeArray(result));
                         scope.fileReader.header = result[0];
                         for (var i = 1; i < result.length; i++) {
