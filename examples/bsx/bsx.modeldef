@@ -15,3 +15,59 @@
 # the cerebral BSX model is another umbrella file to import the
 # individual submodels
 @import bsx_brain
+
+## BELOW INCLUDED FOR MODEL DEFPARSING ##
+# oxygen transport submodel for BSRF
+
+@input SaO2sup
+@output SaO2sup XOv O2c CBF
+
+# BrainSignals NIRS observation submodel framed as a BSRF component
+
+# note: this part of the model has no effect on model behaviour
+# it serves purely to define additional output variables representing measurements
+# however, its external dependencies impose requirements on the models it can link to
+
+@output CMRO2 Vmca TOI HHb HbO2 HbT CCO
+
+# linkage elements of BSRF
+# these crossover or intermediate between the main submodels
+
+@input P_a u
+@output P_a u J_O2
+
+# blood flow/autoregulation parts of BSRF
+
+@input Pa_CO2
+@output Pa_CO2 r v_p v_u v_c v_o eta mu
+
+# scalp compartment add-on for BSX
+
+# simple pressure-based scalp blood flow model
+@output rx Gx xBF P_vx
+@output HbO2x HbTx HHbx TOIx
+
+# simple flux-based scalp blood flow model
+@input yFlux
+@output ry Gy yBF P_vy yFlux
+@output HbO2y HbTy HHby TOIy
+
+# flux-based scalp compartment add-on with venous compliance
+# this is basically a 3-element windkessel or RCR circuit model
+# in which the storage volume is accounted for in the NIRS estimates
+
+@input yFlux
+
+# signals -- since we used x and y for previous, use z here
+@output rz Gz zBF P_vz
+@output HbO2z HbTz HHbz TOIz
+@output Volaz Volvz
+
+# trivial extension to the measurement model that
+# adds extra NIRS outputs that are mixtures of brain and scalp
+
+@output HbO2_mix_x HHb_mix_x HbT_mix_x
+@output HbO2_mix_y HHb_mix_y HbT_mix_y
+
+
+
