@@ -56,8 +56,6 @@
 # this is basically a 3-element windkessel or RCR circuit model
 # in which the storage volume is accounted for in the NIRS estimates
 
-@input yFlux
-
 # signals -- since we used x and y for previous, use z here
 @output rz Gz zBF P_vz
 @output HbO2z HbTz HHbz TOIz
